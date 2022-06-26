@@ -1,0 +1,81 @@
+.login {
+  min-height: 100vh;
+  display: flex;
+  overflow: hidden;
+  .bg {
+    flex: 1;
+    background-image: url('./images/bg@2x.png');
+
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+    position: relative;
+    .sloganBox {
+      position: absolute;
+      left: 12.7%;
+      bottom: 10vh;
+      color: #fff;
+    }
+    .slogan {
+      font-size: 24px;
+      margin-bottom: 5px;
+    }
+    .sloganEn {
+      font-size: 12px;
+      opacity: 0.65;
+    }
+  }
+  .loginBox {
+    flex: 1.618;
+    position: relative;
+    padding-bottom: 80px;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    background-image: url('~@/assets/images/bglogo.svg');
+    .logo {
+      width: 93px;
+      height: 77px;
+      margin-top: 27.444vh;
+      margin-bottom: 18px;
+    }
+    .title {
+      text-align: center;
+      font-size: 26px;
+      color: #000;
+      font-weight: bold;
+      margin: 0 0 38px;
+    }
+    .record {
+      position: absolute;
+      bottom: 30px;
+      left: 0;
+      text-align: center;
+      width: 100%;
+    }
+  }
+  .formBox {
+    max-width: 368px;
+    width: 100%;
+  }
+}
+.lang {
+  display: flex;
+  align-content: center;
+  justify-content: flex-end;
+  margin-bottom: 10px;
+}
+.langIcon {
+  display: flex !important;
+  align-items: center;
+}
+.title {
+  text-align: center;
+}
+.input {
+  height: 40px;
+}
+.btn {
+  height: 40px;
+  width: 100%;
+  margin-top: 46px;
+}

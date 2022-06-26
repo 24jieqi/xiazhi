@@ -1,0 +1,11 @@
+# 登录
+mutation login($input: LoginInput) {
+  login(input: $input) {
+    needUpdatePassword
+    token
+  }
+}
+
+query getPermission($input: GetPermissionInput) {
+  getPermission(input: $input)
+}

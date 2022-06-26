@@ -1,0 +1,3152 @@
+directive @extends on OBJECT | INTERFACE
+
+directive @external on FIELD_DEFINITION
+
+directive @key(fields: _FieldSet!) on OBJECT | INTERFACE
+
+directive @provides(fields: _FieldSet!) on FIELD_DEFINITION
+
+directive @requires(fields: _FieldSet!) on FIELD_DEFINITION
+
+type AppDevicePayload {
+  """
+  0不升级，1升级，2强制升级
+  """
+  upgradeStrategy: Int
+
+  """
+  设备平台
+  """
+  platform: DevicePlatformEnum
+
+  """
+  版本
+  """
+  version: Int
+
+  """
+  版本号
+  """
+  versionCode: String
+
+  """
+  更新信息
+  """
+  updateInfo: String
+
+  """
+  android 包下载地址
+  """
+  downloadUrl: String
+
+  """
+  ios 苹果商店的应用 id
+  """
+  appleId: String
+
+  """
+  发布时间
+  """
+  releaseAt: Long
+
+  """
+  创建时间
+  """
+  createAt: Long
+}
+
+"""
+基本分页请求参数
+"""
+input BasePage {
+  """
+  当前页码
+  """
+  pageCurrent: Int
+
+  """
+  分页条数
+  """
+  pageSize: Int
+}
+
+"""
+java.math.BigDecimal
+"""
+scalar BigDecimal
+
+"""
+黑名单校验入参
+"""
+input BlacklistCheckInput {
+  """
+  可选(编辑必填)
+  """
+  id: Int
+
+  """
+  黑名单类型
+  """
+  blacklistType: String!
+
+  """
+  校验信息
+  """
+  checkInfoStr: String!
+}
+
+"""
+新增黑名单入参
+"""
+input BlacklistCreateInput {
+  """
+  黑名单类型
+  """
+  blacklistType: String!
+
+  """
+  车牌号
+  """
+  carNo: String
+
+  """
+  司机手机号
+  """
+  driverPhone: String
+
+  """
+  司机姓名
+  """
+  driverName: String
+
+  """
+  拉黑原因
+  """
+  blackReason: String!
+}
+
+"""
+移除黑名单信息入参
+"""
+input BlacklistDeleteInput {
+  """
+  黑名单ID
+  """
+  id: Int!
+
+  """
+  拉黑原因
+  """
+  deleteReason: String!
+}
+
+"""
+编辑黑名单信息入参
+"""
+input BlacklistEditInput {
+  """
+  黑名单ID
+  """
+  id: Int!
+
+  """
+  黑名单类型
+  """
+  blacklistType: String!
+
+  """
+  车牌号
+  """
+  carNo: String
+
+  """
+  司机手机号
+  """
+  driverPhone: String
+
+  """
+  司机姓名
+  """
+  driverName: String
+
+  """
+  拉黑原因
+  """
+  blackReason: String!
+}
+
+"""
+新增品类入参
+"""
+input CategoryCreateInput {
+  """
+  品类ID
+  """
+  id: Int!
+
+  """
+  品类图片
+  """
+  img: FileInput!
+}
+
+"""
+品类启用禁用接口入参
+"""
+input CategoryEditEnableInput {
+  """
+  品类ID集合
+  """
+  ids: [Int!]!
+
+  """
+  状态 1 启用 99 禁用
+  """
+  enable: Int!
+}
+
+"""
+查看未添加商品品类入参
+"""
+input CategoryNotAddedInput {
+  typeId: Int!
+}
+
+"""
+品类下拉选项入参
+"""
+input CategorySelectInput {
+  """
+  0 查询全部 1 只查询生效的 默认查全部
+  """
+  isQueryDelete: Int
+}
+
+input ChangePortStatusInput {
+  """
+  id
+  """
+  id: Int
+
+  """
+  状态
+  """
+  status: Int
+}
+
+input ChangeResourceStatusInput {
+  """
+  资源id
+  """
+  id: Int
+
+  """
+  状态 1 可用 99 禁用
+  """
+  status: Int
+}
+
+"""
+修改客户状态
+"""
+input ChangeStatusInput {
+  """
+  客户id
+  """
+  id: Int
+
+  """
+  状态
+  """
+  status: Int
+}
+
+input CheckDepositoryNameInput {
+  """
+  主键ID
+  """
+  id: Int
+
+  """
+  客户id
+  """
+  customerId: Int
+
+  """
+  仓库名称
+  """
+  depositoryName: String!
+}
+
+input CheckProductRuleInput {
+  """
+  id
+  """
+  id: Int
+
+  """
+  商品品类ID
+  """
+  productId: Int
+
+  """
+  柜次规则名称
+  """
+  name: String
+
+  """
+  柜次规则编码
+  """
+  code: String
+}
+
+"""
+根据ID获取商品信息
+"""
+type CommodityDetailPayload {
+  """
+  id
+  """
+  id: Int
+
+  """
+  spu名称
+  """
+  name: String
+
+  """
+  品类ID
+  """
+  categoryId: Int
+
+  """
+  品类名称
+  """
+  categoryName: String
+
+  """
+  名称国际化
+  """
+  nameLocal: String
+
+  """
+  品种
+  """
+  variety: String
+
+  """
+  产地
+  """
+  place: String
+
+  """
+  规格选项
+  """
+  specOptions: [CommoditySpecPayload]
+}
+
+"""
+规格类型选项值信息
+"""
+type CommodityOptionPayload {
+  """
+  规格选项ID
+  """
+  id: Int
+
+  """
+  所属规格类型ID
+  """
+  specId: Int
+
+  """
+  规格选项名称
+  """
+  name: String
+
+  """
+  规格类型国际化
+  """
+  nameLocale: String
+
+  """
+  规格类型排序
+  """
+  sort: Int
+}
+
+"""
+sku详情接口返回信息
+"""
+type CommoditySkuInfoPayload {
+  """
+  skuId
+  """
+  id: Int
+
+  """
+  所属品类ID
+  """
+  categoryId: Int
+
+  """
+  所属商品ID
+  """
+  commodityId: Int
+
+  """
+  净重
+  """
+  netWeight: BigDecimal
+
+  """
+  毛重
+  """
+  grossWeight: BigDecimal
+
+  """
+  sku出口单价
+  """
+  exportPrice: BigDecimal
+
+  """
+  sku出口货币
+  """
+  exportCurrency: Int
+
+  """
+  sku进口单价
+  """
+  import_price: BigDecimal
+
+  """
+  sku进口货币
+  """
+  importCurrency: Int
+
+  """
+  状态
+  """
+  status: Int
+}
+
+"""
+商品规格选项
+"""
+type CommoditySpecPayload {
+  """
+  规格类型ID
+  """
+  id: Int
+
+  """
+  规格类型名称
+  """
+  name: String
+
+  """
+  规格类型国际化
+  """
+  nameLocale: String
+
+  """
+  规格类型排序
+  """
+  sort: Int
+}
+
+input CommodityUpdateBatchInput {
+  """
+  sku ID 数组
+  """
+  skuIds: [Int!]
+
+  """
+  净重
+  """
+  netWeight: BigDecimal
+
+  """
+  毛重
+  """
+  grossWeight: BigDecimal
+
+  """
+  sku出口单价
+  """
+  exportPrice: BigDecimal
+
+  """
+  sku出口货币
+  """
+  exportCurrency: Int
+
+  """
+  sku进口单价
+  """
+  import_price: BigDecimal
+
+  """
+  sku进口货币
+  """
+  importCurrency: Int
+}
+
+input CommodityUpdateBatchStatusInput {
+  """
+  sku ID 数组
+  """
+  skuIds: [Int!]
+
+  """
+  状态 1:启用 99:禁用
+  """
+  status: Int!
+}
+
+"""
+添加商品
+"""
+input CreateCommodityInput {
+  """
+  商品id
+  """
+  commodityId: Int!
+
+  """
+  商品类型id
+  """
+  commodityTypeId: Int!
+
+  """
+  商品品类ID
+  """
+  commodityCategoryId: Int!
+}
+
+"""
+新增客户
+"""
+input CreateCustomerInput {
+  """
+  客户简称（中文）
+  """
+  name: String!
+
+  """
+  客户简称（多语言）
+  """
+  nameLocal: String
+
+  """
+  客户编码
+  """
+  code: String
+
+  """
+  关联区域Ids
+  """
+  departIds: [Int!]
+
+  """
+  收货人
+  """
+  receiver: String
+
+  """
+  收货地址
+  """
+  receiveAddress: String
+
+  """
+  收货人手机号码
+  """
+  phone: String
+
+  """
+  工商信息
+  """
+  businessInfo: CustomerBusinessInput
+
+  """
+  "状态 99 停用 1 启用
+  """
+  status: Int
+}
+
+input CreateDepositoryInput {
+  """
+  客户id
+  """
+  customerId: Int
+
+  """
+  仓库名称
+  """
+  depositoryName: String!
+
+  """
+  联系人
+  """
+  contacts: String
+
+  """
+  联系电话
+  """
+  phone: String
+
+  """
+  地址
+  """
+  address: String!
+
+  """
+  启用状态 1启用 99禁用
+  """
+  enabled: Int
+
+  """
+  经度
+  """
+  lng: String
+
+  """
+  纬度
+  """
+  lat: String
+}
+
+input CreatePortInput {
+  """
+  口岸简称(中文)
+  """
+  name: String!
+
+  """
+  口岸简称(多语言)
+  """
+  nameLocale: String
+
+  """
+  国家(1 中国 2 越南 3 泰国)
+  """
+  country: Int!
+
+  """
+  口岸运输方式(1 陆运 2 海运 3 海铁)
+  """
+  transportMode: Int!
+
+  """
+  报关口岸id数组
+  """
+  declarePortIds: [Int]
+
+  """
+  运输公司id数组
+  """
+  transportCompanyIds: [Int]
+
+  """
+  报关公司id数组
+  """
+  declareCompanyIds: [Int]
+
+  """
+  堆场id数组
+  """
+  storageYardIds: [Int]
+
+  """
+  口岸地址
+  """
+  address: String
+
+  """
+  latitude 纬度
+  """
+  lat: String
+
+  """
+  longitude 经度
+  """
+  lng: String
+}
+
+input CreateProductRuleInput {
+  """
+  商品品类ID
+  """
+  productId: Int
+
+  """
+  柜次规则名称
+  """
+  name: String
+
+  """
+  柜次规则名称 多语言
+  """
+  nameLocale: String
+
+  """
+  柜次规则编码
+  """
+  code: String
+
+  """
+  月偏移量
+  """
+  monthOffset: Int
+
+  """
+  状态 1 启用  99 禁用
+  """
+  enabled: Int
+}
+
+input CreateRoleInput {
+  """
+  角色名称
+  """
+  roleName: String!
+}
+
+"""
+客户工商信息
+"""
+input CustomerBusinessInput {
+  """
+  企业名
+  """
+  name: String
+
+  """
+  法定代表人
+  """
+  legalRep: String
+
+  """
+  社会信用代码
+  """
+  socialCreditCode: String
+
+  """
+  企业地址
+  """
+  address: String
+
+  """
+  营业执照
+  """
+  bizLicense: String
+}
+
+type CustomerBusinessPayload {
+  """
+  企业名
+  """
+  name: String
+
+  """
+  法定代表人
+  """
+  legalRep: String
+
+  """
+  社会信用代码
+  """
+  socialCreditCode: String
+
+  """
+  企业地址
+  """
+  address: String
+
+  """
+  营业执照
+  """
+  bizLicense: String
+}
+
+input CustomerDepositoryInput {
+  """
+  客户id
+  """
+  customerId: Int
+
+  """
+  0:查询全部 1:只查询生效的,默认查询全部
+  """
+  isEnabled: Int
+}
+
+type CustomerDepositoryPayload {
+  """
+  id
+  """
+  id: Int
+
+  """
+  客户id
+  """
+  customerId: Int
+
+  """
+  仓库名称
+  """
+  depositoryName: String
+
+  """
+  启用状态 1启用 99禁用
+  """
+  enabled: Int
+
+  """
+  联系人
+  """
+  contacts: String
+
+  """
+  地址
+  """
+  address: String
+
+  """
+  联系电话
+  """
+  phone: String
+
+  """
+  经度
+  """
+  lng: String
+
+  """
+  纬度
+  """
+  lat: String
+}
+
+"""
+编辑客户
+"""
+type CustomerDetailPayload {
+  id: Int
+
+  """
+  客户简称（中文）
+  """
+  name: String!
+
+  """
+  客户简称（多语言）
+  """
+  nameLocal: String
+
+  """
+  客户编码
+  """
+  code: String
+
+  """
+  关联区域Ids
+  """
+  departIds: [Int!]
+
+  """
+  收货人
+  """
+  receiver: String
+
+  """
+  收货地址
+  """
+  receiveAddress: String
+
+  """
+  收货人手机号码
+  """
+  phone: String
+
+  """
+  工商信息
+  """
+  businessInfo: CustomerBusinessPayload
+
+  """
+  "状态 99 停用 1 启用
+  """
+  status: Int
+}
+
+input CustomerIdInput {
+  """
+  客户id
+  """
+  id: Int
+}
+
+type CustomerPayload {
+  """
+  id
+  """
+  id: Int
+
+  """
+  客户名称
+  """
+  name: String
+
+  """
+  服务区域
+  """
+  departNames: String
+
+  """
+  状态 0 停用 1 启用
+  """
+  status: Int
+
+  """
+  客户编码
+  """
+  code: String
+}
+
+"""
+An RFC-3339 compliant Full Date Scalar
+"""
+scalar Date
+
+"""
+An RFC-3339 compliant DateTime Scalar
+"""
+scalar DateTime
+
+input DepositoryIdInput {
+  """
+  主键ID
+  """
+  id: Int
+}
+
+enum DevicePlatformEnum {
+  """
+  web
+  """
+  WEB
+
+  """
+  android
+  """
+  ANDROID
+
+  """
+  ios
+  """
+  IOS
+}
+
+"""
+校验司机信息是否存在黑名单
+"""
+input DriverInfoCheckInput {
+  """
+  校验信息
+  """
+  keywords: String!
+}
+
+enum ErrorDetail {
+  """
+  Unknown error.
+
+  This error should only be returned when no other error detail applies.
+  If a client sees an unknown errorDetail, it will be interpreted as UNKNOWN.
+
+  HTTP Mapping: 500 Internal Server Error
+  """
+  UNKNOWN
+
+  """
+  The requested field is not found in the schema.
+
+  This differs from `NOT_FOUND` in that `NOT_FOUND` should be used when a
+  query is valid, but is unable to return a result (if, for example, a
+  specific video id doesn't exist). `FIELD_NOT_FOUND` is intended to be
+  returned by the server to signify that the requested field is not known to exist.
+  This may be returned in lieu of failing the entire query.
+  See also `PERMISSION_DENIED` for cases where the
+  requested field is invalid only for the given user or class of users.
+
+  HTTP Mapping: 404 Not Found
+  Error Type: BAD_REQUEST
+  """
+  FIELD_NOT_FOUND
+
+  """
+  The provided cursor is not valid.
+
+  The most common usage for this error is when a client is paginating
+  through a list that uses stateful cursors. In that case, the provided
+  cursor may be expired.
+
+  HTTP Mapping: 404 Not Found
+  Error Type: NOT_FOUND
+  """
+  INVALID_CURSOR
+
+  """
+  The operation is not implemented or is not currently supported/enabled.
+
+  HTTP Mapping: 501 Not Implemented
+  Error Type: BAD_REQUEST
+  """
+  UNIMPLEMENTED
+
+  """
+  The client specified an invalid argument.
+
+  Note that this differs from `FAILED_PRECONDITION`.
+  `INVALID_ARGUMENT` indicates arguments that are problematic
+  regardless of the state of the system (e.g., a malformed file name).
+
+  HTTP Mapping: 400 Bad Request
+  Error Type: BAD_REQUEST
+  """
+  INVALID_ARGUMENT
+
+  """
+  The deadline expired before the operation could complete.
+
+  For operations that change the state of the system, this error
+  may be returned even if the operation has completed successfully.
+  For example, a successful response from a server could have been
+  delayed long enough for the deadline to expire.
+
+  HTTP Mapping: 504 Gateway Timeout
+  Error Type: UNAVAILABLE
+  """
+  DEADLINE_EXCEEDED
+
+  """
+  Service Error.
+
+  There is a problem with an upstream service.
+
+  This may be returned if a gateway receives an unknown error from a service
+  or if a service is unreachable.
+  If a request times out which waiting on a response from a service,
+  `DEADLINE_EXCEEDED` may be returned instead.
+  If a service returns a more specific error Type, the specific error Type may
+  be returned instead.
+
+  HTTP Mapping: 502 Bad Gateway
+  Error Type: UNAVAILABLE
+  """
+  SERVICE_ERROR
+
+  """
+  Request throttled based on server CPU limits
+
+  HTTP Mapping: 503 Unavailable.
+  Error Type: UNAVAILABLE
+  """
+  THROTTLED_CPU
+
+  """
+  Request throttled based on server concurrency limits.
+
+  HTTP Mapping: 503 Unavailable
+  Error Type: UNAVAILABLE
+  """
+  THROTTLED_CONCURRENCY
+
+  """
+  The server detected that the client is exhibiting a behavior that
+  might be generating excessive load.
+
+  HTTP Mapping: 429 Too Many Requests or 420 Enhance Your Calm
+  Error Type: UNAVAILABLE
+  """
+  ENHANCE_YOUR_CALM
+
+  """
+  Request failed due to network errors.
+
+  HTTP Mapping: 503 Unavailable
+  Error Type: UNAVAILABLE
+  """
+  TCP_FAILURE
+
+  """
+  Unable to perform operation because a required resource is missing.
+
+  Example: Client is attempting to refresh a list, but the specified
+  list is expired. This requires an action by the client to get a new list.
+
+  If the user is simply trying GET a resource that is not found,
+  use the NOT_FOUND error type. FAILED_PRECONDITION.MISSING_RESOURCE
+  is to be used particularly when the user is performing an operation
+  that requires a particular resource to exist.
+
+  HTTP Mapping: 400 Bad Request or 500 Internal Server Error
+  Error Type: FAILED_PRECONDITION
+  """
+  MISSING_RESOURCE
+}
+
+enum ErrorType {
+  """
+  Unknown error.
+
+  For example, this error may be returned when
+  an error code received from another address space belongs to
+  an error space that is not known in this address space.  Also
+  errors raised by APIs that do not return enough error information
+  may be converted to this error.
+
+  If a client sees an unknown errorType, it will be interpreted as UNKNOWN.
+  Unknown errors MUST NOT trigger any special behavior. These MAY be treated
+  by an implementation as being equivalent to INTERNAL.
+
+  When possible, a more specific error should be provided.
+
+  HTTP Mapping: 520 Unknown Error
+  """
+  UNKNOWN
+
+  """
+  Internal error.
+
+  An unexpected internal error was encountered. This means that some
+  invariants expected by the underlying system have been broken.
+  This error code is reserved for serious errors.
+
+  HTTP Mapping: 500 Internal Server Error
+  """
+  INTERNAL
+
+  """
+  The requested entity was not found.
+
+  This could apply to a resource that has never existed (e.g. bad resource id),
+  or a resource that no longer exists (e.g. cache expired.)
+
+  Note to server developers: if a request is denied for an entire class
+  of users, such as gradual feature rollout or undocumented allowlist,
+  `NOT_FOUND` may be used. If a request is denied for some users within
+  a class of users, such as user-based access control, `PERMISSION_DENIED`
+  must be used.
+
+  HTTP Mapping: 404 Not Found
+  """
+  NOT_FOUND
+
+  """
+  The request does not have valid authentication credentials.
+
+  This is intended to be returned only for routes that require
+  authentication.
+
+  HTTP Mapping: 401 Unauthorized
+  """
+  UNAUTHENTICATED
+
+  """
+  The caller does not have permission to execute the specified
+  operation.
+
+  `PERMISSION_DENIED` must not be used for rejections
+  caused by exhausting some resource or quota.
+  `PERMISSION_DENIED` must not be used if the caller
+  cannot be identified (use `UNAUTHENTICATED`
+  instead for those errors).
+
+  This error Type does not imply the
+  request is valid or the requested entity exists or satisfies
+  other pre-conditions.
+
+  HTTP Mapping: 403 Forbidden
+  """
+  PERMISSION_DENIED
+
+  """
+  Bad Request.
+
+  There is a problem with the request.
+  Retrying the same request is not likely to succeed.
+  An example would be a query or argument that cannot be deserialized.
+
+  HTTP Mapping: 400 Bad Request
+  """
+  BAD_REQUEST
+
+  """
+  Currently Unavailable.
+
+  The service is currently unavailable.  This is most likely a
+  transient condition, which can be corrected by retrying with
+  a backoff.
+
+  HTTP Mapping: 503 Unavailable
+  """
+  UNAVAILABLE
+
+  """
+  The operation was rejected because the system is not in a state
+  required for the operation's execution.  For example, the directory
+  to be deleted is non-empty, an rmdir operation is applied to
+  a non-directory, etc.
+
+  Service implementers can use the following guidelines to decide
+  between `FAILED_PRECONDITION` and `UNAVAILABLE`:
+
+  - Use `UNAVAILABLE` if the client can retry just the failing call.
+  - Use `FAILED_PRECONDITION` if the client should not retry until
+  the system state has been explicitly fixed.  E.g., if an "rmdir"
+       fails because the directory is non-empty, `FAILED_PRECONDITION`
+  should be returned since the client should not retry unless
+  the files are deleted from the directory.
+
+  HTTP Mapping: 400 Bad Request or 500 Internal Server Error
+  """
+  FAILED_PRECONDITION
+}
+
+"""
+文件入参
+"""
+input FileInput {
+  """
+  文件ID
+  """
+  fileId: String
+
+  """
+  文件名称
+  """
+  fileName: String
+
+  """
+  文件url
+  """
+  fileUrl: String
+
+  """
+  文件上传时间
+  """
+  fileUploadTime: Long
+}
+
+"""
+文件信息体
+"""
+type FilePayLoad {
+  """
+  文件ID
+  """
+  fileId: String
+
+  """
+  文件名称
+  """
+  fileName: String
+
+  """
+  文件url
+  """
+  fileUrl: String
+
+  """
+  文件上传时间
+  """
+  fileUploadTime: Long
+}
+
+"""
+冻结用户入参
+"""
+input FrozenUserInput {
+  """
+  用户ID
+  """
+  id: Int!
+
+  """
+  状态(1-正常,99-冻结)
+  """
+  status: Int
+}
+
+"""
+获取权限列表入参
+"""
+input GetPermissionInput {
+  """
+  权限类型 1 后台管理 2 app 3消息,不传默认查全部
+  """
+  menuType: Int
+}
+
+type HeadOther {
+  key: String
+  title: String
+}
+
+type HeadSpec {
+  """
+  选项id
+  """
+  specId: Int
+
+  """
+  选项名称
+  """
+  specName: String
+}
+
+input IFrameUrlInput {
+  """
+  发货计划id
+  """
+  id: Int
+
+  """
+  运输方式 1_陆运  2_海运 3_铁运
+  """
+  deliveryMethod: Int
+
+  """
+  车牌号
+  """
+  carNo: String
+
+  """
+  船公司代码(海运必填)
+  """
+  carrierCode: String
+
+  """
+  提单号(海运必填)
+  """
+  billCode: String
+
+  """
+  进口港代码(海运必填)
+  """
+  portCode: String
+}
+
+type ListCommodityPayLoad {
+  """
+  商品id
+  """
+  commodityId: Int
+
+  """
+  商品名称
+  """
+  commodityName: String
+
+  """
+  商品类型
+  """
+  commodityTypeId: Int
+
+  """
+  商品类型名称
+  """
+  commodityTypeName: String
+
+  """
+  品类id
+  """
+  categoryId: Int
+
+  """
+  品类名称
+  """
+  categoryName: String
+
+  """
+  品种id
+  """
+  varietyId: Int
+
+  """
+  品种名称
+  """
+  varietyName: String
+
+  """
+  产地id
+  """
+  originId: Int
+
+  """
+  产地名称
+  """
+  originName: String
+
+  """
+  sku数量
+  """
+  skuQuantity: Int
+
+  """
+  状态
+  """
+  status: Int
+}
+
+"""
+添加商品
+"""
+input ListCreateCommodityInput {
+  createCommodityInput: [CreateCommodityInput]!
+}
+
+type ListSku {
+  """
+  sku Id
+  """
+  commoditySkuId: Int
+
+  """
+  规格选项
+  """
+  skuOption: [SkuOption]
+
+  """
+  状态
+  """
+  status: Int
+}
+
+"""
+登陆入参
+"""
+input LoginInput {
+  """
+  账号
+  """
+  userAccount: String!
+
+  """
+  密码
+  """
+  password: String!
+}
+
+"""
+登陆返回体
+"""
+type LoginPayload {
+  """
+  是否需要更新密码
+  """
+  needUpdatePassword: Boolean
+
+  """
+  token
+  """
+  token: String
+}
+
+"""
+Long type
+"""
+scalar Long
+
+type Mutation {
+  """
+  新增柜次规则
+  """
+  createProductRule(input: CreateProductRuleInput): Boolean
+
+  """
+  新增柜次规则
+  """
+  updateProductRule(input: UpdateProductRuleInput): Boolean
+
+  """
+  柜次启用禁用
+  """
+  changeProductRuleStatus(input: Int): Boolean
+
+  """
+  校验柜次规则名称
+  """
+  checkProductRule(input: CheckProductRuleInput): Boolean
+
+  """
+  新增口岸
+  """
+  createPort(input: CreatePortInput): Boolean
+
+  """
+  编辑口岸
+  """
+  updatePort(input: UpdatePortInput): Boolean
+
+  """
+  修改口岸状态
+  """
+  changePortStatus(input: ChangePortStatusInput): Boolean
+
+  """
+  新增黑名单信息
+  """
+  saveBlacklist(input: BlacklistCreateInput): Boolean
+
+  """
+  编辑黑名单信息
+  """
+  editBlacklist(input: BlacklistEditInput): Boolean
+
+  """
+  移除黑名单信息
+  """
+  deleteBlacklist(input: BlacklistDeleteInput): Boolean
+
+  """
+  添加商品
+  """
+  createCommodity(createCommodityInput: ListCreateCommodityInput): [Int]
+
+  """
+  商品状态变更
+  """
+  updateCommodityStatus(updateCommodityStatusInput: UpdateCommodityStatusInput): [Int]
+  createCategory(input: CategoryCreateInput): Boolean
+  editCategoryEnable(input: CategoryEditEnableInput): Boolean
+
+  """
+  添加sku
+  """
+  createCommoditySku(commoditySkuId: [Int]): [Int]
+
+  """
+  编辑sku状态
+  """
+  updateSkuStatus(updateStatusInput: UpdateStatusInput): [Int]
+
+  """
+  批量修改SKU
+  """
+  updateBatchInfo(input: CommodityUpdateBatchInput): [Int]
+
+  """
+  批量修改SKU状态
+  """
+  updateBatchStatus(input: CommodityUpdateBatchStatusInput): [Int]
+
+  """
+  同步用户客户端类型
+  """
+  postAppPlatform(input: UserDevicePlatformInput): Boolean
+
+  """
+  创建客户
+  """
+  createCustomer(input: CreateCustomerInput): Boolean
+
+  """
+  编辑客户
+  """
+  updateCustomer(input: UpdateCustomerInput): Boolean
+
+  """
+  修改客户状态
+  """
+  changeStatus(input: ChangeStatusInput): Boolean
+
+  """
+  创建仓库
+  """
+  createDepository(input: CreateDepositoryInput): Boolean
+
+  """
+  编辑仓库
+  """
+  updateDepository(input: UpdateDepositoryInput): Boolean
+
+  """
+  更改仓库状态
+  """
+  changeDepositoryStatus(input: DepositoryIdInput): Boolean
+
+  """
+  删除资源
+  """
+  deleteResource(input: Int): Boolean
+
+  """
+  创建资源信息
+  """
+  createResource(input: FileInput): Boolean
+
+  """
+  资源信息上下架
+  """
+  changeResourceStatus(input: ChangeResourceStatusInput): Boolean
+
+  """
+  用户登陆
+  """
+  login(input: LoginInput): LoginPayload
+
+  """
+  刷新token
+  """
+  refreshToken: String
+
+  """
+  添加角色
+  """
+  createRole(input: CreateRoleInput): Boolean
+
+  """
+  重置密码
+  """
+  resetPassword(input: ResetPasswordInput): Boolean
+
+  """
+  修改密码
+  """
+  updatePassword(input: UpdatePasswordInput): Boolean
+
+  """
+  添加用户
+  """
+  createUser(input: SaveUserInput): Boolean
+
+  """
+  修改用户
+  """
+  updateUser(input: SaveUserInput): Boolean
+
+  """
+  冻结用户
+  """
+  frozenUser(input: FrozenUserInput): Boolean
+}
+
+"""
+未添加商品列表
+"""
+type NoCommodityPayload {
+  """
+  商品id
+  """
+  commodityId: Int
+
+  """
+  商品名称
+  """
+  commodityName: String
+
+  """
+  商品类型名称
+  """
+  commodityTypeName: String
+
+  """
+  商品类型id
+  """
+  commodityTypeId: Int
+
+  """
+  商品品类名称
+  """
+  commodityCategoryName: String
+
+  """
+  商品品种名称
+  """
+  commodityVarietyName: String
+
+  """
+  商品产地名称
+  """
+  commodityPlaceOriginName: String
+
+  """
+  商品品类ID
+  """
+  commodityCategoryId: Int
+}
+
+"""
+可选sku
+"""
+type NotChosenSkuOption {
+  """
+  sku id
+  """
+  commoditySkuId: Int
+
+  """
+  规格选项
+  """
+  optionId: [Int]
+}
+
+type OrchardPayload {
+  """
+  果园编号
+  """
+  orchardNo: String
+
+  """
+  包装厂编号
+  """
+  packingHouseNo: String
+}
+
+"""
+分页查询黑名单信息入参
+"""
+input PageBlacklistInput {
+  """
+  司机手机号
+  """
+  driverPhone: String
+
+  """
+  司机姓名
+  """
+  driverName: String
+
+  """
+  车牌号
+  """
+  carNo: String
+  pageCurrent: Int
+  pageSize: Int
+}
+
+"""
+分页查询黑名单信息返回信息
+"""
+type PageBlacklistPagePayload {
+  records: [PageBlacklistPayload]
+  pageCurrent: Int
+  pageSize: Int
+  totalRecords: Int
+}
+
+"""
+分页查询黑名单信息返回信息
+"""
+type PageBlacklistPayload {
+  """
+  黑名单ID
+  """
+  id: Int
+
+  """
+  黑名单类型
+  """
+  blacklistType: String
+
+  """
+  黑名单类型描述
+  """
+  blacklistTypeDesc: String
+
+  """
+  车牌号
+  """
+  carNo: String
+
+  """
+  司机手机号
+  """
+  driverPhone: String
+
+  """
+  司机姓名
+  """
+  driverName: String
+
+  """
+  拉黑原因
+  """
+  blackReason: String
+
+  """
+  加入黑名单时间
+  """
+  blackTime: Long
+}
+
+"""
+分页查询商品品类入参
+"""
+input PageCategoryInput {
+  """
+  品类名称
+  """
+  name: String
+
+  """
+  启用状态 1 启用 99 禁用
+  """
+  enabled: Int
+  pageCurrent: Int
+  pageSize: Int
+}
+
+"""
+分页查询品类返回信息
+"""
+type PageCategoryListPayload {
+  """
+  品类ID
+  """
+  id: Int
+
+  """
+  品类名称
+  """
+  name: String
+
+  """
+  商品类型ID
+  """
+  typeId: Int
+
+  """
+  商品类型名称
+  """
+  typeName: String
+
+  """
+  状态 1 启用 99 禁用
+  """
+  enable: Int
+
+  """
+  多语言
+  """
+  nameLocale: String
+
+  """
+  文件
+  """
+  img: FilePayLoad
+}
+
+"""
+分页查询黑名单信息返回信息
+"""
+type PageCategoryPagePayload {
+  records: [PageCategoryListPayload]
+  pageCurrent: Int
+  pageSize: Int
+  totalRecords: Int
+}
+
+"""
+商品管理列表
+"""
+input PageCommodityInput {
+  """
+  商品类型
+  """
+  typeId: Int
+
+  """
+  品类id
+  """
+  categoryId: Int
+
+  """
+  spu名称
+  """
+  commodityName: String
+  pageCurrent: Int
+  pageSize: Int
+}
+
+"""
+分页商品返回信息
+"""
+type PageCommodityPayload {
+  pageCurrent: Int
+  pageSize: Int
+  totalRecords: Long
+  records: [ListCommodityPayLoad]
+}
+
+type PageCustomerDepositoryPayload {
+  """
+  分页数据
+  """
+  records: [CustomerDepositoryPayload]
+
+  """
+  当前页码
+  """
+  pageCurrent: Int
+
+  """
+  分页条数
+  """
+  pageSize: Int
+
+  """
+  总条数
+  """
+  totalRecords: Int
+}
+
+input PageCustomerInput {
+  """
+  客户名称
+  """
+  name: String
+
+  """
+  服务区域名称
+  """
+  departName: String
+
+  """
+  当前页码
+  """
+  pageCurrent: Int
+
+  """
+  分页条数
+  """
+  pageSize: Int
+}
+
+type PageCustomerPayload {
+  """
+  分页数据
+  """
+  records: [CustomerPayload]
+
+  """
+  当前页码
+  """
+  pageCurrent: Int
+
+  """
+  分页条数
+  """
+  pageSize: Int
+
+  """
+  总条数
+  """
+  totalRecords: Int
+}
+
+"""
+未添加商品列表
+"""
+input PageNoCommodityInput {
+  """
+  商品类型
+  """
+  typeId: Int
+
+  """
+  品类
+  """
+  categoryId: Int
+
+  """
+  品种
+  """
+  varietyId: Int
+
+  """
+  产地
+  """
+  originId: Int
+  pageCurrent: Int
+  pageSize: Int
+}
+
+"""
+未添加商品类表返回信息
+"""
+type PageNoCommodityPayload {
+  pageCurrent: Int
+  pageSize: Int
+  totalRecords: Long
+  records: [NoCommodityPayload]
+}
+
+input PagePortInput {
+  """
+  客户名称
+  """
+  name: String
+
+  """
+  国家(1 中国 2 越南 3 泰国)
+  """
+  country: Int
+
+  """
+  口岸运输方式(1 陆运 2 海运 3 海铁)
+  """
+  transportMode: Int
+
+  """
+  当前页码
+  """
+  pageCurrent: Int
+
+  """
+  分页条数
+  """
+  pageSize: Int
+}
+
+type PagePortPayload {
+  """
+  分页数据
+  """
+  records: [PortPayload]
+
+  """
+  当前页码
+  """
+  pageCurrent: Int
+
+  """
+  分页条数
+  """
+  pageSize: Int
+
+  """
+  总条数
+  """
+  totalRecords: Int
+}
+
+input PageProductRuleInput {
+  """
+  商品品类ID
+  """
+  productId: Int!
+
+  """
+  当前页码
+  """
+  pageCurrent: Int
+
+  """
+  分页条数
+  """
+  pageSize: Int
+}
+
+type PageProductRulePayload {
+  """
+  分页数据
+  """
+  records: [ProductRulePayload]
+
+  """
+  当前页码
+  """
+  pageCurrent: Int
+
+  """
+  分页条数
+  """
+  pageSize: Int
+
+  """
+  总条数
+  """
+  totalRecords: Int
+}
+
+input PageResourceInput {
+  """
+  资料名称
+  """
+  name: String
+
+  """
+  当前页码
+  """
+  pageCurrent: Int
+
+  """
+  分页条数
+  """
+  pageSize: Int
+}
+
+type PageResourcePayload {
+  """
+  分页数据
+  """
+  records: [ResourcePayload]
+
+  """
+  当前页码
+  """
+  pageCurrent: Int
+
+  """
+  分页条数
+  """
+  pageSize: Int
+
+  """
+  总条数
+  """
+  totalRecords: Int
+}
+
+input PageRoleInput {
+  """
+  状态（1：正常 99：禁用）
+  """
+  status: Int
+
+  """
+  角色名
+  """
+  roleName: String
+
+  """
+  当前页码
+  """
+  pageCurrent: Int
+
+  """
+  分页条数
+  """
+  pageSize: Int
+}
+
+type PageRolePayload {
+  """
+  分页数据
+  """
+  records: [RolePayload]
+
+  """
+  当前页码
+  """
+  pageCurrent: Int
+
+  """
+  分页条数
+  """
+  pageSize: Int
+
+  """
+  总条数
+  """
+  totalRecords: Int
+}
+
+"""
+sku列表
+"""
+input PageSkuInput {
+  """
+  商品id
+  """
+  commodityId: Int
+
+  """
+  规格筛选
+  """
+  skuCondition: [SkuCondition]
+  pageCurrent: Int
+  pageSize: Int
+}
+
+type PageSkuPayload {
+  pageCurrent: Int
+  pageSize: Int
+  totalRecords: Long
+  records: [ListSku]
+}
+
+"""
+分页查询用户入参
+"""
+input PageUserInput {
+  """
+  登陆账号
+  """
+  userAccount: String
+
+  """
+  姓名
+  """
+  userName: String
+
+  """
+  状态(1-正常,99-冻结)
+  """
+  status: Int
+
+  """
+  角色ID
+  """
+  roleId: Int
+
+  """
+  部门IDS
+  """
+  departIds: [Int]
+
+  """
+  当前页码
+  """
+  pageCurrent: Int
+
+  """
+  分页条数
+  """
+  pageSize: Int
+}
+
+"""
+分页查询用户返回体
+"""
+type PageUserPayload {
+  """
+  分页数据
+  """
+  records: [UserPayload]
+
+  """
+  当前页码
+  """
+  pageCurrent: Int
+
+  """
+  分页条数
+  """
+  pageSize: Int
+
+  """
+  总条数
+  """
+  totalRecords: Int
+}
+
+type PortDetailPayload {
+  """
+  主键
+  """
+  id: Int
+
+  """
+  名称
+  """
+  name: String
+
+  """
+  名称 多语言
+  """
+  nameLocale: String
+
+  """
+  所属国家
+  """
+  country: Int
+
+  """
+  所属公司
+  """
+  subCompany: Int
+
+  """
+  所属公司类型 1-总部，2-海外分公司
+  """
+  subCompanyType: Int
+
+  """
+  口岸编号
+  """
+  code: String
+
+  """
+  口岸运输方式(1陆运 2海运 3海铁)
+  """
+  transportMode: Int
+
+  """
+  口岸类型(1-到达口岸，2-报关口岸)
+  """
+  portType: String
+
+  """
+  报关口岸id数组
+  """
+  declarePortIds: [Int]
+
+  """
+  运输公司id数组
+  """
+  transportCompanyIds: [Int]
+
+  """
+  报关公司id数组
+  """
+  declareCompanyIds: [Int]
+
+  """
+  堆场id数组
+  """
+  storageYardIds: [Int]
+
+  """
+  地址
+  """
+  address: String
+
+  """
+  状态
+  """
+  status: Int
+}
+
+type PortPayload {
+  """
+  主键id
+  """
+  id: Int
+
+  """
+  名称
+  """
+  name: String
+
+  """
+  国家
+  """
+  country: String
+
+  """
+  口岸运输方式
+  """
+  transportMode: String
+
+  """
+  报关口岸
+  """
+  declarePort: String
+
+  """
+  状态 0 禁用 1 开启
+  """
+  status: Int
+}
+
+input ProductRuleOptionInput {
+  """
+  商品品类ID
+  """
+  productId: Int
+
+  """
+  0：查询全部 1：只查询生效的，默认查询全部
+  """
+  enabled: Int
+}
+
+type ProductRulePayload {
+  """
+  柜次规则ID
+  """
+  id: Int
+
+  """
+  柜次规则名称
+  """
+  name: String
+
+  """
+  多语言
+  """
+  nameLocale: String
+
+  """
+  柜次规则编码
+  """
+  code: String
+
+  """
+  月偏移量
+  """
+  monthOffset: Int
+
+  """
+  状态 1 启用  99 禁用
+  """
+  enabled: Int
+}
+
+type Query {
+  """
+  分页查询柜次规则
+  """
+  pageProductRule(input: PageProductRuleInput): PageProductRulePayload
+
+  """
+  根据ID查询柜次规则详情
+  """
+  getProductRuleDetail(input: Int): ProductRulePayload
+
+  """
+  柜次规则下拉选项
+  """
+  productRuleOption(input: ProductRuleOptionInput): [SelectOption]
+
+  """
+  分页查询口岸
+  """
+  pagePort(input: PagePortInput): PagePortPayload
+
+  """
+  口岸下拉选择列表
+  """
+  portSelectOption: [SelectOption]
+
+  """
+  根据id获取口岸详情
+  """
+  getPortDetail(input: Int): PortDetailPayload
+
+  """
+  进口港下拉列表
+  """
+  entryPortOption(input: Int): [SelectOption]
+
+  """
+  报关口岸下拉列表
+  """
+  declarePortOption(input: Int): [SelectOption]
+
+  """
+  出口港下拉列表
+  """
+  exportPortOption(input: Int): [SelectOption]
+
+  """
+  口岸运输公司下拉列表
+  """
+  transportCompanyOption(input: Int): [SelectOption]
+
+  """
+  分页查询黑名单信息
+  """
+  pageBlacklist(input: PageBlacklistInput): PageBlacklistPagePayload
+
+  """
+  黑名单信息校验 true为可用 false为不可用
+  """
+  checkBlacklist(input: BlacklistCheckInput): Boolean
+
+  """
+  校验司机信息 true为可用 false为不可用
+  """
+  checkDriverInfo(input: DriverInfoCheckInput): Boolean
+
+  """
+  商品管理列表
+  """
+  pageCommodityManage(pageCommodityInput: PageCommodityInput): PageCommodityPayload
+
+  """
+  工厂下商品下拉
+  """
+  factoryListOptions(factoryId: Int!): [SelectOption]
+
+  """
+  商品品种下拉列表
+  """
+  varietyOption(categoryId: Int!): [SelectOption]
+
+  """
+  商品产地下拉列表
+  """
+  originOption(categoryId: Int!): [SelectOption]
+
+  """
+  商品下拉
+  """
+  commodityOption(categoryId: Int!): [SelectOption]
+
+  """
+  未添加商品列表
+  """
+  pageNoCommodity(pageNoCommodityInput: PageNoCommodityInput): PageNoCommodityPayload
+
+  """
+  商品详情
+  """
+  queryDetailInfo(commodityId: Int!): CommodityDetailPayload
+
+  """
+  分页查询品类信息
+  """
+  queryPageList(input: PageCategoryInput): PageCategoryPagePayload
+
+  """
+  查询未添加品类信息
+  """
+  queryNotAdded(input: CategoryNotAddedInput): [SelectOption]
+
+  """
+  品类下拉
+  """
+  querySelectList(input: CategorySelectInput): [SelectOption]
+
+  """
+  品类类型下拉
+  """
+  queryTypeSelectList: [SelectOption]
+
+  """
+  根据sku选项检查是否有已生成sku,如果已生成返回sku信息
+  """
+  checkSku(skuOptionIds: [Int!]!): CommoditySkuInfoPayload
+
+  """
+  根据sku选项检查是否有已生成sku,如果已生成返回sku信息
+  """
+  commoditySkuDetail(skuId: Int!): CommoditySkuInfoPayload
+
+  """
+  sku列表
+  """
+  pageSku(pageSku: PageSkuInput): PageSkuPayload
+
+  """
+  未选择sku选项id集合
+  """
+  notChosenSkuOption(commodityId: Int!): [NotChosenSkuOption]
+
+  """
+  查询当前最新 APP 版本信息。platform 需要传：ANDROID 或 IOS 以查询特定的 APP 版本
+  """
+  getVersion(input: DevicePlatformEnum): AppDevicePayload
+
+  """
+  APP 错误日志记录
+  """
+  appError(input: String): Int
+
+  """
+  APP 资料文件
+  """
+  getAppData: [FilePayLoad]
+
+  """
+  APP 获取操作手册 OPERATION_MANUAL_RECEIVER_SOP(销地收货)/OPERATION_MANUAL_RETURN_CAR(还箱)
+  """
+  operationManual(input: String): String
+
+  """
+  获取文件的果园信息
+  """
+  getOrchardInfo(input: FileInput): [OrchardPayload]
+
+  """
+  获取鲸准网内嵌iFrame路径
+  """
+  getIFrameUrl(input: IFrameUrlInput): String
+
+  """
+  所属国际下拉列表
+  """
+  countrySelectOption: [SelectOption]
+
+  """
+  口岸运输方式下拉列表
+  """
+  transportModeSelectOption: [SelectOption]
+
+  """
+  收货方类型下拉列表
+  """
+  receiverTypeSelectOption: [SelectOption]
+
+  """
+  货币类型下拉列表
+  """
+  currencySelectOption: [SelectTextOption]
+
+  """
+  客户关联组织下拉列表
+  """
+  customerOrgSelectList(input: CustomerIdInput): [SelectOption]
+
+  """
+  客户关联仓库下拉列表
+  """
+  customerDepositorySelectList(input: CustomerDepositoryInput): [SelectOption]
+
+  """
+  客户信息分页查询
+  """
+  pageCustomer(input: PageCustomerInput): PageCustomerPayload
+
+  """
+  根据id查询客户详情
+  """
+  getCustomerDetail(input: CustomerIdInput): CustomerDetailPayload
+
+  """
+  分页查询客户仓库
+  """
+  pageCustomerDepository(input: CustomerIdInput): PageCustomerDepositoryPayload
+
+  """
+  校验名称
+  """
+  checkDepositoryName(input: CheckDepositoryNameInput): Boolean
+
+  """
+  资源信息分页查询
+  """
+  pageResource(input: PageResourceInput): PageResourcePayload
+
+  """
+  分页查询角色列表
+  """
+  pageRole(input: PageRoleInput): RolePayload
+
+  """
+  获取权限列表
+  """
+  getPermission(input: GetPermissionInput): [String]
+
+  """
+  分页获取用户
+  """
+  pageUser(input: PageUserInput): PageUserPayload
+
+  """
+  查询用户根据ID,不传ID默认查询当前用户
+  """
+  getUser(id: Int): UserPayload
+
+  """
+  根据关键词搜索用户
+  """
+  searchUser(input: SearchUserInput): [UserPayload]
+
+  """
+  根据真实名称查询用户下拉，可能已经没用了
+  """
+  optionsUser(realname: String): [SelectOption]
+  _service: _Service
+}
+
+"""
+重置密码入参
+"""
+input ResetPasswordInput {
+  """
+  密码
+  """
+  password: String!
+}
+
+type ResourcePayload {
+  """
+  主键id
+  """
+  id: Int
+
+  """
+  名称
+  """
+  name: String
+
+  """
+  资源路径
+  """
+  fileVO: FilePayLoad
+
+  """
+  状态 1_上架 99_下架
+  """
+  status: Int
+
+  """
+  上传时间
+  """
+  createTime: Long
+}
+
+type RolePayload {
+  """
+  主键ID
+  """
+  id: Int
+
+  """
+  角色名称
+  """
+  roleName: String
+
+  """
+  状态（1：正常 99：禁用）
+  """
+  status: Int
+
+  """
+  是否是管理员（1：是 2：否）
+  """
+  isAdmin: Int
+}
+
+"""
+保存用户入参
+"""
+input SaveUserInput {
+  """
+  用户ID
+  """
+  id: Int!
+
+  """
+  角色IDs
+  """
+  roleIds: [Int]!
+
+  """
+  组织IDs
+  """
+  departIds: [Int]!
+
+  """
+  接收短信:(0：否，1：是)
+  """
+  receiveMsg: Int!
+}
+
+"""
+搜索用户入参
+"""
+input SearchUserInput {
+  """
+  关键词搜索，目前支持：名称和手机号
+  """
+  keyword: String
+}
+
+"""
+下拉信息体
+"""
+type SelectOption {
+  """
+  选项名称
+  """
+  label: String
+
+  """
+  选项值
+  """
+  value: Int
+
+  """
+  是否禁用
+  """
+  disabled: Boolean
+
+  """
+  子下拉项
+  """
+  children: [SelectOption]
+}
+
+"""
+下拉信息体
+"""
+type SelectTextOption {
+  """
+  选项名称
+  """
+  label: String
+
+  """
+  选项值
+  """
+  value: String
+
+  """
+  是否禁用
+  """
+  disabled: Boolean
+
+  """
+  描述
+  """
+  description: String
+
+  """
+  子下拉项
+  """
+  children: [SelectTextOption]
+}
+
+input SkuCondition {
+  """
+  规格id
+  """
+  specId: Int
+
+  """
+  规格选项id
+  """
+  optionId: Int
+}
+
+type SkuOption {
+  """
+  规格id
+  """
+  specId: Int
+
+  """
+  规格选项名称
+  """
+  optionName: String
+}
+
+"""
+sku列表表头
+"""
+type TableHeadPayload {
+  spec: [HeadSpec]
+  other: [HeadOther]
+}
+
+"""
+商品状态变更
+"""
+input UpdateCommodityStatusInput {
+  status: Int
+  commodityId: [Int]
+}
+
+"""
+编辑客户
+"""
+input UpdateCustomerInput {
+  id: Int
+
+  """
+  客户简称（中文）
+  """
+  name: String!
+
+  """
+  客户简称（多语言）
+  """
+  nameLocal: String
+
+  """
+  客户编码
+  """
+  code: String
+
+  """
+  关联区域Ids
+  """
+  departIds: [Int!]
+
+  """
+  收货人
+  """
+  receiver: String
+
+  """
+  收货地址
+  """
+  receiveAddress: String
+
+  """
+  收货人手机号码
+  """
+  phone: String
+
+  """
+  工商信息
+  """
+  businessInfo: CustomerBusinessInput
+
+  """
+  "状态 99 停用 1 启用
+  """
+  status: Int
+}
+
+input UpdateDepositoryInput {
+  """
+  主键ID
+  """
+  id: Int
+
+  """
+  客户id
+  """
+  customerId: Int
+
+  """
+  仓库名称
+  """
+  depositoryName: String!
+
+  """
+  联系人
+  """
+  contacts: String
+
+  """
+  联系电话
+  """
+  phone: String
+
+  """
+  地址
+  """
+  address: String!
+
+  """
+  启用状态 1启用 99禁用
+  """
+  enabled: Int
+
+  """
+  经度
+  """
+  lng: String
+
+  """
+  纬度
+  """
+  lat: String
+}
+
+"""
+修改密码入参
+"""
+input UpdatePasswordInput {
+  """
+  旧密码
+  """
+  oldPwd: String
+
+  """
+  新密码
+  """
+  password: String
+}
+
+input UpdatePortInput {
+  """
+  id
+  """
+  id: Int
+
+  """
+  口岸简称(中文)
+  """
+  name: String!
+
+  """
+  口岸简称(多语言)
+  """
+  nameLocale: String
+
+  """
+  国家(1 中国 2 越南 3 泰国)
+  """
+  country: Int!
+
+  """
+  口岸运输方式(1 陆运 2 海运 3 海铁)
+  """
+  transportMode: Int!
+
+  """
+  报关口岸id数组
+  """
+  declarePortIds: [Int]
+
+  """
+  运输公司id数组
+  """
+  transportCompanyIds: [Int]
+
+  """
+  报关公司id数组
+  """
+  declareCompanyIds: [Int]
+
+  """
+  堆场id数组
+  """
+  storageYardIds: [Int]
+
+  """
+  口岸地址
+  """
+  address: String
+
+  """
+  latitude 纬度
+  """
+  lat: String
+
+  """
+  longitude 经度
+  """
+  lng: String
+}
+
+input UpdateProductRuleInput {
+  """
+  id
+  """
+  id: Int
+
+  """
+  商品品类ID
+  """
+  productId: Int
+
+  """
+  柜次规则名称
+  """
+  name: String
+
+  """
+  柜次规则名称 多语言
+  """
+  nameLocale: String
+
+  """
+  柜次规则编码
+  """
+  code: String
+
+  """
+  月偏移量
+  """
+  monthOffset: Int
+
+  """
+  状态 1 启用  99 禁用
+  """
+  enabled: Int
+}
+
+"""
+编辑sku状态
+"""
+input UpdateStatusInput {
+  """
+  状态
+  """
+  status: Int
+
+  """
+  sku id
+  """
+  commoditySkuId: [Int]
+}
+
+input UserDevicePlatformInput {
+  """
+  用户id
+  """
+  userId: Int
+
+  """
+  终端类型
+  """
+  type: DevicePlatformEnum
+}
+
+"""
+用户信息体
+"""
+type UserPayload {
+  """
+  主键ID
+  """
+  id: Int
+
+  """
+  登陆账号
+  """
+  userAccount: String
+
+  """
+  用户名称
+  """
+  userName: String
+
+  """
+  手机号
+  """
+  phone: String
+
+  """
+  状态(1-正常,99-冻结)
+  """
+  status: Int
+
+  """
+  是否是管理员（1：是 2：否）
+  """
+  isAdmin: Int
+
+  """
+  接收短信:(0：否，1：是)
+  """
+  receiveMsg: Int
+
+  """
+  角色IDs
+  """
+  roleIds: [Int]
+
+  """
+  角色名称数组
+  """
+  roleNames: [String]
+
+  """
+  组织IDs
+  """
+  departIds: [Int]
+
+  """
+  组织名称数组
+  """
+  orgNames: [String]
+}
+
+scalar _FieldSet
+
+type _Service {
+  sdl: String!
+}

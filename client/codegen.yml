@@ -1,0 +1,37 @@
+schema:
+  - http://192.168.10.233:10004/graphql
+generates:
+  ./src/graphql/generated/schema.graphql:
+    plugins:
+      - schema-ast
+    config:
+      federation: false
+  src/graphql/generated/types.ts:
+    plugins:
+      - typescript
+  ./src/graphql/:
+    documents:
+      - 'src/graphql/gqls/**/!(*.typing).{gql,ts}'
+      - '!src/graphql/gqls/**/*.generated.{ts,tsx}'
+    preset: near-operation-file
+    presetConfig:
+      extension: '.generated.ts'
+      baseTypesPath: 'generated/types.ts'
+      importTypesNamespace: SchemaTypes
+      folder: __generated__
+    plugins:
+      - typescript-operations
+      - typescript-react-apollo
+    config:
+      arrayInputCoercion: false
+      preResolveTypes: true
+      onlyOperationTypes: true
+      declarationKind: interface
+      skipTypeNameForRoot: true
+      useTypeImports: true
+      skipTypename: true
+      omitOperationSuffix: false
+hooks:
+  afterAllFileWrite:
+    - prettier --write
+watch: true

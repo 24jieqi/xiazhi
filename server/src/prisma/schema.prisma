@@ -1,0 +1,101 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// 词条编辑记录
+model Record {
+  record_id     Int      @id @default(autoincrement())
+  createdAt     DateTime @default(now())
+  Entry         Entry?   @relation(fields: [entryEntry_id], references: [entry_id])
+  entryEntry_id Int?
+  prevLangs     Json
+}
+
+// 词条
+model Entry {
+  entry_id      Int          @id @default(autoincrement())
+  key           String?
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+  public        Boolean      @default(false)
+  archive       Boolean      @default(false)
+  deleted       Boolean      @default(false)
+  modifyRecords Record[]
+  mainLang      LanguageType @default(CHINESE)
+  mainLangText  String?
+  langs         Json?
+  app           App[]
+}
+
+// 应用
+model App {
+  app_id      Int            @id @default(autoincrement())
+  name        String
+  description String?
+  type        AppType
+  languages   LanguageType[]
+  pictures    String[]
+  createdAt   DateTime       @default(now())
+  entries     Entry[]
+  accessKey   String?
+  deleted     Boolean        @default(false)
+  archived    Boolean        @default(false)
+  push        Boolean        @default(true)
+  access      Boolean        @default(true)
+  creator     User?          @relation(fields: [creatorId], references: [user_id])
+  creatorId   Int?
+}
+
+// 应用协作者关联表
+model Collaborator {
+  collaborator_id Int @id @default(autoincrement())
+  app_id          Int
+  user_id         Int
+}
+
+model User {
+  user_id   Int       @id @default(autoincrement())
+  account   String?
+  email     String    @unique
+  phone     String?   @unique
+  nickName  String?
+  name      String?
+  role      UserRole?
+  avatar    String?
+  password  String
+  createdAt DateTime  @default(now())
+  apps      App[]
+}
+
+enum AppType {
+  TOOL
+  EFFICIENCY
+  MUSIC
+  FINANCE
+  GAME
+  CONTACT
+  OTHER
+  EDUCATION
+}
+
+enum LanguageType {
+  CHINESE
+  ENGLISH
+  THAI
+  VIETNAMESE
+}
+
+enum UserRole {
+  DEVELOPER
+  TRANSLATOR
+  MANAGER
+  OTHER
+}

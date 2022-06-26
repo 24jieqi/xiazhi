@@ -1,0 +1,8 @@
+@import '~antd/dist/antd.css';
+p {
+  margin: 0;
+}
+#root,
+.App {
+  height: 100%;
+}

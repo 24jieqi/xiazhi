@@ -1,0 +1,23 @@
+query getUser($id: Int) {
+  getUser(id: $id) {
+    id
+    userAccount
+    userName
+    phone
+    status
+    isAdmin
+    receiveMsg
+    roleIds
+    roleNames
+    departIds
+    orgNames
+  }
+}
+
+mutation resetPassword($input: ResetPasswordInput) {
+  resetPassword(input: $input)
+}
+
+mutation updatePassword($input: UpdatePasswordInput) {
+  updatePassword(input: $input)
+}
