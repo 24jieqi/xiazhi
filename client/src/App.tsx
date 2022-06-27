@@ -7,7 +7,6 @@ import Routes from './router'
 import gqlClient from './graphql/client'
 import 'dayjs/locale/zh-cn'
 import 'moment/dist/locale/zh-cn'
-import { I18NContextWrapper } from './i18n/context'
 import './App.css'
 
 function App() {
@@ -15,11 +14,9 @@ function App() {
     <div className="App">
       <ApolloProvider client={gqlClient}>
         <ConfigProvider locale={zhCN}>
-          <I18NContextWrapper>
-            <BrowserRouter>
-              <Routes />
-            </BrowserRouter>
-          </I18NContextWrapper>
+          <BrowserRouter>
+            <Routes />
+          </BrowserRouter>
         </ConfigProvider>
       </ApolloProvider>
     </div>

@@ -2,7 +2,6 @@ import React, { FC } from 'react'
 import { Breadcrumb } from 'antd'
 import { Link } from 'react-router-dom'
 import { CustomRouteConfig } from '@/router/config/index'
-import { useI18n } from '@/i18n/context'
 import styles from './index.module.less'
 
 export interface BreadcrumbItem {
@@ -14,7 +13,6 @@ interface IProps {
 }
 
 const AppBreadcrumb: FC<IProps> = ({ route }) => {
-  const { I18N } = useI18n()
   const breadcrumb = route?.breadcrumb || []
   if (breadcrumb.length === 0) {
     return null
@@ -22,7 +20,7 @@ const AppBreadcrumb: FC<IProps> = ({ route }) => {
   return (
     <Breadcrumb className={styles.wrap}>
       {breadcrumb?.map((v, i) => {
-        const name = I18N.menu[v.name] ?? v.name
+        const name = v.name
         return v?.path ? (
           <Breadcrumb.Item key={i}>
             <Link to={v?.path}>{name}</Link>

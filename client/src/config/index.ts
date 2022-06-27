@@ -23,7 +23,7 @@ const env: any = process.env.NODE_ENV
 // 配置(公共)
 const commonConfig: CommonConfig = {
   authKey: 'Authorization',
-  authorization: true,
+  authorization: false,
 }
 // 配置(根据环境变量区分)
 export const envConfig: Record<Env, EnvConfig> = {

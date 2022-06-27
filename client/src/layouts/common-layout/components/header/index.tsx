@@ -5,7 +5,6 @@ import header_logo from '@/images/header_logo.png'
 import useCommonLayout from '../../useCommonLayout'
 import styles from './index.module.less'
 import Download from './components/download'
-import Lang from './components/lang'
 import Explain from './components/explain'
 import UserInfo from './components/user-info'
 
@@ -29,10 +28,6 @@ const AppHeader: FC = () => {
         {/* 下载链接 */}
         <div className={styles.item}>
           <Download />
-        </div>
-        {/* 多语言选择 */}
-        <div className={styles.item}>
-          <Lang />
         </div>
         {/* 使用说明 */}
         <div className={styles.item}>

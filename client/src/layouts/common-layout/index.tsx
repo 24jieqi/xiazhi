@@ -7,7 +7,6 @@ import {
   getMenuListWithoutPermission,
 } from '@/utils/route'
 import mainRoutes from '@/router/config/main-routes'
-import authHOC from '@/components/hoc/auth'
 import usePermissions from '@/stores/permissions'
 import { CustomRouteConfig } from '@/router/config'
 import config from '@/config'
@@ -77,4 +76,4 @@ const LayoutComponent: React.FC = () => {
   )
 }
 
-export default authHOC(LayoutComponent)
+export default LayoutComponent

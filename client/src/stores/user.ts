@@ -1,11 +1,11 @@
 import create from 'zustand'
 import client from '@/graphql/client'
-import {
-  GetUserDocument,
-  GetUserQuery,
-} from '@/graphql/gqls/role/__generated__/role.generated'
+// import {
+//   GetUserDocument,
+//   GetUserQuery,
+// } from '@/graphql/gqls/role/__generated__/role.generated'
 
-type UserInfo = GetUserQuery['getUser']
+type UserInfo = any
 
 type UserState = {
   info: UserInfo
@@ -25,12 +25,12 @@ const useUser = create<UserState>(set => ({
     set({ info: user })
   },
   fetchUser: async () => {
-    const res = await client.query<GetUserQuery>({
-      query: GetUserDocument,
-    })
-    const info = res?.data?.getUser
-    set({ info })
-    return info
+    // const res = await client.query<GetUserQuery>({
+    //   query: GetUserDocument,
+    // })
+    // const info = res?.data?.getUser
+    // set({ info })
+    return null
   },
 }))
 

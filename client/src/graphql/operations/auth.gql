@@ -1,0 +1,23 @@
+mutation Register($email: String!, $password: String!) {
+  register(email: $email, password: $password)
+}
+
+mutation Login($email: String!, $password: String!) {
+  login(email: $email, password: $password)
+}
+
+mutation UpdateUserInfo(
+  $name: String
+  $phone: String
+  $nickName: String
+  $role: UserRoleEnum
+  $avatar: String
+) {
+  updateUserInfo(
+    name: $name
+    phone: $phone
+    nickName: $nickName
+    role: $role
+    avatar: $avatar
+  )
+}

@@ -4,17 +4,15 @@ import { Link } from 'react-router-dom'
 import { MenuProps } from 'antd/lib/menu'
 import * as Icons from '@ant-design/icons'
 import { CustomRouteConfig } from '@/router/config'
-import { useI18n } from '@/i18n/context'
 import styles from './style.module.less'
 interface IProps extends MenuProps {
   menuList: CustomRouteConfig[]
 }
 
 const SideMenu: React.FC<IProps> = ({ menuList, ...restProps }) => {
-  const { I18N } = useI18n()
   const renderMenu = (menuConfig: CustomRouteConfig[]) => {
     return menuConfig?.map(menu => {
-      const menuText = I18N.menu[menu.meta?.title]
+      const menuText = menu.meta?.title
       const key = menu.meta?.title
       const subRoutes = menu.children
       // eslint-disable-next-line import/namespace
@@ -24,10 +22,7 @@ const SideMenu: React.FC<IProps> = ({ menuList, ...restProps }) => {
         : null
       if (subRoutes?.length > 0) {
         return (
-          <Menu.SubMenu
-            icon={icon}
-            title={I18N.menu[menu.meta?.title]}
-            key={key}>
+          <Menu.SubMenu icon={icon} title={menu.meta?.title} key={key}>
             {renderMenu(subRoutes)}
           </Menu.SubMenu>
         )
