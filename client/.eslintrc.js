@@ -21,6 +21,6 @@ module.exports = {
     'no-undef': 0,
     'max-nested-callbacks': 'off',
     'no-console': 'warn',
+    'import/no-unresolved': 'off',
   },
-  settings: {},
 }

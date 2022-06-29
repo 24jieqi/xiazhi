@@ -29,7 +29,7 @@ const commonConfig: CommonConfig = {
 export const envConfig: Record<Env, EnvConfig> = {
   // 开发环境
   development: {
-    apiHost: 'http://192.168.10.233:18080', // 开发地址 http://192.168.10.233:10004 测试地址 https://peach-test.hjgpscm.com
+    apiHost: 'http://localhost:3000', // 开发地址 http://192.168.10.233:10004 测试地址 https://peach-test.hjgpscm.com
     uploadHost: '',
     baseUrl: '/',
   },

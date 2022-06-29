@@ -1,7 +1,6 @@
 import create from 'zustand'
 import _create from 'zustand/vanilla'
 import { persist } from 'zustand/middleware'
-import client from '@/graphql/client'
 
 type PermissionState = {
   permissions: string[]

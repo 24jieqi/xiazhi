@@ -1,0 +1,5 @@
+{
+  "devDependencies": {
+    "@fruits-chain/eslint-config-preset": "^0.1.9"
+  }
+}
