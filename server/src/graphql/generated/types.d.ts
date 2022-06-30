@@ -88,6 +88,10 @@ export interface NexusGenObjects {
     public?: boolean | null; // Boolean
     updatedAt?: NexusGenScalars['DateTime'] | null; // DateTime
   }
+  LangageTypeOption: { // root type
+    label: string; // String!
+    value?: NexusGenEnums['LanguageTypeEnum'] | null; // LanguageTypeEnum
+  }
   Mutation: {};
   Query: {};
   RecordItem: { // root type
@@ -152,6 +156,10 @@ export interface NexusGenFieldTypes {
     public: boolean | null; // Boolean
     updatedAt: NexusGenScalars['DateTime'] | null; // DateTime
   }
+  LangageTypeOption: { // field return type
+    label: string; // String!
+    value: NexusGenEnums['LanguageTypeEnum'] | null; // LanguageTypeEnum
+  }
   Mutation: { // field return type
     archivedApp: boolean | null; // Boolean
     changeEntryPublicStatus: boolean | null; // Boolean
@@ -172,6 +180,7 @@ export interface NexusGenFieldTypes {
     getAppInfoById: NexusGenRootTypes['AppItem'] | null; // AppItem
     getCurrentApps: Array<NexusGenRootTypes['AppItem'] | null> | null; // [AppItem]
     getCurrentUser: NexusGenRootTypes['UserInfo'] | null; // UserInfo
+    listSupportLanguage: Array<NexusGenRootTypes['LangageTypeOption'] | null> | null; // [LangageTypeOption]
     pageAllPublicEntries: Array<NexusGenRootTypes['EntryItem'] | null> | null; // [EntryItem]
     pageAppEntries: Array<NexusGenRootTypes['EntryItem'] | null> | null; // [EntryItem]
   }
@@ -227,6 +236,10 @@ export interface NexusGenFieldTypeNames {
     public: 'Boolean'
     updatedAt: 'DateTime'
   }
+  LangageTypeOption: { // field return type name
+    label: 'String'
+    value: 'LanguageTypeEnum'
+  }
   Mutation: { // field return type name
     archivedApp: 'Boolean'
     changeEntryPublicStatus: 'Boolean'
@@ -247,6 +260,7 @@ export interface NexusGenFieldTypeNames {
     getAppInfoById: 'AppItem'
     getCurrentApps: 'AppItem'
     getCurrentUser: 'UserInfo'
+    listSupportLanguage: 'LangageTypeOption'
     pageAllPublicEntries: 'EntryItem'
     pageAppEntries: 'EntryItem'
   }
