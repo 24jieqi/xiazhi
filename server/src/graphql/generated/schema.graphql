@@ -70,6 +70,10 @@ type EntryItem {
   entry_id: Int!
   key: String
   langs: JSONObject
+
+  """支持的语言"""
+  mainLang: LanguageTypeEnum
+  mainLangText: String
   modifyRecords: [RecordItem]
   public: Boolean
   updatedAt: DateTime
@@ -102,7 +106,7 @@ type Mutation {
   createApp(description: String, languages: [LanguageTypeEnum!]!, name: String!, pictures: [String!]!, type: AppTypeEnum!): Int
 
   """创建词条，默认情况下都为公共词条"""
-  createEntry(appId: Int!, key: String, langs: JSONObject): Int
+  createEntry(appId: Int, key: String, langs: JSONObject): Int
 
   """删除一个应用（逻辑删除），删除后应用对客户不可见"""
   deleteApp(id: Int!): Boolean

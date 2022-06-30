@@ -83,6 +83,8 @@ export interface NexusGenObjects {
     entry_id: number; // Int!
     key?: string | null; // String
     langs?: NexusGenScalars['JSONObject'] | null; // JSONObject
+    mainLang?: NexusGenEnums['LanguageTypeEnum'] | null; // LanguageTypeEnum
+    mainLangText?: string | null; // String
     public?: boolean | null; // Boolean
     updatedAt?: NexusGenScalars['DateTime'] | null; // DateTime
   }
@@ -144,6 +146,8 @@ export interface NexusGenFieldTypes {
     entry_id: number; // Int!
     key: string | null; // String
     langs: NexusGenScalars['JSONObject'] | null; // JSONObject
+    mainLang: NexusGenEnums['LanguageTypeEnum'] | null; // LanguageTypeEnum
+    mainLangText: string | null; // String
     modifyRecords: Array<NexusGenRootTypes['RecordItem'] | null> | null; // [RecordItem]
     public: boolean | null; // Boolean
     updatedAt: NexusGenScalars['DateTime'] | null; // DateTime
@@ -217,6 +221,8 @@ export interface NexusGenFieldTypeNames {
     entry_id: 'Int'
     key: 'String'
     langs: 'JSONObject'
+    mainLang: 'LanguageTypeEnum'
+    mainLangText: 'String'
     modifyRecords: 'RecordItem'
     public: 'Boolean'
     updatedAt: 'DateTime'
@@ -282,7 +288,7 @@ export interface NexusGenArgTypes {
       type: NexusGenEnums['AppTypeEnum']; // AppTypeEnum!
     }
     createEntry: { // args
-      appId: number; // Int!
+      appId?: number | null; // Int
       key?: string | null; // String
       langs?: NexusGenScalars['JSONObject'] | null; // JSONObject
     }

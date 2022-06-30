@@ -24,6 +24,11 @@ export const EntryItem = objectType({
     t.boolean('public')
     t.boolean('archive')
     t.boolean('deleted')
+    t.string('mainLangText')
+    t.field('mainLang', {
+      type: 'LanguageTypeEnum',
+      description: '支持的语言'
+    })
     t.field('modifyRecords', {
       type: list(RecordItem),
       async resolve(root, _, ctx) {
@@ -45,7 +50,7 @@ export const EntryMutation = extendType({
       description: '创建词条，默认情况下都为公共词条',
       type: 'Int',
       args: {
-        appId: nonNull(intArg()),
+        appId: intArg(),
         langs: 'JSONObject',
         key: stringArg(),
       },
@@ -58,16 +63,19 @@ export const EntryMutation = extendType({
             mainLangText: args.langs[LanguageType.CHINESE], // 设置主语言文本
           },
         })
-        await ctx.prisma.app.update({
-          where: {
-            app_id: args.appId,
-          },
-          data: {
-            entries: {
-              connect: [{ entry_id: entry.entry_id }],
+        // 传入appId后，关联到APP中
+        if (args.appId) {
+          await ctx.prisma.app.update({
+            where: {
+              app_id: args.appId,
             },
-          },
-        })
+            data: {
+              entries: {
+                connect: [{ entry_id: entry.entry_id }],
+              },
+            },
+          }) 
+        }
         return entry.entry_id
       },
     })
