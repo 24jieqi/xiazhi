@@ -3,7 +3,6 @@ import { useMemo } from 'react'
 import { CustomRouteConfig } from '@/router/config'
 import usePermissions from '@/stores/permissions'
 import config from '@/config'
-import { getRoutesWithPermissions } from '@/utils/route'
 
 interface IPermissionRoutes {
   routes: CustomRouteConfig[]
@@ -20,7 +19,6 @@ const usePermissionRoutes = ({ routes, noAuthRoutes }: IPermissionRoutes) => {
     if (!permissions || !permissions.length) {
       return noAuthRoutes
     }
-    return getRoutesWithPermissions(routes, permissions)
   }, [permissions, routes, noAuthRoutes])
   return useRoutes(authedRoutes)
 }

@@ -3,13 +3,21 @@ import { LockOutlined, UserOutlined } from '@ant-design/icons'
 import { LoginFormPage, ProFormText } from '@ant-design/pro-components'
 import { Button } from 'antd'
 import React from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useLoginMutation } from '@/graphql/operations/__generated__/auth.generated'
 import usePermissions from '@/stores/permissions'
+import { REDIRECT } from '@/router/config/basePath'
+
+interface LoadingData {
+  email: string
+  password: string
+}
 
 const Login: React.FC = () => {
   const [login] = useLoginMutation()
   const { setToken } = usePermissions()
-  async function handleLogin(formData) {
+  const navigate = useNavigate()
+  async function handleLogin(formData: LoadingData) {
     const res = await login({
       variables: {
         email: formData.email,
@@ -18,15 +26,16 @@ const Login: React.FC = () => {
     })
     const token = res.data.login
     setToken(token)
+    navigate(REDIRECT)
     return true
   }
   return (
     <div
       style={{
         backgroundColor: 'white',
-        height: 'calc(100vh - 48px)',
+        height: '100vh',
       }}>
-      <LoginFormPage
+      <LoginFormPage<LoadingData>
         onFinish={handleLogin}
         backgroundImageUrl="https://gw.alipayobjects.com/zos/rmsportal/FfdJeJRQWjEeGTpqgBKj.png"
         title="夏至"

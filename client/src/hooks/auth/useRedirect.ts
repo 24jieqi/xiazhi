@@ -2,7 +2,6 @@ import { useNavigate } from 'react-router-dom'
 import { useCallback, useEffect } from 'react'
 import { Modal } from 'antd'
 import usePermissions from '@/stores/permissions'
-import { getHomepageUrl } from '@/utils/route'
 import { mainRoutes } from '@/router/config'
 import config from '@/config'
 import { LOGIN_PATH } from '@/router/config/basePath'
@@ -16,7 +15,7 @@ const useRedirect = () => {
       let currentPath = sessionStorage.getItem('REDIRECT_URL')
       sessionStorage.removeItem('REDIRECT_URL')
       if (!currentPath) {
-        currentPath = getHomepageUrl(mainRoutes, auth)
+        currentPath = '/home'
       }
       navigate(currentPath)
     },

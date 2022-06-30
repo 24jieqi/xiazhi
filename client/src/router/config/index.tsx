@@ -1,41 +1,13 @@
-/*
- * @Author: your name
- * @Date: 2021-12-31 11:17:51
- * @LastEditTime: 2021-12-31 11:22:22
- * @LastEditors: your name
- * @Description: 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
- * @FilePath: /web-template/src/router/config/index.tsx
- */
-import React, { CSSProperties } from 'react'
+import React from 'react'
 import loadable from '@loadable/component'
-import * as Icons from '@ant-design/icons/lib/icons'
-import { RouteProps, Navigate } from 'react-router-dom'
+import { Navigate, RouteObject } from 'react-router-dom'
 import Layouts from '@/layouts/common-layout/index'
-import { BreadcrumbItem } from '@/layouts/common-layout/components/breadcrumb'
 import InitPage from '@/pages/others/redirect'
 import NoDataPage from '@/pages/others/404'
 import { REDIRECT } from './basePath'
 import modules from './main-routes'
 
-export interface CustomRouteConfig extends RouteProps {
-  /** 面包屑配置 */
-  breadcrumb?: BreadcrumbItem[]
-  /** 权限 */
-  authKey?: string | false
-  /** 页面信息配置 */
-  meta?: {
-    /** 系统左侧菜单栏文案（为空或未配置则不会出现在菜单栏） */
-    title?: string
-    /** 菜单按钮 */
-    icon?: keyof typeof Icons
-    /** 主内容区域padding（默认16px） */
-    contentPadding?: CSSProperties['padding']
-    /** 是否作为菜单项 */
-    isMenu?: boolean
-  }
-  /** 子路由 */
-  children?: CustomRouteConfig[]
-}
+export interface CustomRouteConfig extends RouteObject {}
 
 export const mainRoutes: CustomRouteConfig[] = [
   ...modules,

@@ -1,4 +1,4 @@
 import Home from './home'
-import Basic from './basic-info-manage'
+import Application from './application'
 
-export default [Home, Basic]
+export default [Home, Application]
