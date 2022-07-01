@@ -1,18 +1,29 @@
 query PageAllPublicEntries($pageSize: Int!, $pageNo: Int!) {
   pageAllPublicEntries(pageSize: $pageSize, pageNo: $pageNo) {
-    entry_id
-    key
-    createdAt
-    updatedAt
-    public
-    archive
-    deleted
-    modifyRecords {
-      record_id
+    total
+    pageSize
+    current
+    records {
+      entry_id
+      key
       createdAt
-      entryEntry_id
-      prevLangs
+      updatedAt
+      public
+      archive
+      deleted
+      mainLangText
+      mainLang
+      modifyRecords {
+        record_id
+        createdAt
+        entryEntry_id
+        prevLangs
+      }
+      langs
     }
-    langs
   }
+}
+
+mutation CreateEntry($appId: Int, $langs: JSONObject, $key: String) {
+  createEntry(appId: $appId, langs: $langs, key: $key)
 }

@@ -1,0 +1,6 @@
+query ListSupportLanguage {
+  listSupportLanguage {
+    label
+    value
+  }
+}

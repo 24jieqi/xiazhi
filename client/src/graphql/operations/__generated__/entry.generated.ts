@@ -9,43 +9,66 @@ export type PageAllPublicEntriesQueryVariables = SchemaTypes.Exact<{
 }>
 
 export type PageAllPublicEntriesQuery = {
-  pageAllPublicEntries?: Array<{
-    __typename?: 'EntryItem'
-    entry_id: number
-    key?: string
-    createdAt?: number
-    updatedAt?: number
-    public?: boolean
-    archive?: boolean
-    deleted?: boolean
-    langs?: any
-    modifyRecords?: Array<{
-      __typename?: 'RecordItem'
-      record_id: number
+  pageAllPublicEntries?: {
+    __typename?: 'EntryPaging'
+    total: number
+    pageSize: number
+    current: number
+    records?: Array<{
+      __typename?: 'EntryItem'
+      entry_id: number
+      key?: string
       createdAt?: number
-      entryEntry_id?: number
-      prevLangs?: any
+      updatedAt?: number
+      public?: boolean
+      archive?: boolean
+      deleted?: boolean
+      mainLangText?: string
+      mainLang?: SchemaTypes.LanguageTypeEnum
+      langs?: any
+      modifyRecords?: Array<{
+        __typename?: 'RecordItem'
+        record_id: number
+        createdAt?: number
+        entryEntry_id?: number
+        prevLangs?: any
+      }>
     }>
-  }>
+  }
 }
+
+export type CreateEntryMutationVariables = SchemaTypes.Exact<{
+  appId?: SchemaTypes.InputMaybe<SchemaTypes.Scalars['Int']>
+  langs?: SchemaTypes.InputMaybe<SchemaTypes.Scalars['JSONObject']>
+  key?: SchemaTypes.InputMaybe<SchemaTypes.Scalars['String']>
+}>
+
+export type CreateEntryMutation = { createEntry?: number }
 
 export const PageAllPublicEntriesDocument = gql`
   query PageAllPublicEntries($pageSize: Int!, $pageNo: Int!) {
     pageAllPublicEntries(pageSize: $pageSize, pageNo: $pageNo) {
-      entry_id
-      key
-      createdAt
-      updatedAt
-      public
-      archive
-      deleted
-      modifyRecords {
-        record_id
+      total
+      pageSize
+      current
+      records {
+        entry_id
+        key
         createdAt
-        entryEntry_id
-        prevLangs
+        updatedAt
+        public
+        archive
+        deleted
+        mainLangText
+        mainLang
+        modifyRecords {
+          record_id
+          createdAt
+          entryEntry_id
+          prevLangs
+        }
+        langs
       }
-      langs
     }
   }
 `
@@ -100,4 +123,54 @@ export type PageAllPublicEntriesLazyQueryHookResult = ReturnType<
 export type PageAllPublicEntriesQueryResult = Apollo.QueryResult<
   PageAllPublicEntriesQuery,
   PageAllPublicEntriesQueryVariables
+>
+export const CreateEntryDocument = gql`
+  mutation CreateEntry($appId: Int, $langs: JSONObject, $key: String) {
+    createEntry(appId: $appId, langs: $langs, key: $key)
+  }
+`
+export type CreateEntryMutationFn = Apollo.MutationFunction<
+  CreateEntryMutation,
+  CreateEntryMutationVariables
+>
+
+/**
+ * __useCreateEntryMutation__
+ *
+ * To run a mutation, you first call `useCreateEntryMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateEntryMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createEntryMutation, { data, loading, error }] = useCreateEntryMutation({
+ *   variables: {
+ *      appId: // value for 'appId'
+ *      langs: // value for 'langs'
+ *      key: // value for 'key'
+ *   },
+ * });
+ */
+export function useCreateEntryMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    CreateEntryMutation,
+    CreateEntryMutationVariables
+  >,
+) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useMutation<CreateEntryMutation, CreateEntryMutationVariables>(
+    CreateEntryDocument,
+    options,
+  )
+}
+export type CreateEntryMutationHookResult = ReturnType<
+  typeof useCreateEntryMutation
+>
+export type CreateEntryMutationResult =
+  Apollo.MutationResult<CreateEntryMutation>
+export type CreateEntryMutationOptions = Apollo.BaseMutationOptions<
+  CreateEntryMutation,
+  CreateEntryMutationVariables
 >

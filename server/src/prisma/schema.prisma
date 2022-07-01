@@ -75,6 +75,13 @@ model User {
   apps      App[]
 }
 
+model Langs {
+  lang_id  Int          @id @default(autoincrement())
+  label    String       @unique
+  value    LanguageType
+  disabled Boolean      @default(false)
+}
+
 enum AppType {
   TOOL
   EFFICIENCY

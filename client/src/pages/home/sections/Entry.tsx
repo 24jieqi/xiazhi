@@ -5,8 +5,9 @@ import type { ActionType, ProColumns } from '@ant-design/pro-components'
 import { ProTable } from '@ant-design/pro-components'
 import { Button, Menu } from 'antd'
 import React, { useRef } from 'react'
-import { EntryItem } from '@/graphql/generated/types'
+import { EntryItem, LanguageTypeEnum } from '@/graphql/generated/types'
 import { usePageAllPublicEntriesLazyQuery } from '@/graphql/operations/__generated__/entry.generated'
+import EntryModal from '@/pages/entry/components/entry-modal'
 
 const columns: ProColumns<EntryItem>[] = [
   {
@@ -27,6 +28,27 @@ const columns: ProColumns<EntryItem>[] = [
     valueType: 'dateTime',
     sorter: true,
     hideInSearch: true,
+  },
+  {
+    title: '多语言',
+    children: [
+      {
+        title: '中文',
+        dataIndex: ['langs', LanguageTypeEnum.Chinese],
+      },
+      {
+        title: '英文',
+        dataIndex: ['langs', LanguageTypeEnum.English],
+      },
+      {
+        title: '泰语',
+        dataIndex: ['langs', LanguageTypeEnum.Thai],
+      },
+      {
+        title: '越南语',
+        dataIndex: ['langs', LanguageTypeEnum.Vietnamese],
+      },
+    ],
   },
   {
     title: '创建时间',
@@ -76,22 +98,17 @@ const columns: ProColumns<EntryItem>[] = [
   },
 ]
 
-const menu = (
-  <Menu>
-    <Menu.Item key="1">1st item</Menu.Item>
-    <Menu.Item key="2">2nd item</Menu.Item>
-    <Menu.Item key="3">3rd item</Menu.Item>
-  </Menu>
-)
-
 export default () => {
-  const [pageAllPublicEntries] = usePageAllPublicEntriesLazyQuery()
+  const [pageAllPublicEntries, { fetchMore }] =
+    usePageAllPublicEntriesLazyQuery()
   const actionRef = useRef<ActionType>()
+  function handleAddEntry() {}
   return (
     <ProTable<EntryItem>
       columns={columns}
       actionRef={actionRef}
       cardBordered
+      bordered
       request={async (params = {}, sort, filter) => {
         const res = await pageAllPublicEntries({
           variables: {
@@ -99,7 +116,12 @@ export default () => {
             pageSize: params.pageSize,
           },
         })
-        return res?.data?.pageAllPublicEntries || []
+        const data = res?.data?.pageAllPublicEntries
+        return {
+          data: data.records,
+          success: true,
+          total: data.total,
+        }
       }}
       editable={{
         type: 'multiple',
@@ -133,9 +155,12 @@ export default () => {
       dateFormatter="string"
       headerTitle="公共词条库"
       toolBarRender={() => [
-        <Button key="button" icon={<PlusOutlined />} type="primary">
-          新建
-        </Button>,
+        <EntryModal key="new">
+          <Button key="button" type="primary" onClick={handleAddEntry}>
+            <PlusOutlined />
+            新建
+          </Button>
+        </EntryModal>,
       ]}
     />
   )

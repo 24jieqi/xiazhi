@@ -78,9 +78,28 @@ export type EntryItem = {
   entry_id: Scalars['Int']
   key?: Maybe<Scalars['String']>
   langs?: Maybe<Scalars['JSONObject']>
+  /** 支持的语言 */
+  mainLang?: Maybe<LanguageTypeEnum>
+  mainLangText?: Maybe<Scalars['String']>
   modifyRecords?: Maybe<Array<Maybe<RecordItem>>>
   public?: Maybe<Scalars['Boolean']>
   updatedAt?: Maybe<Scalars['DateTime']>
+}
+
+/** 词条分页对象 */
+export type EntryPaging = {
+  __typename?: 'EntryPaging'
+  current: Scalars['Int']
+  pageSize: Scalars['Int']
+  records?: Maybe<Array<Maybe<EntryItem>>>
+  total: Scalars['Int']
+}
+
+/** 平台支持的多语言词条选项 */
+export type LangageTypeOption = {
+  __typename?: 'LangageTypeOption'
+  label: Scalars['String']
+  value?: Maybe<LanguageTypeEnum>
 }
 
 /** 应用支持的语言枚举 */
@@ -93,6 +112,7 @@ export enum LanguageTypeEnum {
 
 export type Mutation = {
   __typename?: 'Mutation'
+  addLangage?: Maybe<Scalars['Int']>
   /** 归档一个应用（归档后不能再编辑） */
   archivedApp?: Maybe<Scalars['Boolean']>
   /** 切换词条的公有/私有状态 */
@@ -119,6 +139,11 @@ export type Mutation = {
   updateUserInfo?: Maybe<Scalars['Boolean']>
 }
 
+export type MutationAddLangageArgs = {
+  label: Scalars['String']
+  value: LanguageTypeEnum
+}
+
 export type MutationArchivedAppArgs = {
   id: Scalars['Int']
 }
@@ -142,7 +167,7 @@ export type MutationCreateAppArgs = {
 }
 
 export type MutationCreateEntryArgs = {
-  appId: Scalars['Int']
+  appId?: InputMaybe<Scalars['Int']>
   key?: InputMaybe<Scalars['String']>
   langs?: InputMaybe<Scalars['JSONObject']>
 }
@@ -198,8 +223,9 @@ export type Query = {
   getCurrentApps?: Maybe<Array<Maybe<AppItem>>>
   /** 获取当前登录用户的基本信息 */
   getCurrentUser?: Maybe<UserInfo>
+  listSupportLanguage?: Maybe<Array<Maybe<LangageTypeOption>>>
   /** 获取所有公共词条（分页） */
-  pageAllPublicEntries?: Maybe<Array<Maybe<EntryItem>>>
+  pageAllPublicEntries?: Maybe<EntryPaging>
   /** 获取应用所有词条（分页） */
   pageAppEntries?: Maybe<Array<Maybe<EntryItem>>>
 }
