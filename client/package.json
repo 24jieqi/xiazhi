@@ -4,7 +4,7 @@
   "private": true,
   "dependencies": {
     "@ant-design/icons": "^4.0.2",
-    "@ant-design/pro-components": "^1.1.6",
+    "@ant-design/pro-components": "^1.1.7",
     "@apollo/client": "^3.6.9",
     "@craco/craco": "^6.4.3",
     "@loadable/component": "^5.15.2",
@@ -23,6 +23,7 @@
     "react-router-dom": "^6.2.1",
     "react-scripts": "5.0.0",
     "typescript": "^4.5.0",
+    "umi-request": "^1.4.0",
     "wbd-frontend-kit": "1.0.11",
     "web-vitals": "^0.2.4",
     "zustand": "^3.6.7"

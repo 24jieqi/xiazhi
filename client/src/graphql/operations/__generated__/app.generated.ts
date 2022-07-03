@@ -1,61 +1,38 @@
-import type * as SchemaTypes from '../../generated/types'
+import type * as SchemaTypes from '../../generated/types';
 
-import { gql } from '@apollo/client'
-import * as Apollo from '@apollo/client'
-const defaultOptions = {} as const
-export type GetCurrentAppsQueryVariables = SchemaTypes.Exact<{
-  [key: string]: never
-}>
+import { gql } from '@apollo/client';
+import * as Apollo from '@apollo/client';
+const defaultOptions = {} as const;
+export type GetCurrentAppsQueryVariables = SchemaTypes.Exact<{ [key: string]: never; }>;
 
-export type GetCurrentAppsQuery = {
-  getCurrentApps?: Array<{
-    __typename?: 'AppItem'
-    app_id?: number
-    name?: string
-    description?: string
-    type?: SchemaTypes.AppTypeEnum
-    languages?: Array<SchemaTypes.LanguageTypeEnum>
-    pictures?: Array<string>
-    access?: boolean
-    push?: boolean
-    creatorId?: number
-    creator?: {
-      __typename?: 'UserInfo'
-      name?: string
-      user_id?: number
-      email?: string
-      nickName?: string
-      phone?: string
-      role?: SchemaTypes.UserRoleEnum
-      avatar?: string
-    }
-  }>
-}
+
+export type GetCurrentAppsQuery = { getCurrentApps?: Array<{ __typename?: 'AppItem', app_id?: number, name?: string, description?: string, type?: SchemaTypes.AppTypeEnum, languages?: Array<SchemaTypes.LanguageTypeEnum>, pictures?: Array<string>, access?: boolean, push?: boolean, creatorId?: number, creator?: { __typename?: 'UserInfo', name?: string, user_id?: number, email?: string, nickName?: string, phone?: string, role?: SchemaTypes.UserRoleEnum, avatar?: string } }> };
+
 
 export const GetCurrentAppsDocument = gql`
-  query GetCurrentApps {
-    getCurrentApps {
-      app_id
+    query GetCurrentApps {
+  getCurrentApps {
+    app_id
+    name
+    description
+    type
+    languages
+    pictures
+    access
+    push
+    creatorId
+    creator {
       name
-      description
-      type
-      languages
-      pictures
-      access
-      push
-      creatorId
-      creator {
-        name
-        user_id
-        email
-        nickName
-        phone
-        role
-        avatar
-      }
+      user_id
+      email
+      nickName
+      phone
+      role
+      avatar
     }
   }
-`
+}
+    `;
 
 /**
  * __useGetCurrentAppsQuery__
@@ -72,37 +49,14 @@ export const GetCurrentAppsDocument = gql`
  *   },
  * });
  */
-export function useGetCurrentAppsQuery(
-  baseOptions?: Apollo.QueryHookOptions<
-    GetCurrentAppsQuery,
-    GetCurrentAppsQueryVariables
-  >,
-) {
-  const options = { ...defaultOptions, ...baseOptions }
-  return Apollo.useQuery<GetCurrentAppsQuery, GetCurrentAppsQueryVariables>(
-    GetCurrentAppsDocument,
-    options,
-  )
-}
-export function useGetCurrentAppsLazyQuery(
-  baseOptions?: Apollo.LazyQueryHookOptions<
-    GetCurrentAppsQuery,
-    GetCurrentAppsQueryVariables
-  >,
-) {
-  const options = { ...defaultOptions, ...baseOptions }
-  return Apollo.useLazyQuery<GetCurrentAppsQuery, GetCurrentAppsQueryVariables>(
-    GetCurrentAppsDocument,
-    options,
-  )
-}
-export type GetCurrentAppsQueryHookResult = ReturnType<
-  typeof useGetCurrentAppsQuery
->
-export type GetCurrentAppsLazyQueryHookResult = ReturnType<
-  typeof useGetCurrentAppsLazyQuery
->
-export type GetCurrentAppsQueryResult = Apollo.QueryResult<
-  GetCurrentAppsQuery,
-  GetCurrentAppsQueryVariables
->
+export function useGetCurrentAppsQuery(baseOptions?: Apollo.QueryHookOptions<GetCurrentAppsQuery, GetCurrentAppsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetCurrentAppsQuery, GetCurrentAppsQueryVariables>(GetCurrentAppsDocument, options);
+      }
+export function useGetCurrentAppsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetCurrentAppsQuery, GetCurrentAppsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetCurrentAppsQuery, GetCurrentAppsQueryVariables>(GetCurrentAppsDocument, options);
+        }
+export type GetCurrentAppsQueryHookResult = ReturnType<typeof useGetCurrentAppsQuery>;
+export type GetCurrentAppsLazyQueryHookResult = ReturnType<typeof useGetCurrentAppsLazyQuery>;
+export type GetCurrentAppsQueryResult = Apollo.QueryResult<GetCurrentAppsQuery, GetCurrentAppsQueryVariables>;

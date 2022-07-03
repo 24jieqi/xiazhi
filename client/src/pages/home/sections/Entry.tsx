@@ -1,10 +1,10 @@
 /* eslint-disable max-params */
 /* eslint-disable react/no-unstable-nested-components */
-import { PlusOutlined } from '@ant-design/icons'
+import { EditOutlined, PlusOutlined } from '@ant-design/icons'
 import type { ActionType, ProColumns } from '@ant-design/pro-components'
 import { ProTable } from '@ant-design/pro-components'
-import { Button, Menu } from 'antd'
-import React, { useRef } from 'react'
+import { Button } from 'antd'
+import React, { useRef, useState } from 'react'
 import { EntryItem, LanguageTypeEnum } from '@/graphql/generated/types'
 import { usePageAllPublicEntriesLazyQuery } from '@/graphql/operations/__generated__/entry.generated'
 import EntryModal from '@/pages/entry/components/entry-modal'
@@ -14,12 +14,8 @@ const columns: ProColumns<EntryItem>[] = [
     title: '词条key',
     dataIndex: 'key',
     copyable: true,
-    formItemProps: {
-      rules: [
-        {
-          required: false,
-        },
-      ],
+    editable: (text, record, index) => {
+      return index !== 0
     },
   },
   {
@@ -28,6 +24,7 @@ const columns: ProColumns<EntryItem>[] = [
     valueType: 'dateTime',
     sorter: true,
     hideInSearch: true,
+    readonly: true,
   },
   {
     title: '多语言',
@@ -35,6 +32,7 @@ const columns: ProColumns<EntryItem>[] = [
       {
         title: '中文',
         dataIndex: ['langs', LanguageTypeEnum.Chinese],
+        readonly: true,
       },
       {
         title: '英文',
@@ -71,11 +69,14 @@ const columns: ProColumns<EntryItem>[] = [
     valueType: 'dateTime',
     sorter: true,
     hideInSearch: true,
+    readonly: true,
   },
   {
     title: '修改记录',
     key: 'records',
     dataIndex: 'modifyRecords',
+    hideInSearch: true,
+    readonly: true,
     render(_, record) {
       const modifyRecords = record.modifyRecords
       if (modifyRecords?.length) {
@@ -94,21 +95,34 @@ const columns: ProColumns<EntryItem>[] = [
     title: '操作',
     valueType: 'option',
     key: 'option',
-    render: (text, record, _, action) => [<a key="123">123</a>],
+    render: (text, record, _, action) => [
+      <EntryModal
+        key="new"
+        initialFormData={{
+          entryId: record.entry_id,
+          key: record.key,
+          ...record.langs,
+        }}>
+        <Button key="button" type="link">
+          <EditOutlined />
+          编辑
+        </Button>
+      </EntryModal>,
+    ],
   },
 ]
 
 export default () => {
-  const [pageAllPublicEntries, { fetchMore }] =
-    usePageAllPublicEntriesLazyQuery()
+  const [pageAllPublicEntries] = usePageAllPublicEntriesLazyQuery()
   const actionRef = useRef<ActionType>()
-  function handleAddEntry() {}
+  const [editableKeys, setEditableRowKeys] = useState<React.Key[]>([])
   return (
     <ProTable<EntryItem>
       columns={columns}
       actionRef={actionRef}
       cardBordered
       bordered
+      scroll={{ x: 960 }}
       request={async (params = {}, sort, filter) => {
         const res = await pageAllPublicEntries({
           variables: {
@@ -123,45 +137,31 @@ export default () => {
           total: data.total,
         }
       }}
-      editable={{
-        type: 'multiple',
-      }}
-      // columnsState={{
-      //   persistenceKey: 'pro-table-singe-demos',
-      //   persistenceType: 'localStorage',
-      //   onChange(value) {
-      //     console.log('value: ', value)
-      //   },
-      // }}
-      rowKey="id"
+      rowKey="entry_id"
       search={{
         labelWidth: 'auto',
       }}
-      form={{
-        // 由于配置了 transform，提交的参与与定义的不同这里需要转化一下
-        syncToUrl: (values, type) => {
-          if (type === 'get') {
-            return {
-              ...values,
-              created_at: [values.startTime, values.endTime],
-            }
-          }
-          return values
-        },
-      }}
       pagination={{
-        pageSize: 5,
+        pageSize: 10,
       }}
       dateFormatter="string"
       headerTitle="公共词条库"
       toolBarRender={() => [
         <EntryModal key="new">
-          <Button key="button" type="primary" onClick={handleAddEntry}>
+          <Button key="button" type="primary">
             <PlusOutlined />
             新建
           </Button>
         </EntryModal>,
       ]}
+      editable={{
+        type: 'multiple',
+        editableKeys,
+        onSave: async (rowKey, data, row) => {
+          console.log(rowKey, data, row)
+        },
+        onChange: setEditableRowKeys,
+      }}
     />
   )
 }

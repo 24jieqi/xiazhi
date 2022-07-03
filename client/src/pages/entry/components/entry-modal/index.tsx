@@ -1,18 +1,17 @@
 import { PlusOutlined } from '@ant-design/icons'
-import {
-  ModalForm,
-  ProForm,
-  ProFormInstance,
-  ProFormText,
-} from '@ant-design/pro-components'
-import { Button } from 'antd'
-import React, { useRef } from 'react'
+import { ModalForm, ProForm, ProFormText } from '@ant-design/pro-components'
+import { Button, message } from 'antd'
+import React, { useEffect, useRef } from 'react'
 import { LangageTypeOption, LanguageTypeEnum } from '@/graphql/generated/types'
 import { useListSupportLanguageQuery } from '@/graphql/operations/__generated__/basic.generated'
-import { useCreateEntryMutation } from '@/graphql/operations/__generated__/entry.generated'
+import {
+  useCreateEntryMutation,
+  useUpdateEntryMutation,
+} from '@/graphql/operations/__generated__/entry.generated'
 
 interface EntryModalProps {
   children?: JSX.Element
+  initialFormData?: any
 }
 
 function groupLangs(langs: LangageTypeOption[]) {
@@ -34,14 +33,24 @@ function omit(obj: any, keys: string[]) {
   return returned
 }
 
-const EntryModal: React.FC<EntryModalProps> = ({ children }) => {
+const EntryModal: React.FC<EntryModalProps> = ({
+  children,
+  initialFormData,
+}) => {
   const { data } = useListSupportLanguageQuery()
   const [createEntry] = useCreateEntryMutation()
+  const [updateEntry] = useUpdateEntryMutation()
   const langs = groupLangs(data?.listSupportLanguage)
-  const form = useRef<ProFormInstance>()
+  const [form] = ProForm.useForm()
+  // 设置默认值
+  useEffect(() => {
+    if (typeof initialFormData !== 'undefined') {
+      form.setFieldsValue({ ...initialFormData })
+    }
+  }, [initialFormData])
   return (
     <ModalForm
-      formRef={form}
+      form={form}
       trigger={
         children || (
           <Button type="primary">
@@ -51,14 +60,29 @@ const EntryModal: React.FC<EntryModalProps> = ({ children }) => {
         )
       }
       onFinish={async formData => {
-        await createEntry({
-          variables: {
-            key: formData.key,
-            langs: {
-              ...omit(formData, ['key']),
+        // 此时代表编辑
+        if (initialFormData?.entryId) {
+          await updateEntry({
+            variables: {
+              entryId: initialFormData.entryId,
+              key: formData.key,
+              langs: {
+                ...omit(formData, ['key']),
+              },
             },
-          },
-        })
+          })
+          message.success('修改词条成功！')
+        } else {
+          await createEntry({
+            variables: {
+              key: formData.key,
+              langs: {
+                ...omit(formData, ['key']),
+              },
+            },
+          })
+          message.success('新增词条成功！')
+        }
         return true
       }}
       initialValues={{

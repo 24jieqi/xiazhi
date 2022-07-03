@@ -1,28 +1,22 @@
-import type * as SchemaTypes from '../../generated/types'
+import type * as SchemaTypes from '../../generated/types';
 
-import { gql } from '@apollo/client'
-import * as Apollo from '@apollo/client'
-const defaultOptions = {} as const
-export type ListSupportLanguageQueryVariables = SchemaTypes.Exact<{
-  [key: string]: never
-}>
+import { gql } from '@apollo/client';
+import * as Apollo from '@apollo/client';
+const defaultOptions = {} as const;
+export type ListSupportLanguageQueryVariables = SchemaTypes.Exact<{ [key: string]: never; }>;
 
-export type ListSupportLanguageQuery = {
-  listSupportLanguage?: Array<{
-    __typename?: 'LangageTypeOption'
-    label: string
-    value?: SchemaTypes.LanguageTypeEnum
-  }>
-}
+
+export type ListSupportLanguageQuery = { listSupportLanguage?: Array<{ __typename?: 'LangageTypeOption', label: string, value?: SchemaTypes.LanguageTypeEnum }> };
+
 
 export const ListSupportLanguageDocument = gql`
-  query ListSupportLanguage {
-    listSupportLanguage {
-      label
-      value
-    }
+    query ListSupportLanguage {
+  listSupportLanguage {
+    label
+    value
   }
-`
+}
+    `;
 
 /**
  * __useListSupportLanguageQuery__
@@ -39,37 +33,14 @@ export const ListSupportLanguageDocument = gql`
  *   },
  * });
  */
-export function useListSupportLanguageQuery(
-  baseOptions?: Apollo.QueryHookOptions<
-    ListSupportLanguageQuery,
-    ListSupportLanguageQueryVariables
-  >,
-) {
-  const options = { ...defaultOptions, ...baseOptions }
-  return Apollo.useQuery<
-    ListSupportLanguageQuery,
-    ListSupportLanguageQueryVariables
-  >(ListSupportLanguageDocument, options)
-}
-export function useListSupportLanguageLazyQuery(
-  baseOptions?: Apollo.LazyQueryHookOptions<
-    ListSupportLanguageQuery,
-    ListSupportLanguageQueryVariables
-  >,
-) {
-  const options = { ...defaultOptions, ...baseOptions }
-  return Apollo.useLazyQuery<
-    ListSupportLanguageQuery,
-    ListSupportLanguageQueryVariables
-  >(ListSupportLanguageDocument, options)
-}
-export type ListSupportLanguageQueryHookResult = ReturnType<
-  typeof useListSupportLanguageQuery
->
-export type ListSupportLanguageLazyQueryHookResult = ReturnType<
-  typeof useListSupportLanguageLazyQuery
->
-export type ListSupportLanguageQueryResult = Apollo.QueryResult<
-  ListSupportLanguageQuery,
-  ListSupportLanguageQueryVariables
->
+export function useListSupportLanguageQuery(baseOptions?: Apollo.QueryHookOptions<ListSupportLanguageQuery, ListSupportLanguageQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<ListSupportLanguageQuery, ListSupportLanguageQueryVariables>(ListSupportLanguageDocument, options);
+      }
+export function useListSupportLanguageLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<ListSupportLanguageQuery, ListSupportLanguageQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<ListSupportLanguageQuery, ListSupportLanguageQueryVariables>(ListSupportLanguageDocument, options);
+        }
+export type ListSupportLanguageQueryHookResult = ReturnType<typeof useListSupportLanguageQuery>;
+export type ListSupportLanguageLazyQueryHookResult = ReturnType<typeof useListSupportLanguageLazyQuery>;
+export type ListSupportLanguageQueryResult = Apollo.QueryResult<ListSupportLanguageQuery, ListSupportLanguageQueryVariables>;

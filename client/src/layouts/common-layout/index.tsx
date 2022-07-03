@@ -8,9 +8,9 @@ import defaultProps from './menuConfig'
 
 const settings = {
   fixSiderbar: true,
-  navTheme: 'light',
-  layout: 'mix',
-  contentWidth: 'Fluid',
+  // navTheme: 'light',
+  // layout: 'mix',
+  // contentWidth: 'Fluid',
   headerHeight: 48,
   primaryColor: '#13C2C2',
   splitMenus: false,
@@ -26,6 +26,9 @@ const CommonLayout: React.FC = () => {
       }}>
       <ProLayout
         {...defaultProps}
+        navTheme="light"
+        layout="mix"
+        contentWidth="Fluid"
         location={{
           pathname,
         }}
