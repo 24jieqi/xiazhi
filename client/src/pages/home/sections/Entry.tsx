@@ -9,6 +9,34 @@ import { EntryItem, LanguageTypeEnum } from '@/graphql/generated/types'
 import { usePageAllPublicEntriesLazyQuery } from '@/graphql/operations/__generated__/entry.generated'
 import EntryModal from '@/pages/entry/components/entry-modal'
 
+function langDiff(
+  prevs: Record<LanguageTypeEnum, string>,
+  current: Record<LanguageTypeEnum, string>,
+) {
+  const langs = Object.keys(current)
+  const prevCopy = { ...prevs }
+  let result = ''
+  for (const lang of langs) {
+    // 多语言新增
+    if (!prevCopy[lang]) {
+      result += `新增：${current[lang]} \n`
+    } else if (prevCopy[lang] !== current[lang]) {
+      // 编辑的情况
+      result += `编辑：${current[lang]}（${prevCopy[lang]}）\n`
+      delete prevCopy[lang]
+    } else {
+      delete prevCopy[lang]
+    }
+  }
+  const keys = Object.keys(prevCopy)
+  if (keys.length) {
+    for (const key of keys) {
+      result += `删除：${prevCopy[key]}`
+    }
+  }
+  return result
+}
+
 const columns: ProColumns<EntryItem>[] = [
   {
     title: '词条key',
@@ -79,11 +107,12 @@ const columns: ProColumns<EntryItem>[] = [
     readonly: true,
     render(_, record) {
       const modifyRecords = record.modifyRecords
+      const currentLangs = record.langs
       if (modifyRecords?.length) {
         return (
           <div>
             {modifyRecords.map((item, index) => (
-              <p key={index}>{item.prevLangs}</p>
+              <p key={index}>{langDiff(item.prevLangs, currentLangs)}</p>
             ))}
           </div>
         )

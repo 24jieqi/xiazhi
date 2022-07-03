@@ -1,5 +1,5 @@
 import { EditOutlined, SettingOutlined } from '@ant-design/icons'
-import { Avatar, Card, Popover } from 'antd'
+import { Avatar, Card, Col, Popover, Row, Space, Statistic } from 'antd'
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
 import { AppItem } from '@/graphql/generated/types'
@@ -56,9 +56,16 @@ const AppCard: React.FC<AppCardProps> = ({ data }) => {
             />
           </Popover>
         }
-        title="Card title"
-        description="This is the description"
+        description={data.description}
       />
+      <Row style={{ marginTop: 12, marginLeft: 48 }}>
+        <Col span={12}>
+          <Statistic title="词条数" value={109} />
+        </Col>
+        <Col span={12}>
+          <Statistic title="协作者" value={6} />
+        </Col>
+      </Row>
     </Card>
   )
 }

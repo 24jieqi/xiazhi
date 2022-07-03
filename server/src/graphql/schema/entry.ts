@@ -190,6 +190,11 @@ export const EntryMutation = extendType({
       },
       async resolve(_, args, ctx) {
         decodedToken(ctx.req)
+        const currentEntry = await ctx.prisma.entry.findUnique({
+          where: {
+            entry_id: args.entryId,
+          },
+        })
         await ctx.prisma.entry.update({
           where: {
             entry_id: args.entryId,
@@ -198,6 +203,13 @@ export const EntryMutation = extendType({
             key: args.key,
             langs: args.langs,
             mainLangText: args.langs[LanguageType.CHINESE], // 设置主语言文本
+            modifyRecords: {
+              create: [
+                {
+                  prevLangs: currentEntry?.langs || {},
+                },
+              ],
+            },
           },
         })
         return true
@@ -230,7 +242,6 @@ export const EntryQuery = extendType({
             public: true,
           },
         })
-        records[0]
         return {
           current: args.pageNo,
           pageSize: args.pageSize,

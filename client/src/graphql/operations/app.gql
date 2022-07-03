@@ -20,3 +20,19 @@ query GetCurrentApps {
     }
   }
 }
+
+mutation CreateApp(
+  $name: String!
+  $type: AppTypeEnum!
+  $languages: [LanguageTypeEnum!]!
+  $pictures: [String!]!
+  $description: String
+) {
+  createApp(
+    name: $name
+    type: $type
+    languages: $languages
+    pictures: $pictures
+    description: $description
+  )
+}
