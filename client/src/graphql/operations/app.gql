@@ -18,6 +18,7 @@ query GetCurrentApps {
       role
       avatar
     }
+    entryCount
   }
 }
 

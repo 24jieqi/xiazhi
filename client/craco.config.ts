@@ -11,6 +11,11 @@ module.exports = {
         ws: false,
         secure: false,
       },
+      '/_files/upload': {
+        target: 'http://192.168.10.233:3004',
+        secure: true,
+        changeOrigin: true,
+      },
     },
   },
   babel: {

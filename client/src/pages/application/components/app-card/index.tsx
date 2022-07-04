@@ -34,8 +34,15 @@ const AppCard: React.FC<AppCardProps> = ({ data }) => {
   }
   return (
     <Card
+      title={data.name}
       style={{ width: 300 }}
-      cover={<img alt="cover" src={getCoverUrl(data.pictures)} />}
+      cover={
+        <img
+          alt="cover"
+          src={getCoverUrl(data.pictures)}
+          style={{ height: 200, objectFit: 'contain' }}
+        />
+      }
       actions={[
         <SettingOutlined key="setting" onClick={handleRedirectAppSetting} />,
         <EditOutlined key="edit" onClick={handleRedirectAppEdit} />,
@@ -60,7 +67,7 @@ const AppCard: React.FC<AppCardProps> = ({ data }) => {
       />
       <Row style={{ marginTop: 12, marginLeft: 48 }}>
         <Col span={12}>
-          <Statistic title="词条数" value={109} />
+          <Statistic title="词条数" value={data.entryCount} />
         </Col>
         <Col span={12}>
           <Statistic title="协作者" value={6} />

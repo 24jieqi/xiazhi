@@ -11,7 +11,7 @@ const AppHomeEntry: React.FC = () => {
   return (
     <Spin spinning={loading}>
       {appList && appList.length > 0 ? (
-        <Space>
+        <Space align="start">
           {appList.map(app => (
             <AppCard key={app.app_id} data={app} />
           ))}

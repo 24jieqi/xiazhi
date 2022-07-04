@@ -1,7 +1,5 @@
 /* eslint-disable max-params */
 /* eslint-disable react/no-unstable-nested-components */
-import { AppTypeEnum, LanguageTypeEnum } from '@/graphql/generated/types'
-import { useCreateAppMutation } from '@/graphql/operations/__generated__/app.generated'
 import {
   ProFormInstance,
   ProFormUploadButton,
@@ -16,6 +14,29 @@ import {
 } from '@ant-design/pro-components'
 import { message } from 'antd'
 import React, { useRef } from 'react'
+import { UploadFile } from 'antd/lib/upload/interface'
+import { AppTypeEnum, LanguageTypeEnum } from '@/graphql/generated/types'
+import { useCreateAppMutation } from '@/graphql/operations/__generated__/app.generated'
+
+interface FileVO {
+  accessType: number
+  contentType: string
+  createTime: number
+  fileCreateTime: number
+  fileId: string
+  fileUrl: string
+  filename: string
+  size: number
+}
+
+function getPictureUrlList(fileList: UploadFile<Partial<FileVO>>[]) {
+  if (!fileList || !fileList.length) {
+    return []
+  }
+  return fileList
+    .filter(file => file.status === 'done')
+    .map(f => f?.response?.fileUrl)
+}
 
 export default () => {
   const formRef = useRef<ProFormInstance>()
@@ -31,7 +52,7 @@ export default () => {
               description: values.description,
               languages: values.languages,
               type: values.type,
-              pictures: [],
+              pictures: getPictureUrlList(values.pictures),
             },
           })
           message.success('应用创建成功！')

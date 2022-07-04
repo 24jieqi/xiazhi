@@ -1,49 +1,73 @@
-import type * as SchemaTypes from '../../generated/types';
+import type * as SchemaTypes from '../../generated/types'
 
-import { gql } from '@apollo/client';
-import * as Apollo from '@apollo/client';
-const defaultOptions = {} as const;
-export type GetCurrentAppsQueryVariables = SchemaTypes.Exact<{ [key: string]: never; }>;
+import { gql } from '@apollo/client'
+import * as Apollo from '@apollo/client'
+const defaultOptions = {} as const
+export type GetCurrentAppsQueryVariables = SchemaTypes.Exact<{
+  [key: string]: never
+}>
 
-
-export type GetCurrentAppsQuery = { getCurrentApps?: Array<{ __typename?: 'AppItem', app_id?: number, name?: string, description?: string, type?: SchemaTypes.AppTypeEnum, languages?: Array<SchemaTypes.LanguageTypeEnum>, pictures?: Array<string>, access?: boolean, push?: boolean, creatorId?: number, creator?: { __typename?: 'UserInfo', name?: string, user_id?: number, email?: string, nickName?: string, phone?: string, role?: SchemaTypes.UserRoleEnum, avatar?: string } }> };
+export type GetCurrentAppsQuery = {
+  getCurrentApps?: Array<{
+    __typename?: 'AppItem'
+    app_id?: number
+    name?: string
+    description?: string
+    type?: SchemaTypes.AppTypeEnum
+    languages?: Array<SchemaTypes.LanguageTypeEnum>
+    pictures?: Array<string>
+    access?: boolean
+    push?: boolean
+    creatorId?: number
+    entryCount?: number
+    creator?: {
+      __typename?: 'UserInfo'
+      name?: string
+      user_id?: number
+      email?: string
+      nickName?: string
+      phone?: string
+      role?: SchemaTypes.UserRoleEnum
+      avatar?: string
+    }
+  }>
+}
 
 export type CreateAppMutationVariables = SchemaTypes.Exact<{
-  name: SchemaTypes.Scalars['String'];
-  type: SchemaTypes.AppTypeEnum;
-  languages: Array<SchemaTypes.LanguageTypeEnum>;
-  pictures: Array<SchemaTypes.Scalars['String']>;
-  description?: SchemaTypes.InputMaybe<SchemaTypes.Scalars['String']>;
-}>;
+  name: SchemaTypes.Scalars['String']
+  type: SchemaTypes.AppTypeEnum
+  languages: Array<SchemaTypes.LanguageTypeEnum>
+  pictures: Array<SchemaTypes.Scalars['String']>
+  description?: SchemaTypes.InputMaybe<SchemaTypes.Scalars['String']>
+}>
 
-
-export type CreateAppMutation = { createApp?: number };
-
+export type CreateAppMutation = { createApp?: number }
 
 export const GetCurrentAppsDocument = gql`
-    query GetCurrentApps {
-  getCurrentApps {
-    app_id
-    name
-    description
-    type
-    languages
-    pictures
-    access
-    push
-    creatorId
-    creator {
+  query GetCurrentApps {
+    getCurrentApps {
+      app_id
       name
-      user_id
-      email
-      nickName
-      phone
-      role
-      avatar
+      description
+      type
+      languages
+      pictures
+      access
+      push
+      creatorId
+      creator {
+        name
+        user_id
+        email
+        nickName
+        phone
+        role
+        avatar
+      }
+      entryCount
     }
   }
-}
-    `;
+`
 
 /**
  * __useGetCurrentAppsQuery__
@@ -60,29 +84,61 @@ export const GetCurrentAppsDocument = gql`
  *   },
  * });
  */
-export function useGetCurrentAppsQuery(baseOptions?: Apollo.QueryHookOptions<GetCurrentAppsQuery, GetCurrentAppsQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<GetCurrentAppsQuery, GetCurrentAppsQueryVariables>(GetCurrentAppsDocument, options);
-      }
-export function useGetCurrentAppsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetCurrentAppsQuery, GetCurrentAppsQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<GetCurrentAppsQuery, GetCurrentAppsQueryVariables>(GetCurrentAppsDocument, options);
-        }
-export type GetCurrentAppsQueryHookResult = ReturnType<typeof useGetCurrentAppsQuery>;
-export type GetCurrentAppsLazyQueryHookResult = ReturnType<typeof useGetCurrentAppsLazyQuery>;
-export type GetCurrentAppsQueryResult = Apollo.QueryResult<GetCurrentAppsQuery, GetCurrentAppsQueryVariables>;
-export const CreateAppDocument = gql`
-    mutation CreateApp($name: String!, $type: AppTypeEnum!, $languages: [LanguageTypeEnum!]!, $pictures: [String!]!, $description: String) {
-  createApp(
-    name: $name
-    type: $type
-    languages: $languages
-    pictures: $pictures
-    description: $description
+export function useGetCurrentAppsQuery(
+  baseOptions?: Apollo.QueryHookOptions<
+    GetCurrentAppsQuery,
+    GetCurrentAppsQueryVariables
+  >,
+) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useQuery<GetCurrentAppsQuery, GetCurrentAppsQueryVariables>(
+    GetCurrentAppsDocument,
+    options,
   )
 }
-    `;
-export type CreateAppMutationFn = Apollo.MutationFunction<CreateAppMutation, CreateAppMutationVariables>;
+export function useGetCurrentAppsLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<
+    GetCurrentAppsQuery,
+    GetCurrentAppsQueryVariables
+  >,
+) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useLazyQuery<GetCurrentAppsQuery, GetCurrentAppsQueryVariables>(
+    GetCurrentAppsDocument,
+    options,
+  )
+}
+export type GetCurrentAppsQueryHookResult = ReturnType<
+  typeof useGetCurrentAppsQuery
+>
+export type GetCurrentAppsLazyQueryHookResult = ReturnType<
+  typeof useGetCurrentAppsLazyQuery
+>
+export type GetCurrentAppsQueryResult = Apollo.QueryResult<
+  GetCurrentAppsQuery,
+  GetCurrentAppsQueryVariables
+>
+export const CreateAppDocument = gql`
+  mutation CreateApp(
+    $name: String!
+    $type: AppTypeEnum!
+    $languages: [LanguageTypeEnum!]!
+    $pictures: [String!]!
+    $description: String
+  ) {
+    createApp(
+      name: $name
+      type: $type
+      languages: $languages
+      pictures: $pictures
+      description: $description
+    )
+  }
+`
+export type CreateAppMutationFn = Apollo.MutationFunction<
+  CreateAppMutation,
+  CreateAppMutationVariables
+>
 
 /**
  * __useCreateAppMutation__
@@ -105,10 +161,23 @@ export type CreateAppMutationFn = Apollo.MutationFunction<CreateAppMutation, Cre
  *   },
  * });
  */
-export function useCreateAppMutation(baseOptions?: Apollo.MutationHookOptions<CreateAppMutation, CreateAppMutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<CreateAppMutation, CreateAppMutationVariables>(CreateAppDocument, options);
-      }
-export type CreateAppMutationHookResult = ReturnType<typeof useCreateAppMutation>;
-export type CreateAppMutationResult = Apollo.MutationResult<CreateAppMutation>;
-export type CreateAppMutationOptions = Apollo.BaseMutationOptions<CreateAppMutation, CreateAppMutationVariables>;
+export function useCreateAppMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    CreateAppMutation,
+    CreateAppMutationVariables
+  >,
+) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useMutation<CreateAppMutation, CreateAppMutationVariables>(
+    CreateAppDocument,
+    options,
+  )
+}
+export type CreateAppMutationHookResult = ReturnType<
+  typeof useCreateAppMutation
+>
+export type CreateAppMutationResult = Apollo.MutationResult<CreateAppMutation>
+export type CreateAppMutationOptions = Apollo.BaseMutationOptions<
+  CreateAppMutation,
+  CreateAppMutationVariables
+>
