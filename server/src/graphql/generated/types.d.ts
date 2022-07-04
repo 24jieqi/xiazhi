@@ -143,6 +143,7 @@ export interface NexusGenFieldTypes {
     creator: NexusGenRootTypes['UserInfo'] | null; // UserInfo
     creatorId: number | null; // Int
     description: string | null; // String
+    entryCount: number | null; // Int
     languages: Array<NexusGenEnums['LanguageTypeEnum'] | null> | null; // [LanguageTypeEnum]
     name: string | null; // String
     pictures: Array<string | null> | null; // [String]
@@ -230,6 +231,7 @@ export interface NexusGenFieldTypeNames {
     creator: 'UserInfo'
     creatorId: 'Int'
     description: 'String'
+    entryCount: 'Int'
     languages: 'LanguageTypeEnum'
     name: 'String'
     pictures: 'String'

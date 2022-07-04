@@ -38,6 +38,21 @@ export const AppItem = objectType({
         }
       })
     } })
+    t.field('entryCount', {
+      type: 'Int',
+      description: '当前应用包含的词条数量',
+      async resolve(root, _, ctx) {
+        const app = await ctx.prisma.app.findUnique({
+          where: {
+            app_id: root.app_id! 
+          },
+          include: {
+            entries: true
+          }
+        })
+        return app?.entries?.length || 0
+      }
+    })
   },
 })
 

@@ -33,6 +33,9 @@ type AppItem {
   creatorId: Int
   description: String
 
+  """当前应用包含的词条数量"""
+  entryCount: Int
+
   """支持的语言"""
   languages: [LanguageTypeEnum]
   name: String
