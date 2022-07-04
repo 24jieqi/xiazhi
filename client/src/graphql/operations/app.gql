@@ -37,3 +37,27 @@ mutation CreateApp(
     description: $description
   )
 }
+
+query GetAppInfoById($getAppInfoByIdId: Int!) {
+  getAppInfoById(id: $getAppInfoByIdId) {
+    app_id
+    name
+    description
+    type
+    languages
+    pictures
+    access
+    push
+    creatorId
+    creator {
+      name
+      user_id
+      email
+      nickName
+      phone
+      role
+      avatar
+    }
+    entryCount
+  }
+}

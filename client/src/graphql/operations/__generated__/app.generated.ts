@@ -43,6 +43,36 @@ export type CreateAppMutationVariables = SchemaTypes.Exact<{
 
 export type CreateAppMutation = { createApp?: number }
 
+export type GetAppInfoByIdQueryVariables = SchemaTypes.Exact<{
+  getAppInfoByIdId: SchemaTypes.Scalars['Int']
+}>
+
+export type GetAppInfoByIdQuery = {
+  getAppInfoById?: {
+    __typename?: 'AppItem'
+    app_id?: number
+    name?: string
+    description?: string
+    type?: SchemaTypes.AppTypeEnum
+    languages?: Array<SchemaTypes.LanguageTypeEnum>
+    pictures?: Array<string>
+    access?: boolean
+    push?: boolean
+    creatorId?: number
+    entryCount?: number
+    creator?: {
+      __typename?: 'UserInfo'
+      name?: string
+      user_id?: number
+      email?: string
+      nickName?: string
+      phone?: string
+      role?: SchemaTypes.UserRoleEnum
+      avatar?: string
+    }
+  }
+}
+
 export const GetCurrentAppsDocument = gql`
   query GetCurrentApps {
     getCurrentApps {
@@ -180,4 +210,80 @@ export type CreateAppMutationResult = Apollo.MutationResult<CreateAppMutation>
 export type CreateAppMutationOptions = Apollo.BaseMutationOptions<
   CreateAppMutation,
   CreateAppMutationVariables
+>
+export const GetAppInfoByIdDocument = gql`
+  query GetAppInfoById($getAppInfoByIdId: Int!) {
+    getAppInfoById(id: $getAppInfoByIdId) {
+      app_id
+      name
+      description
+      type
+      languages
+      pictures
+      access
+      push
+      creatorId
+      creator {
+        name
+        user_id
+        email
+        nickName
+        phone
+        role
+        avatar
+      }
+      entryCount
+    }
+  }
+`
+
+/**
+ * __useGetAppInfoByIdQuery__
+ *
+ * To run a query within a React component, call `useGetAppInfoByIdQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetAppInfoByIdQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetAppInfoByIdQuery({
+ *   variables: {
+ *      getAppInfoByIdId: // value for 'getAppInfoByIdId'
+ *   },
+ * });
+ */
+export function useGetAppInfoByIdQuery(
+  baseOptions: Apollo.QueryHookOptions<
+    GetAppInfoByIdQuery,
+    GetAppInfoByIdQueryVariables
+  >,
+) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useQuery<GetAppInfoByIdQuery, GetAppInfoByIdQueryVariables>(
+    GetAppInfoByIdDocument,
+    options,
+  )
+}
+export function useGetAppInfoByIdLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<
+    GetAppInfoByIdQuery,
+    GetAppInfoByIdQueryVariables
+  >,
+) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useLazyQuery<GetAppInfoByIdQuery, GetAppInfoByIdQueryVariables>(
+    GetAppInfoByIdDocument,
+    options,
+  )
+}
+export type GetAppInfoByIdQueryHookResult = ReturnType<
+  typeof useGetAppInfoByIdQuery
+>
+export type GetAppInfoByIdLazyQueryHookResult = ReturnType<
+  typeof useGetAppInfoByIdLazyQuery
+>
+export type GetAppInfoByIdQueryResult = Apollo.QueryResult<
+  GetAppInfoByIdQuery,
+  GetAppInfoByIdQueryVariables
 >
