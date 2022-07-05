@@ -31,3 +31,29 @@ mutation CreateEntry($appId: Int, $langs: JSONObject, $key: String) {
 mutation UpdateEntry($entryId: Int!, $langs: JSONObject, $key: String) {
   updateEntry(entryId: $entryId, langs: $langs, key: $key)
 }
+
+query PageAppEntries($pageSize: Int!, $pageNo: Int!, $appId: Int!) {
+  pageAppEntries(pageSize: $pageSize, pageNo: $pageNo, appId: $appId) {
+    total
+    pageSize
+    current
+    records {
+      entry_id
+      key
+      createdAt
+      updatedAt
+      public
+      archive
+      deleted
+      mainLangText
+      mainLang
+      modifyRecords {
+        record_id
+        createdAt
+        entryEntry_id
+        prevLangs
+      }
+      langs
+    }
+  }
+}

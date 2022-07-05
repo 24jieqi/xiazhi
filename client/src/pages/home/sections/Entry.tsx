@@ -39,7 +39,7 @@ function langDiff(
 
 const columns: ProColumns<EntryItem>[] = [
   {
-    title: '词条key',
+    title: '词条Key',
     dataIndex: 'key',
     copyable: true,
     editable: (text, record, index) => {

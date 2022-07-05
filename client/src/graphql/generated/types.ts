@@ -130,12 +130,14 @@ export type Mutation = {
   /** 邮箱&密码登录 */
   login?: Maybe<Scalars['String']>
   /** 刷新应用accessKey */
-  refreshAccessKey?: Maybe<Scalars['Boolean']>
+  refreshAccessKey?: Maybe<Scalars['String']>
   /** 用户邮箱&密码注册 */
   register?: Maybe<Scalars['String']>
   resetPassword?: Maybe<Scalars['Boolean']>
   /** 发送重设密码链接 */
   sendResetPasswordEmail?: Maybe<Scalars['Boolean']>
+  /** 更新应用基本信息 */
+  updateAppBasicInfo?: Maybe<Scalars['Int']>
   updateEntry?: Maybe<Scalars['Boolean']>
   /** 编辑用户信息 */
   updateUserInfo?: Maybe<Scalars['Boolean']>
@@ -201,6 +203,13 @@ export type MutationSendResetPasswordEmailArgs = {
   email: Scalars['String']
 }
 
+export type MutationUpdateAppBasicInfoArgs = {
+  appId: Scalars['Int']
+  description?: InputMaybe<Scalars['String']>
+  pictures: Array<Scalars['String']>
+  type: AppTypeEnum
+}
+
 export type MutationUpdateEntryArgs = {
   entryId: Scalars['Int']
   key?: InputMaybe<Scalars['String']>
@@ -229,7 +238,7 @@ export type Query = {
   /** 获取所有公共词条（分页） */
   pageAllPublicEntries?: Maybe<EntryPaging>
   /** 获取应用所有词条（分页） */
-  pageAppEntries?: Maybe<Array<Maybe<EntryItem>>>
+  pageAppEntries?: Maybe<EntryPaging>
 }
 
 export type QueryGetAccessKeyByAppIdArgs = {

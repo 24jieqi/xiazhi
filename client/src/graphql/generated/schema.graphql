@@ -190,7 +190,7 @@ type Mutation {
   """
   刷新应用accessKey
   """
-  refreshAccessKey(id: Int!): Boolean
+  refreshAccessKey(id: Int!): String
 
   """
   用户邮箱&密码注册
@@ -202,6 +202,16 @@ type Mutation {
   发送重设密码链接
   """
   sendResetPasswordEmail(email: String!): Boolean
+
+  """
+  更新应用基本信息
+  """
+  updateAppBasicInfo(
+    appId: Int!
+    description: String
+    pictures: [String!]!
+    type: AppTypeEnum!
+  ): Int
   updateEntry(entryId: Int!, key: String, langs: JSONObject): Boolean
 
   """
@@ -246,7 +256,7 @@ type Query {
   """
   获取应用所有词条（分页）
   """
-  pageAppEntries(appId: Int!, pageNo: Int!, pageSize: Int!): [EntryItem]
+  pageAppEntries(appId: Int!, pageNo: Int!, pageSize: Int!): EntryPaging
 }
 
 """

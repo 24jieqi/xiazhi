@@ -61,3 +61,33 @@ query GetAppInfoById($getAppInfoByIdId: Int!) {
     entryCount
   }
 }
+
+mutation UpdateAppBasicInfo(
+  $appId: Int!
+  $type: AppTypeEnum!
+  $pictures: [String!]!
+  $description: String
+) {
+  updateAppBasicInfo(
+    appId: $appId
+    type: $type
+    pictures: $pictures
+    description: $description
+  )
+}
+
+query GetAccessKeyByAppId($getAccessKeyByAppIdId: Int!) {
+  getAccessKeyByAppId(id: $getAccessKeyByAppIdId) {
+    app_id
+    name
+    deleted
+    archived
+    push
+    access
+    accessKey
+  }
+}
+
+mutation RefreshAccessKey($refreshAccessKeyId: Int!) {
+  refreshAccessKey(id: $refreshAccessKeyId)
+}

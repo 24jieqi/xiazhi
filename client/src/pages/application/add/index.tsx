@@ -15,8 +15,8 @@ import {
 import { message } from 'antd'
 import React, { useRef } from 'react'
 import { UploadFile } from 'antd/lib/upload/interface'
-import { AppTypeEnum, LanguageTypeEnum } from '@/graphql/generated/types'
 import { useCreateAppMutation } from '@/graphql/operations/__generated__/app.generated'
+import { appSupportLangsOptions, appTypeOptions } from '../constant'
 
 interface FileVO {
   accessType: number
@@ -29,13 +29,13 @@ interface FileVO {
   size: number
 }
 
-function getPictureUrlList(fileList: UploadFile<Partial<FileVO>>[]) {
+export function getPictureUrlList(fileList: UploadFile<Partial<FileVO>>[]) {
   if (!fileList || !fileList.length) {
     return []
   }
   return fileList
     .filter(file => file.status === 'done')
-    .map(f => f?.response?.fileUrl)
+    .map(f => f?.response?.fileUrl || f?.url)
 }
 
 export default () => {
@@ -98,40 +98,7 @@ export default () => {
               rules={[{ required: true, message: '请选择应用类型' }]}
               label="应用类型"
               name="type"
-              options={[
-                {
-                  value: AppTypeEnum.Contact,
-                  label: '社交',
-                },
-                {
-                  value: AppTypeEnum.Education,
-                  label: '教育',
-                },
-                {
-                  value: AppTypeEnum.Efficiency,
-                  label: '效率',
-                },
-                {
-                  value: AppTypeEnum.Finance,
-                  label: '金融',
-                },
-                {
-                  value: AppTypeEnum.Game,
-                  label: '游戏',
-                },
-                {
-                  value: AppTypeEnum.Music,
-                  label: '音乐',
-                },
-                {
-                  value: AppTypeEnum.Tool,
-                  label: '工具',
-                },
-                {
-                  value: AppTypeEnum.Other,
-                  label: '其它',
-                },
-              ]}
+              options={appTypeOptions}
             />
             <ProFormSelect
               label="支持语言"
@@ -139,24 +106,7 @@ export default () => {
               mode="multiple"
               width="md"
               rules={[{ required: true, message: '请选择支持语言' }]}
-              options={[
-                {
-                  value: LanguageTypeEnum.Chinese,
-                  label: '中文',
-                },
-                {
-                  value: LanguageTypeEnum.English,
-                  label: '英语',
-                },
-                {
-                  value: LanguageTypeEnum.Thai,
-                  label: '泰语',
-                },
-                {
-                  value: LanguageTypeEnum.Vietnamese,
-                  label: '越南语',
-                },
-              ]}
+              options={appSupportLangsOptions}
             />
           </ProForm.Group>
           <ProFormUploadButton

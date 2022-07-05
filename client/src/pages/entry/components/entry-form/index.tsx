@@ -1,4 +1,3 @@
-import { PlusOutlined } from '@ant-design/icons'
 import { ModalForm, ProForm, ProFormText } from '@ant-design/pro-components'
 import { Button, message } from 'antd'
 import React, { useEffect, useRef } from 'react'
@@ -9,7 +8,7 @@ import {
   useUpdateEntryMutation,
 } from '@/graphql/operations/__generated__/entry.generated'
 
-interface EntryModalProps {
+interface EntryFormProps {
   children?: JSX.Element
   initialFormData?: any
 }
@@ -33,15 +32,13 @@ function omit(obj: any, keys: string[]) {
   return returned
 }
 
-const EntryModal: React.FC<EntryModalProps> = ({
-  children,
-  initialFormData,
-}) => {
+const EntryForm: React.FC<EntryFormProps> = ({ initialFormData }) => {
   const { data } = useListSupportLanguageQuery()
-  const [createEntry] = useCreateEntryMutation()
+  const [createEntry, { loading }] = useCreateEntryMutation()
   const [updateEntry] = useUpdateEntryMutation()
   const langs = groupLangs(data?.listSupportLanguage)
   const [form] = ProForm.useForm()
+  const isAddActionRef = useRef(false)
   // 设置默认值
   useEffect(() => {
     if (typeof initialFormData !== 'undefined') {
@@ -49,17 +46,24 @@ const EntryModal: React.FC<EntryModalProps> = ({
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialFormData])
+  async function handleAddEntry() {
+    const res = await form.validateFields()
+    isAddActionRef.current = true
+    await createEntry({
+      variables: {
+        key: res.key,
+        appId: initialFormData.appId,
+        langs: {
+          ...omit(res, ['key']),
+        },
+      },
+    })
+    isAddActionRef.current = false
+    message.success('新增词条成功！')
+  }
   return (
-    <ModalForm
+    <ProForm
       form={form}
-      trigger={
-        children || (
-          <Button type="primary">
-            <PlusOutlined />
-            新增词条
-          </Button>
-        )
-      }
       onFinish={async formData => {
         // 此时代表编辑
         if (initialFormData?.entryId) {
@@ -87,9 +91,23 @@ const EntryModal: React.FC<EntryModalProps> = ({
           message.success('新增词条成功！')
         }
         return true
+      }}
+      submitter={{
+        searchConfig: { submitText: '编辑' },
+        render: (_, doms) => {
+          return [
+            ...doms,
+            <Button
+              loading={isAddActionRef.current && loading}
+              key="add"
+              type="primary"
+              onClick={handleAddEntry}>
+              新增
+            </Button>,
+          ]
+        },
       }}>
       <ProFormText
-        width="md"
         name="key"
         label="词条key"
         tooltip="词条可读的描述，应用内唯一"
@@ -113,7 +131,6 @@ const EntryModal: React.FC<EntryModalProps> = ({
                       : []
                   }
                   key={item.value}
-                  width="md"
                   name={item.value}
                   label={item.label}
                   placeholder="请输入多语言词条"
@@ -123,8 +140,8 @@ const EntryModal: React.FC<EntryModalProps> = ({
           </ProForm.Group>
         )
       })}
-    </ModalForm>
+    </ProForm>
   )
 }
 
-export default EntryModal
+export default EntryForm

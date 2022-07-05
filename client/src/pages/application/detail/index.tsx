@@ -3,6 +3,7 @@ import React, { useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { useGetAppInfoByIdQuery } from '@/graphql/operations/__generated__/app.generated'
 import AppBasicInfo from './sections/basic-info'
+import AccessKeyManagement from './sections/access-key'
 
 export default () => {
   const params = useParams()
@@ -32,22 +33,21 @@ export default () => {
             key: '1',
           },
           {
-            tab: '访问key',
+            tab: '应用设置',
             key: '2',
           },
           {
-            tab: '设置',
-            key: '3',
-            disabled: true,
-          },
-          {
             tab: '协作者',
-            key: '4',
+            key: '3',
             disabled: true,
           },
         ]}>
         <ProCard>
-          {tabActiveKey === '1' ? <AppBasicInfo app={appInfo} /> : null}
+          {tabActiveKey === '1' ? (
+            <AppBasicInfo app={appInfo} />
+          ) : (
+            <AccessKeyManagement />
+          )}
         </ProCard>
       </PageContainer>
     </div>

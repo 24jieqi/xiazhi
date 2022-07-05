@@ -7,7 +7,14 @@ import {
 } from '@ant-design/pro-components'
 import React from 'react'
 import { UploadFile } from 'antd/lib/upload/interface'
-import { AppTypeEnum, LanguageTypeEnum } from '@/graphql/generated/types'
+import { message } from 'antd'
+import { useParams } from 'react-router-dom'
+import { useUpdateAppBasicInfoMutation } from '@/graphql/operations/__generated__/app.generated'
+import { getPictureUrlList } from '@/pages/application/add'
+import {
+  appSupportLangsOptions,
+  appTypeOptions,
+} from '@/pages/application/constant'
 import { AppSection } from '../interface'
 
 interface AppBasicInfoProps extends AppSection {}
@@ -31,8 +38,22 @@ function generateUploadFileList(files: string[]) {
 }
 
 const AppBasicInfo: React.FC<AppBasicInfoProps> = ({ app }) => {
+  const params = useParams()
+  const [updateAppBasicInfo] = useUpdateAppBasicInfoMutation()
+  async function handleUpdateAppInfo(formData: Record<string, any>) {
+    await updateAppBasicInfo({
+      variables: {
+        appId: Number(params.id),
+        type: formData.type,
+        pictures: getPictureUrlList(formData.pictures),
+        description: formData.description,
+      },
+    })
+    message.success('编辑应用成功！')
+  }
   return (
     <ProForm
+      onFinish={handleUpdateAppInfo}
       initialValues={{
         name: app.name,
         description: app.description,
@@ -63,40 +84,7 @@ const AppBasicInfo: React.FC<AppBasicInfoProps> = ({ app }) => {
           rules={[{ required: true, message: '请选择应用类型' }]}
           label="应用类型"
           name="type"
-          options={[
-            {
-              value: AppTypeEnum.Contact,
-              label: '社交',
-            },
-            {
-              value: AppTypeEnum.Education,
-              label: '教育',
-            },
-            {
-              value: AppTypeEnum.Efficiency,
-              label: '效率',
-            },
-            {
-              value: AppTypeEnum.Finance,
-              label: '金融',
-            },
-            {
-              value: AppTypeEnum.Game,
-              label: '游戏',
-            },
-            {
-              value: AppTypeEnum.Music,
-              label: '音乐',
-            },
-            {
-              value: AppTypeEnum.Tool,
-              label: '工具',
-            },
-            {
-              value: AppTypeEnum.Other,
-              label: '其它',
-            },
-          ]}
+          options={appTypeOptions}
         />
         <ProFormSelect
           label="支持语言"
@@ -104,24 +92,7 @@ const AppBasicInfo: React.FC<AppBasicInfoProps> = ({ app }) => {
           mode="multiple"
           width="md"
           readonly
-          options={[
-            {
-              value: LanguageTypeEnum.Chinese,
-              label: '中文',
-            },
-            {
-              value: LanguageTypeEnum.English,
-              label: '英语',
-            },
-            {
-              value: LanguageTypeEnum.Thai,
-              label: '泰语',
-            },
-            {
-              value: LanguageTypeEnum.Vietnamese,
-              label: '越南语',
-            },
-          ]}
+          options={appSupportLangsOptions}
         />
       </ProForm.Group>
       <ProFormUploadButton
