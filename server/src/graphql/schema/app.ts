@@ -149,10 +149,25 @@ export const AppMutation = mutationType({
       description: "更新应用基本信息",
       type: "Int",
       args: {
+        appId: nonNull(intArg()),
         description: stringArg(),
         type: nonNull(AppTypeEnum),
         pictures: nonNull(list(nonNull("String"))),
       },
+      async resolve(_, args, ctx) {
+        decodedToken(ctx.req)
+        await ctx.prisma.app.update({
+          where: {
+            app_id: args.appId
+          },
+          data: {
+            type: args.type,
+            description: args.description,
+            pictures: args.pictures
+          }
+        })
+        return 1
+      }
     });
   },
 });
@@ -197,12 +212,13 @@ export const AppAccessMutation = extendType({
   type: "Mutation",
   definition(t) {
     t.field("refreshAccessKey", {
-      type: "Boolean",
+      type: "String",
       description: "刷新应用accessKey",
       args: {
         id: nonNull(intArg()),
       },
       async resolve(_, args, ctx) {
+        decodedToken(ctx.req)
         const accessKey = await bcrypt.hash(String(Date.now()), 10);
         await ctx.prisma.app.update({
           where: {
@@ -212,7 +228,7 @@ export const AppAccessMutation = extendType({
             accessKey,
           },
         });
-        return true;
+        return accessKey;
       },
     });
     t.field("archivedApp", {

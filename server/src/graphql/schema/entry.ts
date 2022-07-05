@@ -251,7 +251,7 @@ export const EntryQuery = extendType({
       },
     })
     t.field('pageAppEntries', {
-      type: list('EntryItem'),
+      type: 'EntryPaging',
       description: '获取应用所有词条（分页）',
       args: {
         pageSize: nonNull(intArg()),
@@ -260,7 +260,7 @@ export const EntryQuery = extendType({
       },
       async resolve(_, args, ctx) {
         decodedToken(ctx.req)
-        return ctx.prisma.entry.findMany({
+        const records =  await ctx.prisma.entry.findMany({
           where: {
             app: {
               some: {
@@ -271,6 +271,21 @@ export const EntryQuery = extendType({
           skip: (args.pageNo - 1) * args.pageSize,
           take: args.pageSize,
         })
+        const total = await ctx.prisma.entry.count({
+          where: {
+            app: {
+              some: {
+                app_id: args.appId
+              }
+            }
+          },
+        })
+        return {
+          current: args.pageNo,
+          pageSize: args.pageSize,
+          records: records,
+          total,
+        }
       },
     })
   },
