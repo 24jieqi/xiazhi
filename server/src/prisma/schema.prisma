@@ -16,7 +16,10 @@ model Record {
   createdAt     DateTime @default(now())
   Entry         Entry?   @relation(fields: [entryEntry_id], references: [entry_id])
   entryEntry_id Int?
-  prevLangs     Json
+  prevLangs     Json?
+  currLangs     Json?
+  prevKey       String?
+  currKey       String?
 }
 
 // 词条

@@ -18,6 +18,9 @@ query PageAllPublicEntries($pageSize: Int!, $pageNo: Int!) {
         createdAt
         entryEntry_id
         prevLangs
+        currLangs
+        prevKey
+        currKey
       }
       langs
     }
@@ -32,8 +35,26 @@ mutation UpdateEntry($entryId: Int!, $langs: JSONObject, $key: String) {
   updateEntry(entryId: $entryId, langs: $langs, key: $key)
 }
 
-query PageAppEntries($pageSize: Int!, $pageNo: Int!, $appId: Int!) {
-  pageAppEntries(pageSize: $pageSize, pageNo: $pageNo, appId: $appId) {
+query PageAppEntries(
+  $pageSize: Int!
+  $pageNo: Int!
+  $appId: Int!
+  $startTime: Float
+  $endTime: Float
+  $mainLangText: String
+  $latest: Boolean
+  $key: String
+) {
+  pageAppEntries(
+    pageSize: $pageSize
+    pageNo: $pageNo
+    appId: $appId
+    startTime: $startTime
+    endTime: $endTime
+    mainLangText: $mainLangText
+    latest: $latest
+    key: $key
+  ) {
     total
     pageSize
     current
@@ -52,6 +73,9 @@ query PageAppEntries($pageSize: Int!, $pageNo: Int!, $appId: Int!) {
         createdAt
         entryEntry_id
         prevLangs
+        currLangs
+        prevKey
+        currKey
       }
       langs
     }

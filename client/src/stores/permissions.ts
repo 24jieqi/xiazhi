@@ -9,7 +9,7 @@ type PermissionState = {
   clear: () => void
 }
 
-export const permissionKey = 'demo-permissions'
+export const permissionKey = 'xiazhi-multi-langs-permissions'
 
 export const permissionStore = _create<PermissionState>(
   persist(

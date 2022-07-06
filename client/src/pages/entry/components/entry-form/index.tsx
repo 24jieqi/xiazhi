@@ -1,7 +1,11 @@
 import { ModalForm, ProForm, ProFormText } from '@ant-design/pro-components'
 import { Button, message } from 'antd'
 import React, { useEffect, useRef } from 'react'
-import { LangageTypeOption, LanguageTypeEnum } from '@/graphql/generated/types'
+import {
+  LangageTypeOption,
+  LanguageTypeEnum,
+  RecordItem,
+} from '@/graphql/generated/types'
 import { useListSupportLanguageQuery } from '@/graphql/operations/__generated__/basic.generated'
 import {
   useCreateEntryMutation,
@@ -11,6 +15,10 @@ import {
 interface EntryFormProps {
   children?: JSX.Element
   initialFormData?: any
+  /**
+   * 当编辑/新增词条成功时触发
+   */
+  onActionSuccess?: () => void
 }
 
 function groupLangs(langs: LangageTypeOption[]) {
@@ -32,7 +40,10 @@ function omit(obj: any, keys: string[]) {
   return returned
 }
 
-const EntryForm: React.FC<EntryFormProps> = ({ initialFormData }) => {
+const EntryForm: React.FC<EntryFormProps> = ({
+  initialFormData,
+  onActionSuccess,
+}) => {
   const { data } = useListSupportLanguageQuery()
   const [createEntry, { loading }] = useCreateEntryMutation()
   const [updateEntry] = useUpdateEntryMutation()
@@ -42,6 +53,8 @@ const EntryForm: React.FC<EntryFormProps> = ({ initialFormData }) => {
   // 设置默认值
   useEffect(() => {
     if (typeof initialFormData !== 'undefined') {
+      // 先重置再设置，否则可能出现数据混乱的问题
+      form.resetFields()
       form.setFieldsValue({ ...initialFormData })
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -59,6 +72,7 @@ const EntryForm: React.FC<EntryFormProps> = ({ initialFormData }) => {
       },
     })
     isAddActionRef.current = false
+    onActionSuccess?.()
     message.success('新增词条成功！')
   }
   return (
@@ -76,6 +90,7 @@ const EntryForm: React.FC<EntryFormProps> = ({ initialFormData }) => {
               },
             },
           })
+          onActionSuccess?.()
           message.success('修改词条成功！')
         } else {
           const allData = form.getFieldsValue(true)
@@ -88,6 +103,7 @@ const EntryForm: React.FC<EntryFormProps> = ({ initialFormData }) => {
               },
             },
           })
+          onActionSuccess?.()
           message.success('新增词条成功！')
         }
         return true

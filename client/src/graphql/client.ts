@@ -38,38 +38,27 @@ let loginModalIsShown = false
 const errorTip = debounce(antdMessage.error, 500)
 const errorMiddleware = onError(({ graphQLErrors, networkError }) => {
   if (graphQLErrors)
-    graphQLErrors.forEach(({ message, locations, extensions, path }) => {
+    graphQLErrors.forEach(({ message, extensions }) => {
       // eslint-disable-next-line no-console
-      console.error(
-        `[GraphQL error]: Message: ${message}, Location: ${JSON.stringify(
-          locations,
-        )}, Path: ${path}`,
-      )
-      if (extensions) {
-        const { message, code } = extensions
-        if ([401, 601].includes(code as any)) {
-          const hasToken = !!permissionStore.getState().token
-          // 过滤掉无token导致的鉴权失败（由路由拦截处理）
-          if (!loginModalIsShown && hasToken) {
-            loginModalIsShown = true
-            Modal.warning({
-              title: '系统提示',
-              content: '登录状态已失效，请重新登录',
-              onOk() {
-                sessionStorage.setItem(
-                  'REDIRECT_URL',
-                  `${location.pathname}${location.search}`,
-                )
-                loginModalIsShown = false
-                // 清空token和permissions
-                permissionStore.getState().clear()
-              },
-              okText: '确定',
-            })
-          }
-        } else {
-          errorTip(message)
+      console.error(`[GraphQL error]: Message: ${message}`)
+      const { code } = extensions
+      // 权限验证错误
+      if (code === 401) {
+        if (!loginModalIsShown) {
+          loginModalIsShown = true
+          Modal.warning({
+            title: '系统提示',
+            content: '登录状态已失效，请重新登录',
+            onOk() {
+              loginModalIsShown = false
+              permissionStore.getState().clear()
+            },
+            okText: '确定',
+          })
         }
+      } else {
+        // 其他错误，直接提示
+        errorTip(message)
       }
     })
   if (networkError) {

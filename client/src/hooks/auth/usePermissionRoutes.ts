@@ -10,16 +10,16 @@ interface IPermissionRoutes {
 }
 
 const usePermissionRoutes = ({ routes, noAuthRoutes }: IPermissionRoutes) => {
-  const { permissions } = usePermissions()
+  const { permissions, token } = usePermissions()
   const authedRoutes = useMemo(() => {
     // 如果配置了不需要鉴权，则直接返回配置的路由
-    if (!config.authorization) {
+    if (!config.authorization && token) {
       return routes
     }
-    if (!permissions || !permissions.length) {
+    if (!permissions || !permissions.length || !token) {
       return noAuthRoutes
     }
-  }, [permissions, routes, noAuthRoutes])
+  }, [permissions, routes, noAuthRoutes, token])
   return useRoutes(authedRoutes)
 }
 

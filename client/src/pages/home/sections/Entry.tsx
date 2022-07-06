@@ -9,7 +9,7 @@ import { EntryItem, LanguageTypeEnum } from '@/graphql/generated/types'
 import { usePageAllPublicEntriesLazyQuery } from '@/graphql/operations/__generated__/entry.generated'
 import EntryModal from '@/pages/entry/components/entry-modal'
 
-function langDiff(
+export function langDiff(
   prevs: Record<LanguageTypeEnum, string>,
   current: Record<LanguageTypeEnum, string>,
 ) {

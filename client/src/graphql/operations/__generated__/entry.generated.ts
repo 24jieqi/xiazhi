@@ -32,6 +32,9 @@ export type PageAllPublicEntriesQuery = {
         createdAt?: number
         entryEntry_id?: number
         prevLangs?: any
+        currLangs?: any
+        prevKey?: string
+        currKey?: string
       }>
     }>
   }
@@ -57,6 +60,11 @@ export type PageAppEntriesQueryVariables = SchemaTypes.Exact<{
   pageSize: SchemaTypes.Scalars['Int']
   pageNo: SchemaTypes.Scalars['Int']
   appId: SchemaTypes.Scalars['Int']
+  startTime?: SchemaTypes.InputMaybe<SchemaTypes.Scalars['Float']>
+  endTime?: SchemaTypes.InputMaybe<SchemaTypes.Scalars['Float']>
+  mainLangText?: SchemaTypes.InputMaybe<SchemaTypes.Scalars['String']>
+  latest?: SchemaTypes.InputMaybe<SchemaTypes.Scalars['Boolean']>
+  key?: SchemaTypes.InputMaybe<SchemaTypes.Scalars['String']>
 }>
 
 export type PageAppEntriesQuery = {
@@ -83,6 +91,9 @@ export type PageAppEntriesQuery = {
         createdAt?: number
         entryEntry_id?: number
         prevLangs?: any
+        currLangs?: any
+        prevKey?: string
+        currKey?: string
       }>
     }>
   }
@@ -109,6 +120,9 @@ export const PageAllPublicEntriesDocument = gql`
           createdAt
           entryEntry_id
           prevLangs
+          currLangs
+          prevKey
+          currKey
         }
         langs
       }
@@ -268,8 +282,26 @@ export type UpdateEntryMutationOptions = Apollo.BaseMutationOptions<
   UpdateEntryMutationVariables
 >
 export const PageAppEntriesDocument = gql`
-  query PageAppEntries($pageSize: Int!, $pageNo: Int!, $appId: Int!) {
-    pageAppEntries(pageSize: $pageSize, pageNo: $pageNo, appId: $appId) {
+  query PageAppEntries(
+    $pageSize: Int!
+    $pageNo: Int!
+    $appId: Int!
+    $startTime: Float
+    $endTime: Float
+    $mainLangText: String
+    $latest: Boolean
+    $key: String
+  ) {
+    pageAppEntries(
+      pageSize: $pageSize
+      pageNo: $pageNo
+      appId: $appId
+      startTime: $startTime
+      endTime: $endTime
+      mainLangText: $mainLangText
+      latest: $latest
+      key: $key
+    ) {
       total
       pageSize
       current
@@ -288,6 +320,9 @@ export const PageAppEntriesDocument = gql`
           createdAt
           entryEntry_id
           prevLangs
+          currLangs
+          prevKey
+          currKey
         }
         langs
       }
@@ -310,6 +345,11 @@ export const PageAppEntriesDocument = gql`
  *      pageSize: // value for 'pageSize'
  *      pageNo: // value for 'pageNo'
  *      appId: // value for 'appId'
+ *      startTime: // value for 'startTime'
+ *      endTime: // value for 'endTime'
+ *      mainLangText: // value for 'mainLangText'
+ *      latest: // value for 'latest'
+ *      key: // value for 'key'
  *   },
  * });
  */

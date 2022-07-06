@@ -1,59 +1,27 @@
-import type { ProColumns } from '@ant-design/pro-components'
+import type { ActionType, ProColumns } from '@ant-design/pro-components'
 import { ProCard, ProTable } from '@ant-design/pro-components'
-import { BadgeProps, Tag, Button, Empty } from 'antd'
-import React, { useEffect, useState } from 'react'
+import { Tag, Button, Empty } from 'antd'
+import React, { useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
+import dayjs from 'dayjs'
 import { useGetAppInfoByIdQuery } from '@/graphql/operations/__generated__/app.generated'
 import { usePageAppEntriesLazyQuery } from '@/graphql/operations/__generated__/entry.generated'
 import { EntryItem } from '@/graphql/generated/types'
-import { appTypeOptions } from '../constant'
-// @ts-ignore
-import styles from './split.less'
 import EntryModal from '@/pages/entry/components/entry-modal'
 import EntryForm from '@/pages/entry/components/entry-form'
-
-type TableListItem = {
-  createdAtRange?: number[]
-  createdAt: number
-  code: string
-}
-
-type DetailListProps = {
-  ip: string
-}
-
-type statusType = BadgeProps['status']
-
-const valueEnum: statusType[] = ['success', 'error', 'processing', 'default']
-
-export type IpListItem = {
-  ip?: string
-  cpu?: number | string
-  mem?: number | string
-  disk?: number | string
-  status: statusType
-}
-
-const ipListDataSource: IpListItem[] = []
-
-for (let i = 0; i < 10; i += 1) {
-  ipListDataSource.push({
-    ip: `106.14.98.1${i}4`,
-    cpu: 10,
-    mem: 20,
-    status: valueEnum[Math.floor(Math.random() * 10) % 4],
-    disk: 30,
-  })
-}
+import { appTypeOptions } from '../constant'
+import styles from './split.module.less'
+import ModifyRecordsModal from '@/pages/entry/components/modify-record-modal'
 
 type EntryListProps = {
   selectedEntry: EntryItem
   onChange: (entry: EntryItem) => void
+  actionRef: React.MutableRefObject<ActionType>
 }
 
 const EntryList: React.FC<EntryListProps> = props => {
   const routeParams = useParams()
-  const { onChange, selectedEntry } = props
+  const { onChange, selectedEntry, actionRef } = props
   const [pageAllPublicEntries] = usePageAppEntriesLazyQuery()
   const columns: ProColumns<EntryItem>[] = [
     {
@@ -65,7 +33,6 @@ const EntryList: React.FC<EntryListProps> = props => {
       title: '主语言',
       dataIndex: 'mainLangText',
       copyable: true,
-      hideInSearch: true,
     },
     {
       title: '创建时间',
@@ -82,9 +49,20 @@ const EntryList: React.FC<EntryListProps> = props => {
       search: {
         transform: value => {
           return {
-            startTime: value[0],
-            endTime: value[1],
+            startTime: dayjs(value[0]).valueOf(),
+            endTime: dayjs(value[1]).valueOf(),
           }
+        },
+      },
+    },
+    {
+      title: '高级筛选',
+      dataIndex: 'state',
+      valueType: 'checkbox',
+      hideInTable: true,
+      valueEnum: {
+        latest: {
+          text: '最近上传',
         },
       },
     },
@@ -96,9 +74,21 @@ const EntryList: React.FC<EntryListProps> = props => {
       sorter: true,
       hideInSearch: true,
     },
+    {
+      title: '修改记录',
+      key: 'updateTime',
+      dataIndex: 'modifyRecords',
+      hideInSearch: true,
+      render(_, record) {
+        return (
+          <ModifyRecordsModal modifyRecords={record?.modifyRecords || []} />
+        )
+      },
+    },
   ]
   return (
     <ProTable<EntryItem>
+      actionRef={actionRef}
       columns={columns}
       request={async (params = {}, sort, filter) => {
         const res = await pageAllPublicEntries({
@@ -106,6 +96,11 @@ const EntryList: React.FC<EntryListProps> = props => {
             pageNo: params.current,
             pageSize: params.pageSize,
             appId: Number(routeParams.id),
+            startTime: params.startTime,
+            endTime: params.endTime,
+            key: params.key,
+            mainLangText: params.mainLangText,
+            latest: (params.state as any[])?.includes('latest'),
           },
         })
         const data = res?.data?.pageAppEntries
@@ -152,6 +147,7 @@ const EntryList: React.FC<EntryListProps> = props => {
 
 const AppEntryEditPage: React.FC = () => {
   const params = useParams()
+  const actionRef = useRef<ActionType>()
   const { data } = useGetAppInfoByIdQuery({
     variables: {
       getAppInfoByIdId: Number(params.id),
@@ -161,6 +157,9 @@ const AppEntryEditPage: React.FC = () => {
   const currentType = appTypeOptions.find(
     item => item.value === data?.getAppInfoById?.type,
   )
+  function handleAddOrUpdateSuccess() {
+    actionRef.current?.reload()
+  }
   return (
     <ProCard
       split="vertical"
@@ -171,11 +170,16 @@ const AppEntryEditPage: React.FC = () => {
         </Tag>,
       ]}>
       <ProCard colSpan={14} ghost>
-        <EntryList onChange={cIp => setCurrent(cIp)} selectedEntry={current} />
+        <EntryList
+          actionRef={actionRef}
+          onChange={cIp => setCurrent(cIp)}
+          selectedEntry={current}
+        />
       </ProCard>
       <ProCard colSpan={10} title={current?.mainLangText}>
         {current ? (
           <EntryForm
+            onActionSuccess={handleAddOrUpdateSuccess}
             initialFormData={{
               ...current,
               ...current.langs,

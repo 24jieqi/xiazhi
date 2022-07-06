@@ -1,10 +1,10 @@
-import jwt from 'jsonwebtoken'
-import Koa from 'koa'
+import jwt from "jsonwebtoken";
+import Koa from "koa";
 
-const SECRET_KEY = 'fafamnx!!2d**8z'
+const SECRET_KEY = "fafamnx!!2d**8z";
 
 export interface DecodedPayload {
-  userId: number
+  userId: number;
 }
 
 /**
@@ -14,16 +14,23 @@ export interface DecodedPayload {
  * @returns
  */
 function decodedToken(req: Koa.ParameterizedContext, requireAuth = true) {
-  const authorization = req.headers.authorization
+  const authorization = req.headers.authorization;
   if (authorization) {
-    const token = authorization.replace('Bearer ', '')
-    const decoded = jwt.verify(token, SECRET_KEY) as unknown as DecodedPayload
-    return decoded
+    try {
+      const token = authorization.replace("Bearer ", "");
+      const decoded = jwt.verify(
+        token,
+        SECRET_KEY
+      ) as unknown as DecodedPayload;
+      return decoded;
+    } catch (error) {
+      throw new Error("[401]Login expired");
+    }
   }
   if (requireAuth) {
-    throw new Error('Login in to access resource')
+    throw new Error("[401]Authentication required");
   }
-  return null
+  return null;
 }
 
 /**
@@ -38,9 +45,9 @@ function generateToken(userId: number) {
     },
     SECRET_KEY,
     {
-      expiresIn: '24h',
+      expiresIn: "24h",
     }
-  )
+  );
 }
 
-export { decodedToken, generateToken }
+export { decodedToken, generateToken };

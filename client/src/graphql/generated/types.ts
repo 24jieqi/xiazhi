@@ -256,15 +256,23 @@ export type QueryPageAllPublicEntriesArgs = {
 
 export type QueryPageAppEntriesArgs = {
   appId: Scalars['Int']
+  endTime?: InputMaybe<Scalars['Float']>
+  key?: InputMaybe<Scalars['String']>
+  latest?: InputMaybe<Scalars['Boolean']>
+  mainLangText?: InputMaybe<Scalars['String']>
   pageNo: Scalars['Int']
   pageSize: Scalars['Int']
+  startTime?: InputMaybe<Scalars['Float']>
 }
 
 /** 词条操作记录 */
 export type RecordItem = {
   __typename?: 'RecordItem'
   createdAt?: Maybe<Scalars['DateTime']>
+  currKey?: Maybe<Scalars['String']>
+  currLangs?: Maybe<Scalars['JSONObject']>
   entryEntry_id?: Maybe<Scalars['Int']>
+  prevKey?: Maybe<Scalars['String']>
   prevLangs?: Maybe<Scalars['JSONObject']>
   record_id: Scalars['Int']
 }

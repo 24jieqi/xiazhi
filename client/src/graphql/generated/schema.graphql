@@ -256,7 +256,16 @@ type Query {
   """
   获取应用所有词条（分页）
   """
-  pageAppEntries(appId: Int!, pageNo: Int!, pageSize: Int!): EntryPaging
+  pageAppEntries(
+    appId: Int!
+    endTime: Float
+    key: String
+    latest: Boolean
+    mainLangText: String
+    pageNo: Int!
+    pageSize: Int!
+    startTime: Float
+  ): EntryPaging
 }
 
 """
@@ -264,7 +273,10 @@ type Query {
 """
 type RecordItem {
   createdAt: DateTime
+  currKey: String
+  currLangs: JSONObject
   entryEntry_id: Int
+  prevKey: String
   prevLangs: JSONObject
   record_id: Int!
 }
