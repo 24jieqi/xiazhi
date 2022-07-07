@@ -22,5 +22,6 @@ module.exports = {
     'max-nested-callbacks': 'off',
     'no-console': 'warn',
     'import/no-unresolved': 'off',
+    'max-params': 'off',
   },
 }

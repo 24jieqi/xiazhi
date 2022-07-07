@@ -1,5 +1,5 @@
 import React, { cloneElement, useMemo, useState } from 'react'
-import { Button, Descriptions, Empty, Modal, Space, Tag } from 'antd'
+import { Button, Modal, Space, Tag } from 'antd'
 import dayjs from 'dayjs'
 import { ProList } from '@ant-design/pro-components'
 import { LanguageTypeEnum, RecordItem } from '@/graphql/generated/types'
@@ -21,48 +21,29 @@ function langDiff(
     modify: [],
   }
   for (const lang of langs) {
-    // 多语言新增
-    if (!prevCopy[lang]) {
-      result.add.push(currLang[lang])
-    } else if (prevCopy[lang] !== currLang[lang]) {
-      // 编辑的情况
-      result.modify.push(`${currLang[lang]}（${prevCopy[lang]}）`)
-      delete prevCopy[lang]
-    } else {
-      delete prevCopy[lang]
+    // 如果当前语言不存在词条且先前存在词条，则表示删除
+    const curr = currLang[lang]
+    const prev = prevCopy[lang]
+    if (!curr && prev) {
+      result.delete.push(prev)
     }
+    // 如果当前存在且先前不存在，则表示新增
+    if (curr && !prev) {
+      result.add.push(curr)
+    } else if (prev !== curr) {
+      // 都存在且不相等的情况
+      result.modify.push({
+        prev,
+        curr,
+      })
+    }
+    delete prevCopy[lang]
   }
   const keys = Object.keys(prevCopy)
   if (keys.length) {
     for (const key of keys) {
       result.delete.push(prevCopy[key])
     }
-  }
-  return result
-}
-
-function renderActionTag(diffResult: any) {
-  const result = []
-  if (diffResult.add.length) {
-    result.push(
-      <Tag key="add" color="#87d068">
-        新增
-      </Tag>,
-    )
-  }
-  if (diffResult.delete.length) {
-    result.push(
-      <Tag key="delete" color="#f50">
-        删除
-      </Tag>,
-    )
-  }
-  if (diffResult.modify.length) {
-    result.push(
-      <Tag key="edit" color="#108ee9">
-        编辑
-      </Tag>,
-    )
   }
   return result
 }
@@ -90,20 +71,54 @@ const ModifyRecordsModal: React.FC<ModifyRecordsProps> = ({
       const diffResult = langDiff(record.prevLangs, record.currLangs)
       return {
         title: dayjs(record.createdAt).format('YY-MM-DD HH:mm'),
-        subTitle: <Space>{renderActionTag(diffResult)}</Space>,
+        subTitle: record.creatorInfo?.name,
         content: (
-          <div>
+          <Space direction="vertical">
             {diffResult.add.length ? (
-              <p>新增：{diffResult.add.join('、')}</p>
+              <Space align="start">
+                <Tag key="add" color="#87d068">
+                  新增
+                </Tag>
+                {diffResult.add.map((text, idx) => (
+                  <span key={idx} style={{ fontWeight: 'bold' }}>
+                    {text}
+                  </span>
+                ))}
+              </Space>
             ) : null}
             {diffResult.delete.length ? (
-              <p>删除：{diffResult.delete.join('、')}</p>
+              <Space align="start">
+                <Tag key="delete" color="#f50">
+                  删除
+                </Tag>
+                <p style={{ textDecoration: 'line-through' }}>
+                  {diffResult.delete.join('、')}
+                </p>
+              </Space>
             ) : null}
             {diffResult.modify.length ? (
-              <p>编辑{diffResult.modify.join('、')}</p>
+              <Space align="start">
+                <Tag key="edit" color="#108ee9">
+                  编辑
+                </Tag>
+                {diffResult.modify.map((item, idx) => (
+                  <span key={idx} style={{ fontWeight: 'bold' }}>
+                    {item.curr}(
+                    <span
+                      style={{
+                        textDecoration: 'line-through',
+                        fontWeight: 'normal',
+                      }}>
+                      {item.prev}
+                    </span>
+                    )
+                  </span>
+                ))}
+              </Space>
             ) : null}
-          </div>
+          </Space>
         ),
+        avatar: record.creatorInfo?.avatar,
       }
     })
   }, [modifyRecords])
@@ -111,6 +126,7 @@ const ModifyRecordsModal: React.FC<ModifyRecordsProps> = ({
     <>
       {ActionComp}
       <Modal
+        bodyStyle={{ maxHeight: 480, overflow: 'auto' }}
         width={768}
         destroyOnClose
         title="编辑记录"
@@ -128,6 +144,17 @@ const ModifyRecordsModal: React.FC<ModifyRecordsProps> = ({
             subTitle: {},
             content: {},
             actions: {},
+            avatar: {
+              // render(_, entity) {
+              //   return (
+              //     <Popover title="123">
+              //       <Avatar size="small" src={entity.avatar?.avatar}>
+              //         U
+              //       </Avatar>
+              //     </Popover>
+              //   )
+              // },
+            },
           }}
           dataSource={dataSource}
         />

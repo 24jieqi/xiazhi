@@ -38,6 +38,33 @@ export const appTypeOptions = [
   },
 ]
 
+export const appTypeTableEnum = {
+  [AppTypeEnum.Contact]: {
+    text: '社交',
+  },
+  [AppTypeEnum.Education]: {
+    text: '教育',
+  },
+  [AppTypeEnum.Efficiency]: {
+    text: '效率',
+  },
+  [AppTypeEnum.Finance]: {
+    text: '金融',
+  },
+  [AppTypeEnum.Game]: {
+    text: '游戏',
+  },
+  [AppTypeEnum.Music]: {
+    text: '音乐',
+  },
+  [AppTypeEnum.Tool]: {
+    text: '工具',
+  },
+  [AppTypeEnum.Other]: {
+    text: '其它',
+  },
+}
+
 /**
  * 支持的语言选项列表
  */
@@ -59,3 +86,18 @@ export const appSupportLangsOptions = [
     label: '越南语',
   },
 ]
+
+export const appSupportLangsTableEnum = {
+  [LanguageTypeEnum.Chinese]: {
+    text: '中文',
+  },
+  [LanguageTypeEnum.English]: {
+    text: '英语',
+  },
+  [LanguageTypeEnum.Thai]: {
+    text: '泰语',
+  },
+  [LanguageTypeEnum.Vietnamese]: {
+    text: '越南语',
+  },
+}

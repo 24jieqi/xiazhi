@@ -1,24 +1,42 @@
-query GetCurrentApps {
-  getCurrentApps {
-    app_id
-    name
-    description
-    type
-    languages
-    pictures
-    access
-    push
-    creatorId
-    creator {
+query GetCurrentApps(
+  $name: String
+  $type: AppTypeEnum
+  $languages: [LanguageTypeEnum!]
+  $access: Boolean
+  $push: Boolean
+) {
+  getCurrentApps(
+    name: $name
+    type: $type
+    languages: $languages
+    access: $access
+    push: $push
+  ) {
+    total
+    pageSize
+    current
+    records {
+      app_id
       name
-      user_id
-      email
-      nickName
-      phone
-      role
-      avatar
+      description
+      type
+      languages
+      pictures
+      access
+      push
+      accessKey
+      creatorId
+      creator {
+        name
+        user_id
+        email
+        nickName
+        phone
+        role
+        avatar
+      }
+      entryCount
     }
-    entryCount
   }
 }
 

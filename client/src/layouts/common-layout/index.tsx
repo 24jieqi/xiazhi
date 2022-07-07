@@ -46,7 +46,7 @@ const CommonLayout: React.FC = () => {
             <Avatar shape="square" size="small" icon={<UserOutlined />} />
           </div>
         )}
-        title="多语言词库"
+        title="多语言词库平台"
         {...settings}>
         <Outlet />
       </ProLayout>

@@ -4,33 +4,44 @@ import { gql } from '@apollo/client'
 import * as Apollo from '@apollo/client'
 const defaultOptions = {} as const
 export type GetCurrentAppsQueryVariables = SchemaTypes.Exact<{
-  [key: string]: never
+  name?: SchemaTypes.InputMaybe<SchemaTypes.Scalars['String']>
+  type?: SchemaTypes.InputMaybe<SchemaTypes.AppTypeEnum>
+  languages?: SchemaTypes.InputMaybe<Array<SchemaTypes.LanguageTypeEnum>>
+  access?: SchemaTypes.InputMaybe<SchemaTypes.Scalars['Boolean']>
+  push?: SchemaTypes.InputMaybe<SchemaTypes.Scalars['Boolean']>
 }>
 
 export type GetCurrentAppsQuery = {
-  getCurrentApps?: Array<{
-    __typename?: 'AppItem'
-    app_id?: number
-    name?: string
-    description?: string
-    type?: SchemaTypes.AppTypeEnum
-    languages?: Array<SchemaTypes.LanguageTypeEnum>
-    pictures?: Array<string>
-    access?: boolean
-    push?: boolean
-    creatorId?: number
-    entryCount?: number
-    creator?: {
-      __typename?: 'UserInfo'
+  getCurrentApps?: {
+    __typename?: 'AppPaging'
+    total: number
+    pageSize: number
+    current: number
+    records?: Array<{
+      __typename?: 'AppItem'
+      app_id?: number
       name?: string
-      user_id?: number
-      email?: string
-      nickName?: string
-      phone?: string
-      role?: SchemaTypes.UserRoleEnum
-      avatar?: string
-    }
-  }>
+      description?: string
+      type?: SchemaTypes.AppTypeEnum
+      languages?: Array<SchemaTypes.LanguageTypeEnum>
+      pictures?: Array<string>
+      access?: boolean
+      push?: boolean
+      accessKey?: string
+      creatorId?: number
+      entryCount?: number
+      creator?: {
+        __typename?: 'UserInfo'
+        name?: string
+        user_id?: number
+        email?: string
+        nickName?: string
+        phone?: string
+        role?: SchemaTypes.UserRoleEnum
+        avatar?: string
+      }
+    }>
+  }
 }
 
 export type CreateAppMutationVariables = SchemaTypes.Exact<{
@@ -106,27 +117,45 @@ export type RefreshAccessKeyMutationVariables = SchemaTypes.Exact<{
 export type RefreshAccessKeyMutation = { refreshAccessKey?: string }
 
 export const GetCurrentAppsDocument = gql`
-  query GetCurrentApps {
-    getCurrentApps {
-      app_id
-      name
-      description
-      type
-      languages
-      pictures
-      access
-      push
-      creatorId
-      creator {
+  query GetCurrentApps(
+    $name: String
+    $type: AppTypeEnum
+    $languages: [LanguageTypeEnum!]
+    $access: Boolean
+    $push: Boolean
+  ) {
+    getCurrentApps(
+      name: $name
+      type: $type
+      languages: $languages
+      access: $access
+      push: $push
+    ) {
+      total
+      pageSize
+      current
+      records {
+        app_id
         name
-        user_id
-        email
-        nickName
-        phone
-        role
-        avatar
+        description
+        type
+        languages
+        pictures
+        access
+        push
+        accessKey
+        creatorId
+        creator {
+          name
+          user_id
+          email
+          nickName
+          phone
+          role
+          avatar
+        }
+        entryCount
       }
-      entryCount
     }
   }
 `
@@ -143,6 +172,11 @@ export const GetCurrentAppsDocument = gql`
  * @example
  * const { data, loading, error } = useGetCurrentAppsQuery({
  *   variables: {
+ *      name: // value for 'name'
+ *      type: // value for 'type'
+ *      languages: // value for 'languages'
+ *      access: // value for 'access'
+ *      push: // value for 'push'
  *   },
  * });
  */

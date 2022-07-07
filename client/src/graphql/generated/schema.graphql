@@ -38,6 +38,11 @@ type AppItem {
   是否可访问
   """
   access: Boolean
+
+  """
+  可访问key
+  """
+  accessKey: String
   app_id: Int
 
   """
@@ -68,6 +73,16 @@ type AppItem {
   """
   push: Boolean
   type: AppTypeEnum
+}
+
+"""
+应用分页对象
+"""
+type AppPaging {
+  current: Int!
+  pageSize: Int!
+  records: [AppItem]
+  total: Int!
 }
 
 """
@@ -240,7 +255,13 @@ type Query {
   """
   获取当前用户创建的应用列表
   """
-  getCurrentApps: [AppItem]
+  getCurrentApps(
+    access: Boolean
+    languages: [LanguageTypeEnum!]
+    name: String
+    push: Boolean
+    type: AppTypeEnum
+  ): AppPaging
 
   """
   获取当前登录用户的基本信息
@@ -273,6 +294,8 @@ type Query {
 """
 type RecordItem {
   createdAt: DateTime
+  creator: Int
+  creatorInfo: UserInfo
   currKey: String
   currLangs: JSONObject
   entryEntry_id: Int

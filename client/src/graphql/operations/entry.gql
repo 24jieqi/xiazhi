@@ -21,6 +21,14 @@ query PageAllPublicEntries($pageSize: Int!, $pageNo: Int!) {
         currLangs
         prevKey
         currKey
+        creatorInfo {
+          name
+          user_id
+          email
+          nickName
+          phone
+          avatar
+        }
       }
       langs
     }
@@ -57,7 +65,6 @@ query PageAppEntries(
   ) {
     total
     pageSize
-    current
     records {
       entry_id
       key
@@ -76,6 +83,15 @@ query PageAppEntries(
         currLangs
         prevKey
         currKey
+        creatorInfo {
+          name
+          user_id
+          email
+          nickName
+          phone
+          role
+          avatar
+        }
       }
       langs
     }

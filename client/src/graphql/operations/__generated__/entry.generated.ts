@@ -35,6 +35,15 @@ export type PageAllPublicEntriesQuery = {
         currLangs?: any
         prevKey?: string
         currKey?: string
+        creatorInfo?: {
+          __typename?: 'UserInfo'
+          name?: string
+          user_id?: number
+          email?: string
+          nickName?: string
+          phone?: string
+          avatar?: string
+        }
       }>
     }>
   }
@@ -72,7 +81,6 @@ export type PageAppEntriesQuery = {
     __typename?: 'EntryPaging'
     total: number
     pageSize: number
-    current: number
     records?: Array<{
       __typename?: 'EntryItem'
       entry_id: number
@@ -94,6 +102,16 @@ export type PageAppEntriesQuery = {
         currLangs?: any
         prevKey?: string
         currKey?: string
+        creatorInfo?: {
+          __typename?: 'UserInfo'
+          name?: string
+          user_id?: number
+          email?: string
+          nickName?: string
+          phone?: string
+          role?: SchemaTypes.UserRoleEnum
+          avatar?: string
+        }
       }>
     }>
   }
@@ -123,6 +141,14 @@ export const PageAllPublicEntriesDocument = gql`
           currLangs
           prevKey
           currKey
+          creatorInfo {
+            name
+            user_id
+            email
+            nickName
+            phone
+            avatar
+          }
         }
         langs
       }
@@ -304,7 +330,6 @@ export const PageAppEntriesDocument = gql`
     ) {
       total
       pageSize
-      current
       records {
         entry_id
         key
@@ -323,6 +348,15 @@ export const PageAppEntriesDocument = gql`
           currLangs
           prevKey
           currKey
+          creatorInfo {
+            name
+            user_id
+            email
+            nickName
+            phone
+            role
+            avatar
+          }
         }
         langs
       }

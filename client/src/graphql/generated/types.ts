@@ -42,6 +42,8 @@ export type AppItem = {
   __typename?: 'AppItem'
   /** 是否可访问 */
   access?: Maybe<Scalars['Boolean']>
+  /** 可访问key */
+  accessKey?: Maybe<Scalars['String']>
   app_id?: Maybe<Scalars['Int']>
   /** 创建者 */
   creator?: Maybe<UserInfo>
@@ -57,6 +59,15 @@ export type AppItem = {
   /** 是否支持词条推送 */
   push?: Maybe<Scalars['Boolean']>
   type?: Maybe<AppTypeEnum>
+}
+
+/** 应用分页对象 */
+export type AppPaging = {
+  __typename?: 'AppPaging'
+  current: Scalars['Int']
+  pageSize: Scalars['Int']
+  records?: Maybe<Array<Maybe<AppItem>>>
+  total: Scalars['Int']
 }
 
 /** 应用类型枚举 */
@@ -231,7 +242,7 @@ export type Query = {
   /** 通过应用id获取应用基本信息 */
   getAppInfoById?: Maybe<AppItem>
   /** 获取当前用户创建的应用列表 */
-  getCurrentApps?: Maybe<Array<Maybe<AppItem>>>
+  getCurrentApps?: Maybe<AppPaging>
   /** 获取当前登录用户的基本信息 */
   getCurrentUser?: Maybe<UserInfo>
   listSupportLanguage?: Maybe<Array<Maybe<LangageTypeOption>>>
@@ -247,6 +258,14 @@ export type QueryGetAccessKeyByAppIdArgs = {
 
 export type QueryGetAppInfoByIdArgs = {
   id: Scalars['Int']
+}
+
+export type QueryGetCurrentAppsArgs = {
+  access?: InputMaybe<Scalars['Boolean']>
+  languages?: InputMaybe<Array<LanguageTypeEnum>>
+  name?: InputMaybe<Scalars['String']>
+  push?: InputMaybe<Scalars['Boolean']>
+  type?: InputMaybe<AppTypeEnum>
 }
 
 export type QueryPageAllPublicEntriesArgs = {
@@ -269,6 +288,8 @@ export type QueryPageAppEntriesArgs = {
 export type RecordItem = {
   __typename?: 'RecordItem'
   createdAt?: Maybe<Scalars['DateTime']>
+  creator?: Maybe<Scalars['Int']>
+  creatorInfo?: Maybe<UserInfo>
   currKey?: Maybe<Scalars['String']>
   currLangs?: Maybe<Scalars['JSONObject']>
   entryEntry_id?: Maybe<Scalars['Int']>
