@@ -23,6 +23,20 @@ export const RecordItem = objectType({
     t.json("currLangs");
     t.string("prevKey");
     t.string("currKey");
+    t.int("creator");
+    t.field("creatorInfo", {
+      type: "UserInfo",
+      async resolve(root, _, ctx) {
+        if (!root.creator) {
+          return null
+        }
+        return ctx.prisma.user.findUnique({
+          where: {
+            user_id: root.creator
+          }
+        })
+      }
+    })
   },
 });
 
@@ -221,7 +235,7 @@ export const EntryMutation = extendType({
         key: stringArg(),
       },
       async resolve(_, args, ctx) {
-        decodedToken(ctx.req);
+        const { userId } = decodedToken(ctx.req)!;
         const currentEntry = await ctx.prisma.entry.findUnique({
           where: {
             entry_id: args.entryId,
@@ -242,6 +256,7 @@ export const EntryMutation = extendType({
                   currLangs: args.langs,
                   prevKey: currentEntry?.key,
                   currKey: args.key,
+                  creator: userId
                 },
               ],
             },

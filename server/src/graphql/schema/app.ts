@@ -9,6 +9,7 @@ import {
   enumType,
   list,
   extendType,
+  booleanArg,
 } from "nexus";
 import bcrypt from "bcrypt";
 import { decodedToken } from "../token";
@@ -40,6 +41,7 @@ export const AppItem = objectType({
     t.list.string("pictures", { description: "应用截图" });
     t.boolean("access", { description: "是否可访问" });
     t.boolean("push", { description: "是否支持词条推送" });
+    t.string('accessKey', { description: '可访问key' })
     t.int("creatorId");
     t.field("creator", {
       type: "UserInfo",
@@ -70,6 +72,19 @@ export const AppItem = objectType({
   },
 });
 
+export const AppPaging = objectType({
+  name: "AppPaging",
+  description: "应用分页对象",
+  definition(t) {
+    t.nonNull.int("total");
+    t.nonNull.int("pageSize");
+    t.nonNull.int("current");
+    t.field("records", {
+      type: list(AppItem),
+    });
+  },
+});
+
 export const AppQuery = queryType({
   definition(t) {
     t.field("getAppInfoById", {
@@ -90,14 +105,36 @@ export const AppQuery = queryType({
     });
     t.field("getCurrentApps", {
       description: "获取当前用户创建的应用列表",
-      type: list("AppItem"),
-      async resolve(_root, _, ctx) {
+      type: 'AppPaging',
+      args: {
+        name: stringArg(),
+        type: 'AppTypeEnum',
+        languages: list(nonNull(LanguageTypeEnum)),
+        access: booleanArg(),
+        push: booleanArg()
+      },
+      async resolve(_root, args, ctx) {
         const decoded = decodedToken(ctx.req);
-        return ctx.prisma.app.findMany({
+        const records = await ctx.prisma.app.findMany({
           where: {
             creatorId: decoded?.userId,
+            name: {
+              contains: args.name!
+            },
+            type: args.type!,
+            languages: {
+              hasEvery: args.languages || []
+            },
+            access: args.access!,
+            push: args.push!
           },
         });
+        return {
+          total: records.length,
+          records: records,
+          current: 1,
+          pageSize: records.length
+        }
       },
     });
   },

@@ -20,6 +20,7 @@ model Record {
   currLangs     Json?
   prevKey       String?
   currKey       String?
+  creator       Int?
 }
 
 // 词条
