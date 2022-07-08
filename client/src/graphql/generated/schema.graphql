@@ -111,7 +111,7 @@ type EntryItem {
   archive: Boolean
   createdAt: DateTime
   deleted: Boolean
-  entry_id: Int!
+  entry_id: Int
   key: String
   langs: JSONObject
 
@@ -165,6 +165,21 @@ type Mutation {
   归档一个应用（归档后不能再编辑）
   """
   archivedApp(id: Int!): Boolean
+
+  """
+  更改应用在可访问和推送上的状态
+  """
+  changeAccessStatus(access: Boolean, appId: Int!, push: Boolean): Boolean
+
+  """
+  归档词条或者删除词条（仅针对非公共词条）
+  """
+  changeEntryAccessStatus(
+    appId: Int!
+    archive: Boolean
+    deleted: Boolean
+    entryId: Int!
+  ): Boolean
 
   """
   切换词条的公有/私有状态
@@ -239,6 +254,7 @@ type Mutation {
     phone: String
     role: UserRoleEnum
   ): Boolean
+  uploadEntries(accessKey: String, entries: [UploadEntryItem]!): Boolean
 }
 
 type Query {
@@ -246,6 +262,11 @@ type Query {
   根据应用id获取应用权限&访问相关的信息
   """
   getAccessKeyByAppId(id: Int!): AppAccessInfo
+
+  """
+  根据accessKey获取所有应用词条
+  """
+  getAllEntries(accessKey: String!): [EntryItem]
 
   """
   通过应用id获取应用基本信息
@@ -302,6 +323,14 @@ type RecordItem {
   prevKey: String
   prevLangs: JSONObject
   record_id: Int!
+}
+
+"""
+新增词条上传信息
+"""
+input UploadEntryItem {
+  key: String
+  langs: JSONObject
 }
 
 """

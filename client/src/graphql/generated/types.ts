@@ -88,7 +88,7 @@ export type EntryItem = {
   archive?: Maybe<Scalars['Boolean']>
   createdAt?: Maybe<Scalars['DateTime']>
   deleted?: Maybe<Scalars['Boolean']>
-  entry_id: Scalars['Int']
+  entry_id?: Maybe<Scalars['Int']>
   key?: Maybe<Scalars['String']>
   langs?: Maybe<Scalars['JSONObject']>
   /** 支持的语言 */
@@ -128,6 +128,10 @@ export type Mutation = {
   addLangage?: Maybe<Scalars['Int']>
   /** 归档一个应用（归档后不能再编辑） */
   archivedApp?: Maybe<Scalars['Boolean']>
+  /** 更改应用在可访问和推送上的状态 */
+  changeAccessStatus?: Maybe<Scalars['Boolean']>
+  /** 归档词条或者删除词条（仅针对非公共词条） */
+  changeEntryAccessStatus?: Maybe<Scalars['Boolean']>
   /** 切换词条的公有/私有状态 */
   changeEntryPublicStatus?: Maybe<Scalars['Boolean']>
   /** 检测邮箱是否可用 */
@@ -152,6 +156,7 @@ export type Mutation = {
   updateEntry?: Maybe<Scalars['Boolean']>
   /** 编辑用户信息 */
   updateUserInfo?: Maybe<Scalars['Boolean']>
+  uploadEntries?: Maybe<Scalars['Boolean']>
 }
 
 export type MutationAddLangageArgs = {
@@ -161,6 +166,19 @@ export type MutationAddLangageArgs = {
 
 export type MutationArchivedAppArgs = {
   id: Scalars['Int']
+}
+
+export type MutationChangeAccessStatusArgs = {
+  access?: InputMaybe<Scalars['Boolean']>
+  appId: Scalars['Int']
+  push?: InputMaybe<Scalars['Boolean']>
+}
+
+export type MutationChangeEntryAccessStatusArgs = {
+  appId: Scalars['Int']
+  archive?: InputMaybe<Scalars['Boolean']>
+  deleted?: InputMaybe<Scalars['Boolean']>
+  entryId: Scalars['Int']
 }
 
 export type MutationChangeEntryPublicStatusArgs = {
@@ -235,10 +253,17 @@ export type MutationUpdateUserInfoArgs = {
   role?: InputMaybe<UserRoleEnum>
 }
 
+export type MutationUploadEntriesArgs = {
+  accessKey?: InputMaybe<Scalars['String']>
+  entries: Array<InputMaybe<UploadEntryItem>>
+}
+
 export type Query = {
   __typename?: 'Query'
   /** 根据应用id获取应用权限&访问相关的信息 */
   getAccessKeyByAppId?: Maybe<AppAccessInfo>
+  /** 根据accessKey获取所有应用词条 */
+  getAllEntries?: Maybe<Array<Maybe<EntryItem>>>
   /** 通过应用id获取应用基本信息 */
   getAppInfoById?: Maybe<AppItem>
   /** 获取当前用户创建的应用列表 */
@@ -254,6 +279,10 @@ export type Query = {
 
 export type QueryGetAccessKeyByAppIdArgs = {
   id: Scalars['Int']
+}
+
+export type QueryGetAllEntriesArgs = {
+  accessKey: Scalars['String']
 }
 
 export type QueryGetAppInfoByIdArgs = {
@@ -296,6 +325,12 @@ export type RecordItem = {
   prevKey?: Maybe<Scalars['String']>
   prevLangs?: Maybe<Scalars['JSONObject']>
   record_id: Scalars['Int']
+}
+
+/** 新增词条上传信息 */
+export type UploadEntryItem = {
+  key?: InputMaybe<Scalars['String']>
+  langs?: InputMaybe<Scalars['JSONObject']>
 }
 
 /** 用户基本信息 */

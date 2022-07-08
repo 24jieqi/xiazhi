@@ -97,3 +97,17 @@ query PageAppEntries(
     }
   }
 }
+
+mutation ChangeEntryAccessStatus(
+  $appId: Int!
+  $entryId: Int!
+  $archive: Boolean
+  $deleted: Boolean
+) {
+  changeEntryAccessStatus(
+    appId: $appId
+    entryId: $entryId
+    archive: $archive
+    deleted: $deleted
+  )
+}

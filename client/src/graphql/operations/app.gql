@@ -109,3 +109,7 @@ query GetAccessKeyByAppId($getAccessKeyByAppIdId: Int!) {
 mutation RefreshAccessKey($refreshAccessKeyId: Int!) {
   refreshAccessKey(id: $refreshAccessKeyId)
 }
+
+mutation ChangeAccessStatus($appId: Int!, $access: Boolean, $push: Boolean) {
+  changeAccessStatus(appId: $appId, access: $access, push: $push)
+}

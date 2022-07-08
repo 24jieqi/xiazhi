@@ -11,6 +11,7 @@ import {
   NEW_APP,
 } from '@/router/config/main-routes/application/path'
 import { appSupportLangsTableEnum, appTypeTableEnum } from '../constant'
+import AccessSwitch from '../components/access-switch'
 
 const AppListPage: React.FC = () => {
   const navigate = useNavigate()
@@ -84,11 +85,18 @@ const AppListPage: React.FC = () => {
     },
     {
       title: '可访问',
+      tooltip: '表示是否可以通过相关接口访问应用词条',
       dataIndex: 'access',
       valueType: 'switch',
       initialValue: true,
       render: (_, record) => {
-        return <Switch checked={record.access} />
+        return (
+          <AccessSwitch
+            appId={record.app_id}
+            type="access"
+            initialChecked={record.access}
+          />
+        )
       },
     },
     {
@@ -104,8 +112,15 @@ const AppListPage: React.FC = () => {
       dataIndex: 'push',
       valueType: 'switch',
       initialValue: true,
+      tooltip: '表示是否可以通过相关接口推送词条到平台',
       render: (_, record) => {
-        return <Switch checked={record.push} />
+        return (
+          <AccessSwitch
+            appId={record.app_id}
+            type="push"
+            initialChecked={record.push}
+          />
+        )
       },
     },
     // {

@@ -16,7 +16,7 @@ export type PageAllPublicEntriesQuery = {
     current: number
     records?: Array<{
       __typename?: 'EntryItem'
-      entry_id: number
+      entry_id?: number
       key?: string
       createdAt?: number
       updatedAt?: number
@@ -83,7 +83,7 @@ export type PageAppEntriesQuery = {
     pageSize: number
     records?: Array<{
       __typename?: 'EntryItem'
-      entry_id: number
+      entry_id?: number
       key?: string
       createdAt?: number
       updatedAt?: number
@@ -115,6 +115,17 @@ export type PageAppEntriesQuery = {
       }>
     }>
   }
+}
+
+export type ChangeEntryAccessStatusMutationVariables = SchemaTypes.Exact<{
+  appId: SchemaTypes.Scalars['Int']
+  entryId: SchemaTypes.Scalars['Int']
+  archive?: SchemaTypes.InputMaybe<SchemaTypes.Scalars['Boolean']>
+  deleted?: SchemaTypes.InputMaybe<SchemaTypes.Scalars['Boolean']>
+}>
+
+export type ChangeEntryAccessStatusMutation = {
+  changeEntryAccessStatus?: boolean
 }
 
 export const PageAllPublicEntriesDocument = gql`
@@ -420,4 +431,65 @@ export type PageAppEntriesLazyQueryHookResult = ReturnType<
 export type PageAppEntriesQueryResult = Apollo.QueryResult<
   PageAppEntriesQuery,
   PageAppEntriesQueryVariables
+>
+export const ChangeEntryAccessStatusDocument = gql`
+  mutation ChangeEntryAccessStatus(
+    $appId: Int!
+    $entryId: Int!
+    $archive: Boolean
+    $deleted: Boolean
+  ) {
+    changeEntryAccessStatus(
+      appId: $appId
+      entryId: $entryId
+      archive: $archive
+      deleted: $deleted
+    )
+  }
+`
+export type ChangeEntryAccessStatusMutationFn = Apollo.MutationFunction<
+  ChangeEntryAccessStatusMutation,
+  ChangeEntryAccessStatusMutationVariables
+>
+
+/**
+ * __useChangeEntryAccessStatusMutation__
+ *
+ * To run a mutation, you first call `useChangeEntryAccessStatusMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useChangeEntryAccessStatusMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [changeEntryAccessStatusMutation, { data, loading, error }] = useChangeEntryAccessStatusMutation({
+ *   variables: {
+ *      appId: // value for 'appId'
+ *      entryId: // value for 'entryId'
+ *      archive: // value for 'archive'
+ *      deleted: // value for 'deleted'
+ *   },
+ * });
+ */
+export function useChangeEntryAccessStatusMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    ChangeEntryAccessStatusMutation,
+    ChangeEntryAccessStatusMutationVariables
+  >,
+) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useMutation<
+    ChangeEntryAccessStatusMutation,
+    ChangeEntryAccessStatusMutationVariables
+  >(ChangeEntryAccessStatusDocument, options)
+}
+export type ChangeEntryAccessStatusMutationHookResult = ReturnType<
+  typeof useChangeEntryAccessStatusMutation
+>
+export type ChangeEntryAccessStatusMutationResult =
+  Apollo.MutationResult<ChangeEntryAccessStatusMutation>
+export type ChangeEntryAccessStatusMutationOptions = Apollo.BaseMutationOptions<
+  ChangeEntryAccessStatusMutation,
+  ChangeEntryAccessStatusMutationVariables
 >

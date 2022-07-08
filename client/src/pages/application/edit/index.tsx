@@ -1,17 +1,20 @@
 import type { ActionType, ProColumns } from '@ant-design/pro-components'
 import { ProCard, ProTable } from '@ant-design/pro-components'
-import { Tag, Button, Empty } from 'antd'
+import { Tag, Button, Empty, message, Space } from 'antd'
 import React, { useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import dayjs from 'dayjs'
 import { useGetAppInfoByIdQuery } from '@/graphql/operations/__generated__/app.generated'
-import { usePageAppEntriesLazyQuery } from '@/graphql/operations/__generated__/entry.generated'
+import {
+  useChangeEntryAccessStatusMutation,
+  usePageAppEntriesLazyQuery,
+} from '@/graphql/operations/__generated__/entry.generated'
 import { EntryItem } from '@/graphql/generated/types'
 import EntryModal from '@/pages/entry/components/entry-modal'
 import EntryForm from '@/pages/entry/components/entry-form'
+import ModifyRecordsModal from '@/pages/entry/components/modify-record-modal'
 import { appTypeOptions } from '../constant'
 import styles from './split.module.less'
-import ModifyRecordsModal from '@/pages/entry/components/modify-record-modal'
 
 type EntryListProps = {
   selectedEntry: EntryItem
@@ -23,11 +26,33 @@ const EntryList: React.FC<EntryListProps> = props => {
   const routeParams = useParams()
   const { onChange, selectedEntry, actionRef } = props
   const [pageAllPublicEntries] = usePageAppEntriesLazyQuery()
+  const [changeEntryAccess] = useChangeEntryAccessStatusMutation()
+  async function handleChangeEntryAccess(
+    type: 'archive' | 'deleted',
+    row: EntryItem,
+  ) {
+    await changeEntryAccess({
+      variables: {
+        entryId: row.entry_id,
+        appId: Number(routeParams.id),
+        [type]: true,
+      },
+    })
+    message.success('操作成功！')
+    actionRef.current.reload()
+  }
   const columns: ProColumns<EntryItem>[] = [
     {
       title: '词条Key',
       dataIndex: 'key',
-      copyable: true,
+      render(dom, entity) {
+        return (
+          <Space>
+            {dom}
+            {entity.archive ? <Tag color="#f50">已归档</Tag> : null}
+          </Space>
+        )
+      },
     },
     {
       title: '主语言',
@@ -64,6 +89,9 @@ const EntryList: React.FC<EntryListProps> = props => {
         latest: {
           text: '最近上传',
         },
+        archived: {
+          text: '已归档',
+        },
       },
     },
     {
@@ -75,7 +103,7 @@ const EntryList: React.FC<EntryListProps> = props => {
       hideInSearch: true,
     },
     {
-      title: '修改记录',
+      title: '词条修改记录',
       key: 'updateTime',
       dataIndex: 'modifyRecords',
       hideInSearch: true,
@@ -84,6 +112,23 @@ const EntryList: React.FC<EntryListProps> = props => {
           <ModifyRecordsModal modifyRecords={record?.modifyRecords || []} />
         )
       },
+    },
+    {
+      title: '操作',
+      key: 'operation',
+      valueType: 'option',
+      render: (_, row, index, action) => [
+        row.archive ? null : (
+          <a
+            key="achieve"
+            onClick={() => handleChangeEntryAccess('archive', row)}>
+            归档
+          </a>
+        ),
+        <a key="delete" onClick={() => handleChangeEntryAccess('deleted', row)}>
+          删除
+        </a>,
+      ],
     },
   ]
   return (
@@ -133,6 +178,9 @@ const EntryList: React.FC<EntryListProps> = props => {
         ],
       }}
       onRow={record => {
+        if (record.archive) {
+          return {}
+        }
         return {
           onClick: () => {
             if (record.entry_id) {

@@ -116,6 +116,14 @@ export type RefreshAccessKeyMutationVariables = SchemaTypes.Exact<{
 
 export type RefreshAccessKeyMutation = { refreshAccessKey?: string }
 
+export type ChangeAccessStatusMutationVariables = SchemaTypes.Exact<{
+  appId: SchemaTypes.Scalars['Int']
+  access?: SchemaTypes.InputMaybe<SchemaTypes.Scalars['Boolean']>
+  push?: SchemaTypes.InputMaybe<SchemaTypes.Scalars['Boolean']>
+}>
+
+export type ChangeAccessStatusMutation = { changeAccessStatus?: boolean }
+
 export const GetCurrentAppsDocument = gql`
   query GetCurrentApps(
     $name: String
@@ -525,4 +533,54 @@ export type RefreshAccessKeyMutationResult =
 export type RefreshAccessKeyMutationOptions = Apollo.BaseMutationOptions<
   RefreshAccessKeyMutation,
   RefreshAccessKeyMutationVariables
+>
+export const ChangeAccessStatusDocument = gql`
+  mutation ChangeAccessStatus($appId: Int!, $access: Boolean, $push: Boolean) {
+    changeAccessStatus(appId: $appId, access: $access, push: $push)
+  }
+`
+export type ChangeAccessStatusMutationFn = Apollo.MutationFunction<
+  ChangeAccessStatusMutation,
+  ChangeAccessStatusMutationVariables
+>
+
+/**
+ * __useChangeAccessStatusMutation__
+ *
+ * To run a mutation, you first call `useChangeAccessStatusMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useChangeAccessStatusMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [changeAccessStatusMutation, { data, loading, error }] = useChangeAccessStatusMutation({
+ *   variables: {
+ *      appId: // value for 'appId'
+ *      access: // value for 'access'
+ *      push: // value for 'push'
+ *   },
+ * });
+ */
+export function useChangeAccessStatusMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    ChangeAccessStatusMutation,
+    ChangeAccessStatusMutationVariables
+  >,
+) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useMutation<
+    ChangeAccessStatusMutation,
+    ChangeAccessStatusMutationVariables
+  >(ChangeAccessStatusDocument, options)
+}
+export type ChangeAccessStatusMutationHookResult = ReturnType<
+  typeof useChangeAccessStatusMutation
+>
+export type ChangeAccessStatusMutationResult =
+  Apollo.MutationResult<ChangeAccessStatusMutation>
+export type ChangeAccessStatusMutationOptions = Apollo.BaseMutationOptions<
+  ChangeAccessStatusMutation,
+  ChangeAccessStatusMutationVariables
 >
