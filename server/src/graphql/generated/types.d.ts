@@ -37,6 +37,10 @@ declare global {
 }
 
 export interface NexusGenInputs {
+  UploadEntryItem: { // input type
+    key?: string | null; // String
+    langs?: NexusGenScalars['JSONObject'] | null; // JSONObject
+  }
 }
 
 export interface NexusGenEnums {
@@ -87,7 +91,7 @@ export interface NexusGenObjects {
     archive?: boolean | null; // Boolean
     createdAt?: NexusGenScalars['DateTime'] | null; // DateTime
     deleted?: boolean | null; // Boolean
-    entry_id: number; // Int!
+    entry_id?: number | null; // Int
     key?: string | null; // String
     langs?: NexusGenScalars['JSONObject'] | null; // JSONObject
     mainLang?: NexusGenEnums['LanguageTypeEnum'] | null; // LanguageTypeEnum
@@ -172,7 +176,7 @@ export interface NexusGenFieldTypes {
     archive: boolean | null; // Boolean
     createdAt: NexusGenScalars['DateTime'] | null; // DateTime
     deleted: boolean | null; // Boolean
-    entry_id: number; // Int!
+    entry_id: number | null; // Int
     key: string | null; // String
     langs: NexusGenScalars['JSONObject'] | null; // JSONObject
     mainLang: NexusGenEnums['LanguageTypeEnum'] | null; // LanguageTypeEnum
@@ -194,6 +198,8 @@ export interface NexusGenFieldTypes {
   Mutation: { // field return type
     addLangage: number | null; // Int
     archivedApp: boolean | null; // Boolean
+    changeAccessStatus: boolean | null; // Boolean
+    changeEntryAccessStatus: boolean | null; // Boolean
     changeEntryPublicStatus: boolean | null; // Boolean
     checkEmailValidation: boolean | null; // Boolean
     createApp: number | null; // Int
@@ -207,9 +213,11 @@ export interface NexusGenFieldTypes {
     updateAppBasicInfo: number | null; // Int
     updateEntry: boolean | null; // Boolean
     updateUserInfo: boolean | null; // Boolean
+    uploadEntries: boolean | null; // Boolean
   }
   Query: { // field return type
     getAccessKeyByAppId: NexusGenRootTypes['AppAccessInfo'] | null; // AppAccessInfo
+    getAllEntries: Array<NexusGenRootTypes['EntryItem'] | null> | null; // [EntryItem]
     getAppInfoById: NexusGenRootTypes['AppItem'] | null; // AppItem
     getCurrentApps: NexusGenRootTypes['AppPaging'] | null; // AppPaging
     getCurrentUser: NexusGenRootTypes['UserInfo'] | null; // UserInfo
@@ -295,6 +303,8 @@ export interface NexusGenFieldTypeNames {
   Mutation: { // field return type name
     addLangage: 'Int'
     archivedApp: 'Boolean'
+    changeAccessStatus: 'Boolean'
+    changeEntryAccessStatus: 'Boolean'
     changeEntryPublicStatus: 'Boolean'
     checkEmailValidation: 'Boolean'
     createApp: 'Int'
@@ -308,9 +318,11 @@ export interface NexusGenFieldTypeNames {
     updateAppBasicInfo: 'Int'
     updateEntry: 'Boolean'
     updateUserInfo: 'Boolean'
+    uploadEntries: 'Boolean'
   }
   Query: { // field return type name
     getAccessKeyByAppId: 'AppAccessInfo'
+    getAllEntries: 'EntryItem'
     getAppInfoById: 'AppItem'
     getCurrentApps: 'AppPaging'
     getCurrentUser: 'UserInfo'
@@ -348,6 +360,17 @@ export interface NexusGenArgTypes {
     }
     archivedApp: { // args
       id: number; // Int!
+    }
+    changeAccessStatus: { // args
+      access?: boolean | null; // Boolean
+      appId: number; // Int!
+      push?: boolean | null; // Boolean
+    }
+    changeEntryAccessStatus: { // args
+      appId: number; // Int!
+      archive?: boolean | null; // Boolean
+      deleted?: boolean | null; // Boolean
+      entryId: number; // Int!
     }
     changeEntryPublicStatus: { // args
       appId: number; // Int!
@@ -408,10 +431,17 @@ export interface NexusGenArgTypes {
       phone?: string | null; // String
       role?: NexusGenEnums['UserRoleEnum'] | null; // UserRoleEnum
     }
+    uploadEntries: { // args
+      accessKey?: string | null; // String
+      entries: Array<NexusGenInputs['UploadEntryItem'] | null>; // [UploadEntryItem]!
+    }
   }
   Query: {
     getAccessKeyByAppId: { // args
       id: number; // Int!
+    }
+    getAllEntries: { // args
+      accessKey: string; // String!
     }
     getAppInfoById: { // args
       id: number; // Int!
@@ -448,7 +478,7 @@ export interface NexusGenTypeInterfaces {
 
 export type NexusGenObjectNames = keyof NexusGenObjects;
 
-export type NexusGenInputNames = never;
+export type NexusGenInputNames = keyof NexusGenInputs;
 
 export type NexusGenEnumNames = keyof NexusGenEnums;
 

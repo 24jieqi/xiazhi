@@ -293,6 +293,12 @@ export const AppAccessMutation = extendType({
         id: nonNull(intArg()),
       },
       async resolve(_, args, ctx) {
+        /**
+         * 逻辑删除一个应用步骤
+         * 1.设置删除标记
+         * 2.断开创建者关系（可能也有写作者）
+         * 3.断开与词条的关系（这些词条将变为不可查询的词条）
+         */
         await ctx.prisma.app.update({
           where: {
             app_id: args.id,
@@ -302,6 +308,9 @@ export const AppAccessMutation = extendType({
             creator: {
               disconnect: true,
             },
+            entries: {
+              set: []
+            }
           },
           include: {
             creator: true,
@@ -310,5 +319,27 @@ export const AppAccessMutation = extendType({
         return true;
       },
     });
+    t.field("changeAccessStatus", {
+      type: 'Boolean',
+      description: '更改应用在可访问和推送上的状态',
+      args: {
+        appId: nonNull(intArg()),
+        access: booleanArg(),
+        push: booleanArg()
+      },
+      async resolve(_, args, ctx) {
+        decodedToken(ctx.req)
+        await ctx.prisma.app.update({
+          where: {
+            app_id: args.appId,
+          },
+          data: {
+            access: args.access!,
+            push: args.push!
+          }
+        })
+        return true
+      }
+    })
   },
 });

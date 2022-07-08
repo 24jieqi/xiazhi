@@ -57,7 +57,7 @@ export const EntryItem = objectType({
   name: "EntryItem",
   description: "词条基本信息",
   definition(t) {
-    t.nonNull.int("entry_id");
+    t.int("entry_id");
     t.string("key");
     t.date("createdAt");
     t.date("updatedAt");
@@ -265,6 +265,52 @@ export const EntryMutation = extendType({
         return true;
       },
     });
+    t.field('changeEntryAccessStatus', {
+      type: 'Boolean',
+      description: '归档词条或者删除词条（仅针对非公共词条）',
+      args: {
+        appId: nonNull(intArg()),
+        entryId: nonNull(intArg()),
+        archive: booleanArg(),
+        deleted: booleanArg()
+      },
+      async resolve(_, args, ctx) {
+        decodedToken(ctx.req)
+        // 不允许可逆操作
+        if (args.deleted === false || args.archive === false) {
+          throw new Error('归档/删除是不可逆操作！')
+        }
+        const entry = await ctx.prisma.entry.findUnique({
+          where: {
+            entry_id: args.entryId
+          },
+          include: {
+            app: true
+          }
+        })
+        // 无法操作公共词条
+        if (entry?.public) {
+          throw new Error('无法更改公共词条状态')
+        }
+        // 只有词条和APPId是匹配的，才进行更新
+        if (entry?.app && entry.app.find(app => app.app_id === args.appId)) {
+          await ctx.prisma.entry.update({
+            where: {
+              entry_id: args.entryId
+            },
+            data: {
+              archive: args.archive || undefined,
+              deleted: args.deleted || undefined,
+              app: {
+                disconnect: args.deleted ? [{ app_id: args.appId }] : undefined
+              }
+            }
+          })
+          return true
+        }
+        throw new Error('参数不匹配，请检测后重试')
+      }
+    })
   },
 });
 
