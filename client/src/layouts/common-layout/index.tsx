@@ -3,7 +3,7 @@ import { UserOutlined } from '@ant-design/icons'
 import { ProLayout } from '@ant-design/pro-components'
 import { Avatar } from 'antd'
 import React, { useState } from 'react'
-import { Link, Outlet } from 'react-router-dom'
+import { Link, Outlet, useLocation } from 'react-router-dom'
 import defaultProps from './menuConfig'
 
 const settings = {
@@ -18,7 +18,8 @@ const settings = {
 }
 
 const CommonLayout: React.FC = () => {
-  const [pathname, setPathname] = useState('/home')
+  const location = useLocation()
+  const [pathname, setPathname] = useState(location.pathname)
   return (
     <div
       style={{
