@@ -200,11 +200,11 @@ export interface NexusGenFieldTypes {
     archivedApp: boolean | null; // Boolean
     changeAccessStatus: boolean | null; // Boolean
     changeEntryAccessStatus: boolean | null; // Boolean
-    changeEntryPublicStatus: boolean | null; // Boolean
     checkEmailValidation: boolean | null; // Boolean
     createApp: number | null; // Int
     createEntry: number | null; // Int
     deleteApp: boolean | null; // Boolean
+    deleteEntries: boolean | null; // Boolean
     login: string | null; // String
     refreshAccessKey: string | null; // String
     register: string | null; // String
@@ -305,11 +305,11 @@ export interface NexusGenFieldTypeNames {
     archivedApp: 'Boolean'
     changeAccessStatus: 'Boolean'
     changeEntryAccessStatus: 'Boolean'
-    changeEntryPublicStatus: 'Boolean'
     checkEmailValidation: 'Boolean'
     createApp: 'Int'
     createEntry: 'Int'
     deleteApp: 'Boolean'
+    deleteEntries: 'Boolean'
     login: 'String'
     refreshAccessKey: 'String'
     register: 'String'
@@ -372,11 +372,6 @@ export interface NexusGenArgTypes {
       deleted?: boolean | null; // Boolean
       entryId: number; // Int!
     }
-    changeEntryPublicStatus: { // args
-      appId: number; // Int!
-      entryId: number; // Int!
-      public: boolean; // Boolean!
-    }
     checkEmailValidation: { // args
       email: string; // String!
     }
@@ -394,6 +389,10 @@ export interface NexusGenArgTypes {
     }
     deleteApp: { // args
       id: number; // Int!
+    }
+    deleteEntries: { // args
+      appId: number; // Int!
+      entryIds: number[]; // [Int!]!
     }
     login: { // args
       email: string; // String!
@@ -459,6 +458,7 @@ export interface NexusGenArgTypes {
     }
     pageAppEntries: { // args
       appId: number; // Int!
+      archive?: boolean | null; // Boolean
       endTime?: number | null; // Float
       key?: string | null; // String
       latest?: boolean | null; // Boolean

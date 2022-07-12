@@ -49,13 +49,19 @@ export const AccessMutation = extendType({
           where: {
             accessKey: args.accessKey,
             push: true
+          },
+          include: {
+            entries: true
           }
         })
         if (!app) {
           throw new Error('accessKey不正确或无权访问此应用')
         }
-        // 创建多个词条数据
-        const entries = args.entries.map(entry => ({
+        // 创建多个词条数据(但会进行一层筛选)
+        const entries = args.entries.filter((item) => {
+          const mainLangText = item?.langs[LanguageType.CHINESE]
+          return !app.entries.find(e => e.mainLangText === mainLangText)
+        }).map(entry => ({
           key: entry?.key,
           langs: entry?.langs,
           mainLangText: entry?.langs[LanguageType.CHINESE], // 设置主语言文本

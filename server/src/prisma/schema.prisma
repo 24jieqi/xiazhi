@@ -36,7 +36,8 @@ model Entry {
   mainLang      LanguageType @default(CHINESE)
   mainLangText  String?
   langs         Json?
-  app           App[]
+  app           App?         @relation(fields: [appApp_id], references: [app_id])
+  appApp_id     Int?
 }
 
 // 应用

@@ -96,17 +96,17 @@ export const EntryMutation = extendType({
       },
       async resolve(_, args, ctx) {
         decodedToken(ctx.req);
+        // 主要语言校验
         const mainLangText = args.langs[LanguageType.CHINESE];
         if (!mainLangText) {
           throw new Error("必须填写词条中文！");
         }
+        // 存在性校验
         if (args.appId) {
           const records = await ctx.prisma.entry.findMany({
             where: {
               app: {
-                some: {
                   app_id: args.appId,
-                },
               },
               mainLangText: mainLangText,
             },
@@ -115,13 +115,14 @@ export const EntryMutation = extendType({
             throw new Error("无法新增已经存在的词条");
           }
         }
+        // 创建词条
         const entry = await ctx.prisma.entry.create({
           data: {
             key: args.key,
             langs: args.langs,
             mainLangText: args.langs[LanguageType.CHINESE], // 设置主语言文本
             public: !args.appId,
-          },
+          }
         });
         // 传入appId后，关联到APP中
         if (args.appId) {
@@ -137,94 +138,6 @@ export const EntryMutation = extendType({
           });
         }
         return entry.entry_id;
-      },
-    });
-    t.field("changeEntryPublicStatus", {
-      type: "Boolean",
-      description: "切换词条的公有/私有状态",
-      args: {
-        appId: nonNull(intArg()),
-        entryId: nonNull(intArg()),
-        public: nonNull(booleanArg()),
-      },
-      async resolve(_, args, ctx) {
-        decodedToken(ctx.req);
-        const isPublic = args.public;
-        const currentEntry = await ctx.prisma.entry.findUnique({
-          where: {
-            entry_id: args.entryId,
-          },
-        });
-        /**
-         * 如果是从私有变成公有，操作步骤如下：
-         * 1. 查找公共库词条，如果有匹配词条，则复制词条翻译到公共词条，否则将此词条变更为公共词条，并建立关联关系
-         * 2. 创建与当前APP的关联关系
-         * 3. 添加一条操作记录
-         */
-        if (isPublic) {
-          const targetEntry = await ctx.prisma.entry.findFirst({
-            where: {
-              public: true,
-              mainLangText: currentEntry?.mainLangText,
-            },
-          });
-          if (!targetEntry) {
-            await ctx.prisma.entry.update({
-              where: {
-                entry_id: args.entryId,
-              },
-              data: {
-                public: true,
-              },
-            });
-          } else {
-            // 创建一条修改记录
-            const record = await ctx.prisma.record.create({
-              data: {
-                prevLangs: targetEntry.langs!,
-              },
-            });
-            // 更新公共词条
-            await ctx.prisma.entry.update({
-              where: {
-                entry_id: targetEntry.entry_id,
-              },
-              data: {
-                langs: currentEntry?.langs!,
-                modifyRecords: {
-                  connect: [
-                    {
-                      record_id: record.record_id,
-                    },
-                  ],
-                },
-                app: {
-                  connect: [
-                    {
-                      app_id: args.appId,
-                    },
-                  ],
-                },
-              },
-            });
-            // 取消原词条与用户的关联
-            await ctx.prisma.app.update({
-              where: {
-                app_id: args.appId,
-              },
-              data: {
-                entries: {
-                  disconnect: [
-                    {
-                      entry_id: currentEntry?.entry_id,
-                    },
-                  ],
-                },
-              },
-            });
-          }
-        }
-        return true;
       },
     });
     t.field("updateEntry", {
@@ -284,16 +197,14 @@ export const EntryMutation = extendType({
           where: {
             entry_id: args.entryId
           },
-          include: {
-            app: true
-          }
         })
         // 无法操作公共词条
-        if (entry?.public) {
+        if (entry && entry?.public) {
           throw new Error('无法更改公共词条状态')
         }
         // 只有词条和APPId是匹配的，才进行更新
-        if (entry?.app && entry.app.find(app => app.app_id === args.appId)) {
+        if (entry?.appApp_id && entry.appApp_id === args.appId) {
+          // 更新词条
           await ctx.prisma.entry.update({
             where: {
               entry_id: args.entryId
@@ -301,14 +212,60 @@ export const EntryMutation = extendType({
             data: {
               archive: args.archive || undefined,
               deleted: args.deleted || undefined,
-              app: {
-                disconnect: args.deleted ? [{ app_id: args.appId }] : undefined
+            }
+          })
+          // 断开应用和词条的联系
+          await ctx.prisma.app.update({
+            where: {
+              app_id: args.appId
+            },
+            data: {
+              entries: {
+                disconnect: args.deleted ? [{ entry_id: args.entryId }]: undefined
               }
             }
           })
           return true
         }
         throw new Error('参数不匹配，请检测后重试')
+      }
+    })
+    t.field('deleteEntries', {
+      type: 'Boolean',
+      description: '删除（批量）应用词条',
+      args: {
+        appId: nonNull(intArg()),
+        entryIds: nonNull(list(nonNull(intArg()))),
+      },
+      async resolve(_, args, ctx) {
+        decodedToken(ctx.req)
+        // 更新词条标记删除
+        ctx.prisma.entry.updateMany({
+          where: {
+            entry_id: {
+              in: args.entryIds
+            }
+          },
+          data: {
+            deleted: true
+          }
+        })
+        const list = args.entryIds.map(entryId => ({ entry_id: entryId }))
+        // 解除和应用的关系
+        await ctx.prisma.app.update({
+          where: {
+            app_id: args.appId
+          },
+          include: {
+            entries: true
+          },
+          data: {
+            entries: {
+              disconnect: list
+            }
+          }
+        })
+        return true
       }
     })
   },
@@ -358,20 +315,20 @@ export const EntryQuery = extendType({
         mainLangText: stringArg(),
         latest: booleanArg(),
         key: stringArg(),
+        archive: booleanArg()
       },
       async resolve(_, args, ctx) {
         decodedToken(ctx.req);
         const records = await ctx.prisma.entry.findMany({
           where: {
             app: {
-              some: {
-                app_id: args.appId,
-              },
+              app_id: args.appId
             },
             mainLangText: {
               contains: args.mainLangText || undefined,
             },
             key: args.key,
+            archive: args.archive || undefined,
             createdAt: {
               lte: args.endTime
                 ? formatISO(new Date(args.endTime!))
@@ -390,9 +347,20 @@ export const EntryQuery = extendType({
         const total = await ctx.prisma.entry.count({
           where: {
             app: {
-              some: {
-                app_id: args.appId,
-              },
+              app_id: args.appId
+            },
+            mainLangText: {
+              contains: args.mainLangText || undefined,
+            },
+            key: args.key,
+            archive: args.archive || undefined,
+            createdAt: {
+              lte: args.endTime
+                ? formatISO(new Date(args.endTime!))
+                : undefined,
+              gte: args.startTime
+                ? formatISO(new Date(args.startTime!))
+                : undefined,
             },
           },
         });
@@ -406,3 +374,11 @@ export const EntryQuery = extendType({
     });
   },
 });
+
+/**
+ * 关于词条和APP关系的更正
+ * 1. 词条分为public和private两种
+ * 2. 可以公共词条创建（复制）多个词条
+ * 3. 应用和词条是一对多的（而非多对多）
+ * 4. 删除词条时，词条会被逻辑删除，被逻辑删除的词条会定期进行清理（或者小概率恢复）
+ */

@@ -132,9 +132,6 @@ type Mutation {
   """归档词条或者删除词条（仅针对非公共词条）"""
   changeEntryAccessStatus(appId: Int!, archive: Boolean, deleted: Boolean, entryId: Int!): Boolean
 
-  """切换词条的公有/私有状态"""
-  changeEntryPublicStatus(appId: Int!, entryId: Int!, public: Boolean!): Boolean
-
   """检测邮箱是否可用"""
   checkEmailValidation(email: String!): Boolean
 
@@ -146,6 +143,9 @@ type Mutation {
 
   """删除一个应用（逻辑删除），删除后应用对客户不可见"""
   deleteApp(id: Int!): Boolean
+
+  """删除（批量）应用词条"""
+  deleteEntries(appId: Int!, entryIds: [Int!]!): Boolean
 
   """邮箱&密码登录"""
   login(email: String!, password: String!): String
@@ -190,7 +190,7 @@ type Query {
   pageAllPublicEntries(pageNo: Int!, pageSize: Int!): EntryPaging
 
   """获取应用所有词条（分页）"""
-  pageAppEntries(appId: Int!, endTime: Float, key: String, latest: Boolean, mainLangText: String, pageNo: Int!, pageSize: Int!, startTime: Float): EntryPaging
+  pageAppEntries(appId: Int!, archive: Boolean, endTime: Float, key: String, latest: Boolean, mainLangText: String, pageNo: Int!, pageSize: Int!, startTime: Float): EntryPaging
 }
 
 """词条操作记录"""
