@@ -182,11 +182,6 @@ type Mutation {
   ): Boolean
 
   """
-  切换词条的公有/私有状态
-  """
-  changeEntryPublicStatus(appId: Int!, entryId: Int!, public: Boolean!): Boolean
-
-  """
   检测邮箱是否可用
   """
   checkEmailValidation(email: String!): Boolean
@@ -211,6 +206,11 @@ type Mutation {
   删除一个应用（逻辑删除），删除后应用对客户不可见
   """
   deleteApp(id: Int!): Boolean
+
+  """
+  删除（批量）应用词条
+  """
+  deleteEntries(appId: Int!, entryIds: [Int!]!): Boolean
 
   """
   邮箱&密码登录
@@ -300,6 +300,7 @@ type Query {
   """
   pageAppEntries(
     appId: Int!
+    archive: Boolean
     endTime: Float
     key: String
     latest: Boolean

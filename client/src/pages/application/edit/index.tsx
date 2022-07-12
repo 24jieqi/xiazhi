@@ -1,6 +1,6 @@
 import type { ActionType, ProColumns } from '@ant-design/pro-components'
 import { ProCard, ProTable } from '@ant-design/pro-components'
-import { Tag, Button, Empty, message, Space } from 'antd'
+import { Tag, Button, Empty, message, Space, Table } from 'antd'
 import React, { useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import dayjs from 'dayjs'
@@ -117,15 +117,21 @@ const EntryList: React.FC<EntryListProps> = props => {
       title: '操作',
       key: 'operation',
       valueType: 'option',
-      render: (_, row, index, action) => [
+      render: (_, row) => [
         row.archive ? null : (
           <a
             key="achieve"
-            onClick={() => handleChangeEntryAccess('archive', row)}>
+            onClick={() => {
+              handleChangeEntryAccess('archive', row)
+            }}>
             归档
           </a>
         ),
-        <a key="delete" onClick={() => handleChangeEntryAccess('deleted', row)}>
+        <a
+          key="delete"
+          onClick={() => {
+            handleChangeEntryAccess('deleted', row)
+          }}>
           删除
         </a>,
       ],
@@ -135,7 +141,7 @@ const EntryList: React.FC<EntryListProps> = props => {
     <ProTable<EntryItem>
       actionRef={actionRef}
       columns={columns}
-      request={async (params = {}, sort, filter) => {
+      request={async (params = {}) => {
         const res = await pageAllPublicEntries({
           variables: {
             pageNo: params.current,
@@ -146,6 +152,7 @@ const EntryList: React.FC<EntryListProps> = props => {
             key: params.key,
             mainLangText: params.mainLangText,
             latest: (params.state as any[])?.includes('latest'),
+            archive: (params.state as any[])?.includes('archived'),
           },
         })
         const data = res?.data?.pageAppEntries
@@ -188,6 +195,25 @@ const EntryList: React.FC<EntryListProps> = props => {
             }
           },
         }
+      }}
+      rowSelection={{
+        selections: [Table.SELECTION_ALL, Table.SELECTION_INVERT],
+        defaultSelectedRowKeys: [],
+      }}
+      tableAlertRender={({ selectedRowKeys, onCleanSelected }) => {
+        return (
+          <Space size={24}>
+            <span>
+              已选 {selectedRowKeys.length} 项
+              <a style={{ marginLeft: 8 }} onClick={onCleanSelected}>
+                取消选择
+              </a>
+            </span>
+          </Space>
+        )
+      }}
+      tableAlertOptionRender={({ selectedRowKeys, onCleanSelected }) => {
+        return <a>批量删除</a>
       }}
     />
   )

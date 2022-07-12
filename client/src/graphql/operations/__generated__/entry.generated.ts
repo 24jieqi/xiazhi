@@ -69,6 +69,7 @@ export type PageAppEntriesQueryVariables = SchemaTypes.Exact<{
   pageSize: SchemaTypes.Scalars['Int']
   pageNo: SchemaTypes.Scalars['Int']
   appId: SchemaTypes.Scalars['Int']
+  archive?: SchemaTypes.InputMaybe<SchemaTypes.Scalars['Boolean']>
   startTime?: SchemaTypes.InputMaybe<SchemaTypes.Scalars['Float']>
   endTime?: SchemaTypes.InputMaybe<SchemaTypes.Scalars['Float']>
   mainLangText?: SchemaTypes.InputMaybe<SchemaTypes.Scalars['String']>
@@ -81,6 +82,7 @@ export type PageAppEntriesQuery = {
     __typename?: 'EntryPaging'
     total: number
     pageSize: number
+    current: number
     records?: Array<{
       __typename?: 'EntryItem'
       entry_id?: number
@@ -102,6 +104,7 @@ export type PageAppEntriesQuery = {
         currLangs?: any
         prevKey?: string
         currKey?: string
+        creator?: number
         creatorInfo?: {
           __typename?: 'UserInfo'
           name?: string
@@ -323,6 +326,7 @@ export const PageAppEntriesDocument = gql`
     $pageSize: Int!
     $pageNo: Int!
     $appId: Int!
+    $archive: Boolean
     $startTime: Float
     $endTime: Float
     $mainLangText: String
@@ -333,6 +337,7 @@ export const PageAppEntriesDocument = gql`
       pageSize: $pageSize
       pageNo: $pageNo
       appId: $appId
+      archive: $archive
       startTime: $startTime
       endTime: $endTime
       mainLangText: $mainLangText
@@ -341,6 +346,7 @@ export const PageAppEntriesDocument = gql`
     ) {
       total
       pageSize
+      current
       records {
         entry_id
         key
@@ -359,6 +365,7 @@ export const PageAppEntriesDocument = gql`
           currLangs
           prevKey
           currKey
+          creator
           creatorInfo {
             name
             user_id
@@ -390,6 +397,7 @@ export const PageAppEntriesDocument = gql`
  *      pageSize: // value for 'pageSize'
  *      pageNo: // value for 'pageNo'
  *      appId: // value for 'appId'
+ *      archive: // value for 'archive'
  *      startTime: // value for 'startTime'
  *      endTime: // value for 'endTime'
  *      mainLangText: // value for 'mainLangText'

@@ -23,5 +23,6 @@ module.exports = {
     'no-console': 'warn',
     'import/no-unresolved': 'off',
     'max-params': 'off',
+    'react/no-unstable-nested-components': 'off',
   },
 }

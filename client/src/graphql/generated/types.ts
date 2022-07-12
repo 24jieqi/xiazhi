@@ -132,8 +132,6 @@ export type Mutation = {
   changeAccessStatus?: Maybe<Scalars['Boolean']>
   /** 归档词条或者删除词条（仅针对非公共词条） */
   changeEntryAccessStatus?: Maybe<Scalars['Boolean']>
-  /** 切换词条的公有/私有状态 */
-  changeEntryPublicStatus?: Maybe<Scalars['Boolean']>
   /** 检测邮箱是否可用 */
   checkEmailValidation?: Maybe<Scalars['Boolean']>
   /** 创建应用 */
@@ -142,6 +140,8 @@ export type Mutation = {
   createEntry?: Maybe<Scalars['Int']>
   /** 删除一个应用（逻辑删除），删除后应用对客户不可见 */
   deleteApp?: Maybe<Scalars['Boolean']>
+  /** 删除（批量）应用词条 */
+  deleteEntries?: Maybe<Scalars['Boolean']>
   /** 邮箱&密码登录 */
   login?: Maybe<Scalars['String']>
   /** 刷新应用accessKey */
@@ -181,12 +181,6 @@ export type MutationChangeEntryAccessStatusArgs = {
   entryId: Scalars['Int']
 }
 
-export type MutationChangeEntryPublicStatusArgs = {
-  appId: Scalars['Int']
-  entryId: Scalars['Int']
-  public: Scalars['Boolean']
-}
-
 export type MutationCheckEmailValidationArgs = {
   email: Scalars['String']
 }
@@ -207,6 +201,11 @@ export type MutationCreateEntryArgs = {
 
 export type MutationDeleteAppArgs = {
   id: Scalars['Int']
+}
+
+export type MutationDeleteEntriesArgs = {
+  appId: Scalars['Int']
+  entryIds: Array<Scalars['Int']>
 }
 
 export type MutationLoginArgs = {
@@ -304,6 +303,7 @@ export type QueryPageAllPublicEntriesArgs = {
 
 export type QueryPageAppEntriesArgs = {
   appId: Scalars['Int']
+  archive?: InputMaybe<Scalars['Boolean']>
   endTime?: InputMaybe<Scalars['Float']>
   key?: InputMaybe<Scalars['String']>
   latest?: InputMaybe<Scalars['Boolean']>

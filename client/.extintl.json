@@ -1,0 +1,13 @@
+{
+  "rootPath": "/Users/hjmac01/www/package/xiazhi/client/src/pages/others/login",
+  "langs": ["CHINESE", "ENGLISH"],
+  "extractOnly": true,
+  "whiteList": [".ts", ".tsx", ".js", ".jsx"],
+  "prefix": [],
+  "templateString": {
+    "funcName": "I18N.get"
+  },
+  "fieldPrefix": "intl",
+  "origin": "http://localhost:3000/graphql",
+  "accessKey": "$2b$10$BP1I.qCoQgnNyHC4tqk/5.z2aWhloNQSCUN7B468MK0QFLi3oF1fu"
+}

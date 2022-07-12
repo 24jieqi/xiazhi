@@ -47,6 +47,7 @@ query PageAppEntries(
   $pageSize: Int!
   $pageNo: Int!
   $appId: Int!
+  $archive: Boolean
   $startTime: Float
   $endTime: Float
   $mainLangText: String
@@ -57,6 +58,7 @@ query PageAppEntries(
     pageSize: $pageSize
     pageNo: $pageNo
     appId: $appId
+    archive: $archive
     startTime: $startTime
     endTime: $endTime
     mainLangText: $mainLangText
@@ -65,6 +67,7 @@ query PageAppEntries(
   ) {
     total
     pageSize
+    current
     records {
       entry_id
       key
@@ -83,6 +86,7 @@ query PageAppEntries(
         currLangs
         prevKey
         currKey
+        creator
         creatorInfo {
           name
           user_id

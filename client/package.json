@@ -38,7 +38,11 @@
     "analyze": "source-map-explorer build/static/js/main.*",
     "script": "wbd-scripts",
     "gen": "fruits-chain-gc http://localhost:3000/graphql",
-    "gen-w": "fruits-chain-gc http://localhost:3000/graphql -w"
+    "gen-w": "fruits-chain-gc http://localhost:3000/graphql -w",
+    "test:config": "extintl config -o",
+    "test:sync": "extintl sync",
+    "test:start": "extintl start",
+    "test:update": "extintl update"
   },
   "resolutions": {
     "@types/react": "^17",
