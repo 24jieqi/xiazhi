@@ -101,6 +101,22 @@ type EntryPaging {
   total: Int!
 }
 
+"""系统使用反馈项"""
+type FeedbackItem {
+  feedback_id: Int!
+  message: String
+  result: Boolean!
+  user: UserInfo
+}
+
+"""用户反馈的分页对象"""
+type FeedbackPaging {
+  current: Int!
+  pageSize: Int!
+  records: [FeedbackItem]
+  total: Int!
+}
+
 """
 The `JSONObject` scalar type represents JSON objects as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
 """
@@ -147,6 +163,9 @@ type Mutation {
   """删除（批量）应用词条"""
   deleteEntries(appId: Int!, entryIds: [Int!]!): Boolean
 
+  """反馈(新增/修改描述)"""
+  feedback(feedbackId: Int, message: String, result: Boolean!, userId: Int): Int
+
   """邮箱&密码登录"""
   login(email: String!, password: String!): String
 
@@ -170,6 +189,9 @@ type Mutation {
 }
 
 type Query {
+  """点赞次数统计"""
+  countPositive: Int
+
   """根据应用id获取应用权限&访问相关的信息"""
   getAccessKeyByAppId(id: Int!): AppAccessInfo
 
@@ -191,6 +213,9 @@ type Query {
 
   """获取应用所有词条（分页）"""
   pageAppEntries(appId: Int!, archive: Boolean, endTime: Float, key: String, latest: Boolean, mainLangText: String, pageNo: Int!, pageSize: Int!, startTime: Float): EntryPaging
+
+  """反馈问题内容分页"""
+  pageFeedbackNegative(pageNo: Int!, pageSize: Int!): FeedbackPaging
 }
 
 """词条操作记录"""

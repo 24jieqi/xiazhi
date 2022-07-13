@@ -67,17 +67,18 @@ model Collaborator {
 }
 
 model User {
-  user_id   Int       @id @default(autoincrement())
+  user_id   Int        @id @default(autoincrement())
   account   String?
-  email     String    @unique
-  phone     String?   @unique
+  email     String     @unique
+  phone     String?    @unique
   nickName  String?
   name      String?
   role      UserRole?
   avatar    String?
   password  String
-  createdAt DateTime  @default(now())
+  createdAt DateTime   @default(now())
   apps      App[]
+  Feedback  Feedback[]
 }
 
 model Langs {
@@ -85,6 +86,14 @@ model Langs {
   label    String       @unique
   value    LanguageType
   disabled Boolean      @default(false)
+}
+
+model Feedback {
+  feedback_id Int     @id @default(autoincrement())
+  user        User?   @relation(fields: [userUser_id], references: [user_id])
+  userUser_id Int?
+  message     String?
+  result      Boolean
 }
 
 enum AppType {

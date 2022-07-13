@@ -105,6 +105,18 @@ export interface NexusGenObjects {
     records?: Array<NexusGenRootTypes['EntryItem'] | null> | null; // [EntryItem]
     total: number; // Int!
   }
+  FeedbackItem: { // root type
+    feedback_id: number; // Int!
+    message?: string | null; // String
+    result: boolean; // Boolean!
+    user?: NexusGenRootTypes['UserInfo'] | null; // UserInfo
+  }
+  FeedbackPaging: { // root type
+    current: number; // Int!
+    pageSize: number; // Int!
+    records?: Array<NexusGenRootTypes['FeedbackItem'] | null> | null; // [FeedbackItem]
+    total: number; // Int!
+  }
   LangageTypeOption: { // root type
     label: string; // String!
     value?: NexusGenEnums['LanguageTypeEnum'] | null; // LanguageTypeEnum
@@ -191,6 +203,18 @@ export interface NexusGenFieldTypes {
     records: Array<NexusGenRootTypes['EntryItem'] | null> | null; // [EntryItem]
     total: number; // Int!
   }
+  FeedbackItem: { // field return type
+    feedback_id: number; // Int!
+    message: string | null; // String
+    result: boolean; // Boolean!
+    user: NexusGenRootTypes['UserInfo'] | null; // UserInfo
+  }
+  FeedbackPaging: { // field return type
+    current: number; // Int!
+    pageSize: number; // Int!
+    records: Array<NexusGenRootTypes['FeedbackItem'] | null> | null; // [FeedbackItem]
+    total: number; // Int!
+  }
   LangageTypeOption: { // field return type
     label: string; // String!
     value: NexusGenEnums['LanguageTypeEnum'] | null; // LanguageTypeEnum
@@ -205,6 +229,7 @@ export interface NexusGenFieldTypes {
     createEntry: number | null; // Int
     deleteApp: boolean | null; // Boolean
     deleteEntries: boolean | null; // Boolean
+    feedback: number | null; // Int
     login: string | null; // String
     refreshAccessKey: string | null; // String
     register: string | null; // String
@@ -216,6 +241,7 @@ export interface NexusGenFieldTypes {
     uploadEntries: boolean | null; // Boolean
   }
   Query: { // field return type
+    countPositive: number | null; // Int
     getAccessKeyByAppId: NexusGenRootTypes['AppAccessInfo'] | null; // AppAccessInfo
     getAllEntries: Array<NexusGenRootTypes['EntryItem'] | null> | null; // [EntryItem]
     getAppInfoById: NexusGenRootTypes['AppItem'] | null; // AppItem
@@ -224,6 +250,7 @@ export interface NexusGenFieldTypes {
     listSupportLanguage: Array<NexusGenRootTypes['LangageTypeOption'] | null> | null; // [LangageTypeOption]
     pageAllPublicEntries: NexusGenRootTypes['EntryPaging'] | null; // EntryPaging
     pageAppEntries: NexusGenRootTypes['EntryPaging'] | null; // EntryPaging
+    pageFeedbackNegative: NexusGenRootTypes['FeedbackPaging'] | null; // FeedbackPaging
   }
   RecordItem: { // field return type
     createdAt: NexusGenScalars['DateTime'] | null; // DateTime
@@ -296,6 +323,18 @@ export interface NexusGenFieldTypeNames {
     records: 'EntryItem'
     total: 'Int'
   }
+  FeedbackItem: { // field return type name
+    feedback_id: 'Int'
+    message: 'String'
+    result: 'Boolean'
+    user: 'UserInfo'
+  }
+  FeedbackPaging: { // field return type name
+    current: 'Int'
+    pageSize: 'Int'
+    records: 'FeedbackItem'
+    total: 'Int'
+  }
   LangageTypeOption: { // field return type name
     label: 'String'
     value: 'LanguageTypeEnum'
@@ -310,6 +349,7 @@ export interface NexusGenFieldTypeNames {
     createEntry: 'Int'
     deleteApp: 'Boolean'
     deleteEntries: 'Boolean'
+    feedback: 'Int'
     login: 'String'
     refreshAccessKey: 'String'
     register: 'String'
@@ -321,6 +361,7 @@ export interface NexusGenFieldTypeNames {
     uploadEntries: 'Boolean'
   }
   Query: { // field return type name
+    countPositive: 'Int'
     getAccessKeyByAppId: 'AppAccessInfo'
     getAllEntries: 'EntryItem'
     getAppInfoById: 'AppItem'
@@ -329,6 +370,7 @@ export interface NexusGenFieldTypeNames {
     listSupportLanguage: 'LangageTypeOption'
     pageAllPublicEntries: 'EntryPaging'
     pageAppEntries: 'EntryPaging'
+    pageFeedbackNegative: 'FeedbackPaging'
   }
   RecordItem: { // field return type name
     createdAt: 'DateTime'
@@ -393,6 +435,12 @@ export interface NexusGenArgTypes {
     deleteEntries: { // args
       appId: number; // Int!
       entryIds: number[]; // [Int!]!
+    }
+    feedback: { // args
+      feedbackId?: number | null; // Int
+      message?: string | null; // String
+      result: boolean; // Boolean!
+      userId?: number | null; // Int
     }
     login: { // args
       email: string; // String!
@@ -466,6 +514,10 @@ export interface NexusGenArgTypes {
       pageNo: number; // Int!
       pageSize: number; // Int!
       startTime?: number | null; // Float
+    }
+    pageFeedbackNegative: { // args
+      pageNo: number; // Int!
+      pageSize: number; // Int!
     }
   }
 }
