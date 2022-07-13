@@ -1,0 +1,17 @@
+mutation Feedback(
+  $result: Boolean!
+  $message: String
+  $userId: Int
+  $feedbackId: Int
+) {
+  feedback(
+    result: $result
+    message: $message
+    userId: $userId
+    feedbackId: $feedbackId
+  )
+}
+
+query FeedbackStatistics {
+  countPositive
+}

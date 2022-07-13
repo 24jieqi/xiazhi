@@ -131,6 +131,13 @@ export type ChangeEntryAccessStatusMutation = {
   changeEntryAccessStatus?: boolean
 }
 
+export type DeleteEntriesMutationVariables = SchemaTypes.Exact<{
+  appId: SchemaTypes.Scalars['Int']
+  entryIds: Array<SchemaTypes.Scalars['Int']>
+}>
+
+export type DeleteEntriesMutation = { deleteEntries?: boolean }
+
 export const PageAllPublicEntriesDocument = gql`
   query PageAllPublicEntries($pageSize: Int!, $pageNo: Int!) {
     pageAllPublicEntries(pageSize: $pageSize, pageNo: $pageNo) {
@@ -500,4 +507,53 @@ export type ChangeEntryAccessStatusMutationResult =
 export type ChangeEntryAccessStatusMutationOptions = Apollo.BaseMutationOptions<
   ChangeEntryAccessStatusMutation,
   ChangeEntryAccessStatusMutationVariables
+>
+export const DeleteEntriesDocument = gql`
+  mutation DeleteEntries($appId: Int!, $entryIds: [Int!]!) {
+    deleteEntries(appId: $appId, entryIds: $entryIds)
+  }
+`
+export type DeleteEntriesMutationFn = Apollo.MutationFunction<
+  DeleteEntriesMutation,
+  DeleteEntriesMutationVariables
+>
+
+/**
+ * __useDeleteEntriesMutation__
+ *
+ * To run a mutation, you first call `useDeleteEntriesMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeleteEntriesMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deleteEntriesMutation, { data, loading, error }] = useDeleteEntriesMutation({
+ *   variables: {
+ *      appId: // value for 'appId'
+ *      entryIds: // value for 'entryIds'
+ *   },
+ * });
+ */
+export function useDeleteEntriesMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    DeleteEntriesMutation,
+    DeleteEntriesMutationVariables
+  >,
+) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useMutation<
+    DeleteEntriesMutation,
+    DeleteEntriesMutationVariables
+  >(DeleteEntriesDocument, options)
+}
+export type DeleteEntriesMutationHookResult = ReturnType<
+  typeof useDeleteEntriesMutation
+>
+export type DeleteEntriesMutationResult =
+  Apollo.MutationResult<DeleteEntriesMutation>
+export type DeleteEntriesMutationOptions = Apollo.BaseMutationOptions<
+  DeleteEntriesMutation,
+  DeleteEntriesMutationVariables
 >

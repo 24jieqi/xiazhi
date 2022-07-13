@@ -4,16 +4,28 @@ import { Button, Space, Statistic } from 'antd'
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { NEW_APP } from '@/router/config/main-routes/application/path'
+import {
+  useFeedbackMutation,
+  useFeedbackStatisticsQuery,
+} from '@/graphql/operations/__generated__/feedback.generated'
 import AppHomeEntry from './sections/App'
 import EntryHomeSearch from './sections/Entry'
 
 const Home: React.FC = () => {
   const navigate = useNavigate()
   const [current, setCurrent] = useState('app')
+  const { data, refetch } = useFeedbackStatisticsQuery()
+  const [feedback] = useFeedbackMutation()
   const [like, setLike] = useState(false)
   const LikeIcon = like ? LikeFilled : LikeOutlined
-  function handleChangeLike() {
-    setLike(!like)
+  async function handleChangeLike() {
+    setLike(true)
+    await feedback({
+      variables: {
+        result: true,
+      },
+    })
+    await refetch()
   }
   function handleRedirectCreateApp() {
     navigate(NEW_APP)
@@ -50,8 +62,12 @@ const Home: React.FC = () => {
         <Space size={24}>
           <Statistic
             title="点赞"
-            value={1198}
-            prefix={<LikeIcon onClick={handleChangeLike} />}
+            value={data?.countPositive}
+            prefix={
+              <Space>
+                <LikeIcon onClick={handleChangeLike} />
+              </Space>
+            }
           />
         </Space>
       }

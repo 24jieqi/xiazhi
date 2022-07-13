@@ -1,12 +1,13 @@
 import type { ActionType, ProColumns } from '@ant-design/pro-components'
 import { ProCard, ProTable } from '@ant-design/pro-components'
-import { Tag, Button, Empty, message, Space, Table } from 'antd'
+import { Tag, Button, Empty, message, Space, Table, Tooltip } from 'antd'
 import React, { useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import dayjs from 'dayjs'
 import { useGetAppInfoByIdQuery } from '@/graphql/operations/__generated__/app.generated'
 import {
   useChangeEntryAccessStatusMutation,
+  useDeleteEntriesMutation,
   usePageAppEntriesLazyQuery,
 } from '@/graphql/operations/__generated__/entry.generated'
 import { EntryItem } from '@/graphql/generated/types'
@@ -27,6 +28,17 @@ const EntryList: React.FC<EntryListProps> = props => {
   const { onChange, selectedEntry, actionRef } = props
   const [pageAllPublicEntries] = usePageAppEntriesLazyQuery()
   const [changeEntryAccess] = useChangeEntryAccessStatusMutation()
+  const [deleteEntries] = useDeleteEntriesMutation()
+  const appId = Number(routeParams.id)
+  async function handleMultiDelete(entryIds: number[], onSuccess?: () => void) {
+    await deleteEntries({
+      variables: {
+        entryIds,
+        appId,
+      },
+    })
+    onSuccess?.()
+  }
   async function handleChangeEntryAccess(
     type: 'archive' | 'deleted',
     row: EntryItem,
@@ -34,7 +46,7 @@ const EntryList: React.FC<EntryListProps> = props => {
     await changeEntryAccess({
       variables: {
         entryId: row.entry_id,
-        appId: Number(routeParams.id),
+        appId,
         [type]: true,
       },
     })
@@ -88,6 +100,7 @@ const EntryList: React.FC<EntryListProps> = props => {
       valueEnum: {
         latest: {
           text: '最近上传',
+          disabled: true,
         },
         archived: {
           text: '已归档',
@@ -117,6 +130,7 @@ const EntryList: React.FC<EntryListProps> = props => {
       title: '操作',
       key: 'operation',
       valueType: 'option',
+      tooltip: '归档和删除都属于不可逆操作，请谨慎使用',
       render: (_, row) => [
         row.archive ? null : (
           <a
@@ -176,12 +190,14 @@ const EntryList: React.FC<EntryListProps> = props => {
       }}
       toolbar={{
         actions: [
-          <Button size="small" key="list" type="link">
+          <Button disabled size="small" key="list" type="link">
             下载多语言模版
           </Button>,
-          <Button size="small" key="list" type="primary">
-            导入
-          </Button>,
+          <Tooltip key="export" title="敬请期待">
+            <Button size="small" key="list" type="primary">
+              导入
+            </Button>
+          </Tooltip>,
         ],
       }}
       onRow={record => {
@@ -213,7 +229,17 @@ const EntryList: React.FC<EntryListProps> = props => {
         )
       }}
       tableAlertOptionRender={({ selectedRowKeys, onCleanSelected }) => {
-        return <a>批量删除</a>
+        return (
+          <a
+            onClick={() =>
+              handleMultiDelete(selectedRowKeys as number[], () => {
+                onCleanSelected()
+                actionRef.current.reload()
+              })
+            }>
+            批量删除
+          </a>
+        )
       }}
     />
   )

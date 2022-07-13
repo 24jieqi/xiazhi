@@ -115,3 +115,7 @@ mutation ChangeEntryAccessStatus(
     deleted: $deleted
   )
 }
+
+mutation DeleteEntries($appId: Int!, $entryIds: [Int!]!) {
+  deleteEntries(appId: $appId, entryIds: $entryIds)
+}

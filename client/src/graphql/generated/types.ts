@@ -108,6 +108,24 @@ export type EntryPaging = {
   total: Scalars['Int']
 }
 
+/** 系统使用反馈项 */
+export type FeedbackItem = {
+  __typename?: 'FeedbackItem'
+  feedback_id: Scalars['Int']
+  message?: Maybe<Scalars['String']>
+  result: Scalars['Boolean']
+  user?: Maybe<UserInfo>
+}
+
+/** 用户反馈的分页对象 */
+export type FeedbackPaging = {
+  __typename?: 'FeedbackPaging'
+  current: Scalars['Int']
+  pageSize: Scalars['Int']
+  records?: Maybe<Array<Maybe<FeedbackItem>>>
+  total: Scalars['Int']
+}
+
 /** 平台支持的多语言词条选项 */
 export type LangageTypeOption = {
   __typename?: 'LangageTypeOption'
@@ -142,6 +160,8 @@ export type Mutation = {
   deleteApp?: Maybe<Scalars['Boolean']>
   /** 删除（批量）应用词条 */
   deleteEntries?: Maybe<Scalars['Boolean']>
+  /** 反馈(新增/修改描述) */
+  feedback?: Maybe<Scalars['Int']>
   /** 邮箱&密码登录 */
   login?: Maybe<Scalars['String']>
   /** 刷新应用accessKey */
@@ -208,6 +228,13 @@ export type MutationDeleteEntriesArgs = {
   entryIds: Array<Scalars['Int']>
 }
 
+export type MutationFeedbackArgs = {
+  feedbackId?: InputMaybe<Scalars['Int']>
+  message?: InputMaybe<Scalars['String']>
+  result: Scalars['Boolean']
+  userId?: InputMaybe<Scalars['Int']>
+}
+
 export type MutationLoginArgs = {
   email: Scalars['String']
   password: Scalars['String']
@@ -259,6 +286,8 @@ export type MutationUploadEntriesArgs = {
 
 export type Query = {
   __typename?: 'Query'
+  /** 点赞次数统计 */
+  countPositive?: Maybe<Scalars['Int']>
   /** 根据应用id获取应用权限&访问相关的信息 */
   getAccessKeyByAppId?: Maybe<AppAccessInfo>
   /** 根据accessKey获取所有应用词条 */
@@ -274,6 +303,8 @@ export type Query = {
   pageAllPublicEntries?: Maybe<EntryPaging>
   /** 获取应用所有词条（分页） */
   pageAppEntries?: Maybe<EntryPaging>
+  /** 反馈问题内容分页 */
+  pageFeedbackNegative?: Maybe<FeedbackPaging>
 }
 
 export type QueryGetAccessKeyByAppIdArgs = {
@@ -311,6 +342,11 @@ export type QueryPageAppEntriesArgs = {
   pageNo: Scalars['Int']
   pageSize: Scalars['Int']
   startTime?: InputMaybe<Scalars['Float']>
+}
+
+export type QueryPageFeedbackNegativeArgs = {
+  pageNo: Scalars['Int']
+  pageSize: Scalars['Int']
 }
 
 /** 词条操作记录 */

@@ -139,7 +139,6 @@ const AppListPage: React.FC = () => {
     <ProCard title="我的应用">
       <ProTable<AppItem>
         columns={columns}
-        cardBordered
         scroll={{ x: 1200 }}
         request={async (params: any = {}, sort, filter) => {
           const res = await getCurrentApps({

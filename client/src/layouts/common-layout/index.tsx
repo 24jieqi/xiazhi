@@ -4,13 +4,11 @@ import { ProLayout } from '@ant-design/pro-components'
 import { Avatar } from 'antd'
 import React, { useState } from 'react'
 import { Link, Outlet, useLocation } from 'react-router-dom'
+import FeedbackModal from './Feedback'
 import defaultProps from './menuConfig'
 
 const settings = {
   fixSiderbar: true,
-  // navTheme: 'light',
-  // layout: 'mix',
-  // contentWidth: 'Fluid',
   headerHeight: 48,
   primaryColor: '#13C2C2',
   splitMenus: false,
@@ -28,11 +26,13 @@ const CommonLayout: React.FC = () => {
       <ProLayout
         {...defaultProps}
         navTheme="light"
+        breakpoint={false}
         layout="mix"
         contentWidth="Fluid"
         location={{
           pathname,
         }}
+        defaultCollapsed={true}
         menuItemRender={(item, dom) => (
           <Link
             to={item.path}
@@ -47,6 +47,7 @@ const CommonLayout: React.FC = () => {
             <Avatar shape="square" size="small" icon={<UserOutlined />} />
           </div>
         )}
+        menuFooterRender={() => <FeedbackModal />}
         title="多语言词库平台"
         {...settings}>
         <Outlet />
