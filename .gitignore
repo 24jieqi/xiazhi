@@ -1,5 +1,5 @@
 node_modules
-/server/lib
+/server/dist
 .DS_Store
 
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
@@ -28,3 +28,5 @@ yarn-error.log*
 moduleConfig.json
 
 .vscode
+
+server/views

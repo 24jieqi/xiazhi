@@ -2,7 +2,9 @@ import cors from "@koa/cors";
 import { ApolloServer } from "apollo-server-koa";
 import { ApolloServerPluginDrainHttpServer } from "apollo-server-core";
 import Koa from "koa";
+import serve from "koa-static";
 import http from "http";
+import path from "path";
 import schema from "../graphql";
 import { createContext } from "../graphql/context";
 
@@ -30,6 +32,8 @@ const apolloServer = new ApolloServer({
 const app = new Koa();
 
 app.use(cors());
+
+app.use(serve(path.resolve(__dirname, '../../views')))
 
 const PORT = 3000;
 
