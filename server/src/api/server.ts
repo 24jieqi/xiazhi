@@ -5,6 +5,7 @@ import Koa from "koa";
 import serve from "koa-static";
 import http from "http";
 import path from "path";
+import historyApiFallback from "koa2-connect-history-api-fallback"
 import schema from "../graphql";
 import { createContext } from "../graphql/context";
 
@@ -31,9 +32,9 @@ const apolloServer = new ApolloServer({
 
 const app = new Koa();
 
-app.use(cors());
-
-app.use(serve(path.resolve(__dirname, '../../views')))
+app.use(cors())
+  .use(historyApiFallback({ whiteList: ['/graphql'] }))
+  .use(serve(path.resolve(__dirname, '../../views')))
 
 const PORT = 3000;
 
