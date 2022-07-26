@@ -251,6 +251,7 @@ export interface NexusGenFieldTypes {
     pageAllPublicEntries: NexusGenRootTypes['EntryPaging'] | null; // EntryPaging
     pageAppEntries: NexusGenRootTypes['EntryPaging'] | null; // EntryPaging
     pageFeedbackNegative: NexusGenRootTypes['FeedbackPaging'] | null; // FeedbackPaging
+    validEntryKey: boolean | null; // Boolean
   }
   RecordItem: { // field return type
     createdAt: NexusGenScalars['DateTime'] | null; // DateTime
@@ -371,6 +372,7 @@ export interface NexusGenFieldTypeNames {
     pageAllPublicEntries: 'EntryPaging'
     pageAppEntries: 'EntryPaging'
     pageFeedbackNegative: 'FeedbackPaging'
+    validEntryKey: 'Boolean'
   }
   RecordItem: { // field return type name
     createdAt: 'DateTime'
@@ -518,6 +520,11 @@ export interface NexusGenArgTypes {
     pageFeedbackNegative: { // args
       pageNo: number; // Int!
       pageSize: number; // Int!
+    }
+    validEntryKey: { // args
+      appId: number; // Int!
+      entryId?: number | null; // Int
+      key?: string | null; // String
     }
   }
 }

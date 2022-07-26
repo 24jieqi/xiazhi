@@ -154,6 +154,19 @@ export const EntryMutation = extendType({
             entry_id: args.entryId,
           },
         });
+        // 在某个应用中查找排除自身词条key相同的词条列表
+        const entries = await ctx.prisma.entry.findMany({
+          where: {
+            key: args.key,
+            appApp_id: currentEntry?.appApp_id,
+            entry_id: {
+              not: args.entryId
+            }
+          }
+        })
+        if (entries && entries.length) {
+          throw new Error('词条key在应用内唯一')
+        }
         await ctx.prisma.entry.update({
           where: {
             entry_id: args.entryId,
@@ -372,6 +385,30 @@ export const EntryQuery = extendType({
         };
       },
     });
+    t.field("validEntryKey", {
+      description: '词条key应用内唯一校验',
+      type: 'Boolean',
+      args: {
+        appId: nonNull(intArg()),
+        entryId: intArg(),
+        key: stringArg(),
+      },
+      async resolve(_, args, ctx) {
+        const targetEntries = await ctx.prisma.entry.findMany({
+          where: {
+            appApp_id: args.appId,
+            entry_id: {
+              not: args.entryId || undefined
+            },
+            key: args.key
+          }
+        })
+        if (targetEntries && targetEntries.length) {
+          return false
+        }
+        return true
+      }
+    })
   },
 });
 
