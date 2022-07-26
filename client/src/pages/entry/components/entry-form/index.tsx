@@ -1,16 +1,13 @@
-import { ModalForm, ProForm, ProFormText } from '@ant-design/pro-components'
-import { Button, message } from 'antd'
+import { ProForm, ProFormText } from '@ant-design/pro-components'
+import { message } from 'antd'
 import React, { useEffect, useRef } from 'react'
-import {
-  LangageTypeOption,
-  LanguageTypeEnum,
-  RecordItem,
-} from '@/graphql/generated/types'
+import { LangageTypeOption, LanguageTypeEnum } from '@/graphql/generated/types'
 import { useListSupportLanguageQuery } from '@/graphql/operations/__generated__/basic.generated'
 import {
   useCreateEntryMutation,
   useUpdateEntryMutation,
 } from '@/graphql/operations/__generated__/entry.generated'
+import { entryKeyValidator } from '../validator'
 
 interface EntryFormProps {
   children?: JSX.Element
@@ -59,22 +56,6 @@ const EntryForm: React.FC<EntryFormProps> = ({
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialFormData])
-  async function handleAddEntry() {
-    const res = await form.validateFields()
-    isAddActionRef.current = true
-    await createEntry({
-      variables: {
-        key: res.key,
-        appId: initialFormData.appId,
-        langs: {
-          ...omit(res, ['key']),
-        },
-      },
-    })
-    isAddActionRef.current = false
-    onActionSuccess?.()
-    message.success('新增词条成功！')
-  }
   return (
     <ProForm
       form={form}
@@ -110,30 +91,27 @@ const EntryForm: React.FC<EntryFormProps> = ({
       }}
       submitter={{
         searchConfig: { submitText: '编辑' },
-        render: (_, doms) => {
-          return [
-            ...doms,
-            <Button
-              loading={isAddActionRef.current && loading}
-              key="add"
-              type="primary"
-              onClick={handleAddEntry}>
-              新增
-            </Button>,
-          ]
-        },
       }}>
-      <ProFormText
-        name="key"
-        label="词条key"
-        tooltip="词条可读的描述，应用内唯一"
-        placeholder="请输入词条key"
-        // addonAfter={
-        //   <Tooltip title="随机生成一个">
-        //     <RedoOutlined />
-        //   </Tooltip>
-        // }
-      />
+      <ProForm.Item shouldUpdate>
+        {({ getFieldValue }) => {
+          const entryId = getFieldValue('entryId')
+          const appId = getFieldValue('appId')
+          return (
+            <ProFormText
+              name="key"
+              label="词条key"
+              tooltip="词条可读的描述，应用内唯一"
+              placeholder="请输入词条key"
+              validateTrigger="onBlur"
+              rules={[
+                {
+                  validator: entryKeyValidator(appId, entryId),
+                },
+              ]}
+            />
+          )
+        }}
+      </ProForm.Item>
       {langs.map((lang, index) => {
         return (
           <ProForm.Group key={index}>

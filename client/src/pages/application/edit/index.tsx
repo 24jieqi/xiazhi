@@ -198,6 +198,18 @@ const EntryList: React.FC<EntryListProps> = props => {
               导入
             </Button>
           </Tooltip>,
+          <EntryModal
+            initialFormData={{
+              appId,
+            }}
+            key="add"
+            onActionSuccess={() => {
+              actionRef.current.reload()
+            }}>
+            <Button size="small" type="primary">
+              新增词条
+            </Button>
+          </EntryModal>,
         ],
       }}
       onRow={record => {

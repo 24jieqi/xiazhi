@@ -138,6 +138,14 @@ export type DeleteEntriesMutationVariables = SchemaTypes.Exact<{
 
 export type DeleteEntriesMutation = { deleteEntries?: boolean }
 
+export type ValidEntryKeyQueryVariables = SchemaTypes.Exact<{
+  appId: SchemaTypes.Scalars['Int']
+  entryId?: SchemaTypes.InputMaybe<SchemaTypes.Scalars['Int']>
+  key?: SchemaTypes.InputMaybe<SchemaTypes.Scalars['String']>
+}>
+
+export type ValidEntryKeyQuery = { validEntryKey?: boolean }
+
 export const PageAllPublicEntriesDocument = gql`
   query PageAllPublicEntries($pageSize: Int!, $pageNo: Int!) {
     pageAllPublicEntries(pageSize: $pageSize, pageNo: $pageNo) {
@@ -556,4 +564,62 @@ export type DeleteEntriesMutationResult =
 export type DeleteEntriesMutationOptions = Apollo.BaseMutationOptions<
   DeleteEntriesMutation,
   DeleteEntriesMutationVariables
+>
+export const ValidEntryKeyDocument = gql`
+  query ValidEntryKey($appId: Int!, $entryId: Int, $key: String) {
+    validEntryKey(appId: $appId, entryId: $entryId, key: $key)
+  }
+`
+
+/**
+ * __useValidEntryKeyQuery__
+ *
+ * To run a query within a React component, call `useValidEntryKeyQuery` and pass it any options that fit your needs.
+ * When your component renders, `useValidEntryKeyQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useValidEntryKeyQuery({
+ *   variables: {
+ *      appId: // value for 'appId'
+ *      entryId: // value for 'entryId'
+ *      key: // value for 'key'
+ *   },
+ * });
+ */
+export function useValidEntryKeyQuery(
+  baseOptions: Apollo.QueryHookOptions<
+    ValidEntryKeyQuery,
+    ValidEntryKeyQueryVariables
+  >,
+) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useQuery<ValidEntryKeyQuery, ValidEntryKeyQueryVariables>(
+    ValidEntryKeyDocument,
+    options,
+  )
+}
+export function useValidEntryKeyLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<
+    ValidEntryKeyQuery,
+    ValidEntryKeyQueryVariables
+  >,
+) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useLazyQuery<ValidEntryKeyQuery, ValidEntryKeyQueryVariables>(
+    ValidEntryKeyDocument,
+    options,
+  )
+}
+export type ValidEntryKeyQueryHookResult = ReturnType<
+  typeof useValidEntryKeyQuery
+>
+export type ValidEntryKeyLazyQueryHookResult = ReturnType<
+  typeof useValidEntryKeyLazyQuery
+>
+export type ValidEntryKeyQueryResult = Apollo.QueryResult<
+  ValidEntryKeyQuery,
+  ValidEntryKeyQueryVariables
 >

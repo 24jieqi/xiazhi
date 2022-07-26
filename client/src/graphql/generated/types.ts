@@ -305,6 +305,8 @@ export type Query = {
   pageAppEntries?: Maybe<EntryPaging>
   /** 反馈问题内容分页 */
   pageFeedbackNegative?: Maybe<FeedbackPaging>
+  /** 词条key应用内唯一校验 */
+  validEntryKey?: Maybe<Scalars['Boolean']>
 }
 
 export type QueryGetAccessKeyByAppIdArgs = {
@@ -347,6 +349,12 @@ export type QueryPageAppEntriesArgs = {
 export type QueryPageFeedbackNegativeArgs = {
   pageNo: Scalars['Int']
   pageSize: Scalars['Int']
+}
+
+export type QueryValidEntryKeyArgs = {
+  appId: Scalars['Int']
+  entryId?: InputMaybe<Scalars['Int']>
+  key?: InputMaybe<Scalars['String']>
 }
 
 /** 词条操作记录 */

@@ -8,10 +8,12 @@ import {
   useCreateEntryMutation,
   useUpdateEntryMutation,
 } from '@/graphql/operations/__generated__/entry.generated'
+import { entryKeyValidator } from '../validator'
 
 interface EntryModalProps {
   children?: JSX.Element
   initialFormData?: any
+  onActionSuccess?: () => void
 }
 
 function groupLangs(langs: LangageTypeOption[]) {
@@ -36,6 +38,7 @@ function omit(obj: any, keys: string[]) {
 const EntryModal: React.FC<EntryModalProps> = ({
   children,
   initialFormData,
+  onActionSuccess,
 }) => {
   const { data } = useListSupportLanguageQuery()
   const [createEntry] = useCreateEntryMutation()
@@ -86,20 +89,30 @@ const EntryModal: React.FC<EntryModalProps> = ({
           })
           message.success('新增词条成功！')
         }
+        onActionSuccess?.()
         return true
       }}>
-      <ProFormText
-        width="md"
-        name="key"
-        label="词条key"
-        tooltip="词条可读的描述，应用内唯一"
-        placeholder="请输入词条key"
-        // addonAfter={
-        //   <Tooltip title="随机生成一个">
-        //     <RedoOutlined />
-        //   </Tooltip>
-        // }
-      />
+      <ProForm.Item shouldUpdate>
+        {({ getFieldValue }) => {
+          const appId = getFieldValue('appId')
+          const entryId = getFieldValue('entryId')
+          return (
+            <ProFormText
+              validateTrigger="onBlur"
+              rules={[
+                {
+                  validator: entryKeyValidator(appId, entryId),
+                },
+              ]}
+              width="md"
+              name="key"
+              label="词条key"
+              tooltip="词条可读的描述，应用内唯一"
+              placeholder="请输入词条key"
+            />
+          )
+        }}
+      </ProForm.Item>
       {langs.map((lang, index) => {
         return (
           <ProForm.Group key={index}>

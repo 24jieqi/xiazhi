@@ -119,3 +119,7 @@ mutation ChangeEntryAccessStatus(
 mutation DeleteEntries($appId: Int!, $entryIds: [Int!]!) {
   deleteEntries(appId: $appId, entryIds: $entryIds)
 }
+
+query ValidEntryKey($appId: Int!, $entryId: Int, $key: String) {
+  validEntryKey(appId: $appId, entryId: $entryId, key: $key)
+}
