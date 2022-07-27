@@ -1,0 +1,1 @@
+export const historyApiFallbackWhiteList = ['/graphql', '/assets/template.xlsx']
