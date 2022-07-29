@@ -177,6 +177,8 @@ export type Mutation = {
   /** 编辑用户信息 */
   updateUserInfo?: Maybe<Scalars['Boolean']>
   uploadEntries?: Maybe<Scalars['Boolean']>
+  /** 通过excel上传词条 */
+  uploadEntriesXlsx?: Maybe<Scalars['Boolean']>
 }
 
 export type MutationAddLangageArgs = {
@@ -282,6 +284,11 @@ export type MutationUpdateUserInfoArgs = {
 export type MutationUploadEntriesArgs = {
   accessKey?: InputMaybe<Scalars['String']>
   entries: Array<InputMaybe<UploadEntryItem>>
+}
+
+export type MutationUploadEntriesXlsxArgs = {
+  appId: Scalars['Int']
+  fileUrl: Scalars['String']
 }
 
 export type Query = {

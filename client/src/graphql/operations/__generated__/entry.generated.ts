@@ -146,6 +146,13 @@ export type ValidEntryKeyQueryVariables = SchemaTypes.Exact<{
 
 export type ValidEntryKeyQuery = { validEntryKey?: boolean }
 
+export type UploadEntriesXlsxMutationVariables = SchemaTypes.Exact<{
+  appId: SchemaTypes.Scalars['Int']
+  fileUrl: SchemaTypes.Scalars['String']
+}>
+
+export type UploadEntriesXlsxMutation = { uploadEntriesXlsx?: boolean }
+
 export const PageAllPublicEntriesDocument = gql`
   query PageAllPublicEntries($pageSize: Int!, $pageNo: Int!) {
     pageAllPublicEntries(pageSize: $pageSize, pageNo: $pageNo) {
@@ -622,4 +629,53 @@ export type ValidEntryKeyLazyQueryHookResult = ReturnType<
 export type ValidEntryKeyQueryResult = Apollo.QueryResult<
   ValidEntryKeyQuery,
   ValidEntryKeyQueryVariables
+>
+export const UploadEntriesXlsxDocument = gql`
+  mutation UploadEntriesXlsx($appId: Int!, $fileUrl: String!) {
+    uploadEntriesXlsx(appId: $appId, fileUrl: $fileUrl)
+  }
+`
+export type UploadEntriesXlsxMutationFn = Apollo.MutationFunction<
+  UploadEntriesXlsxMutation,
+  UploadEntriesXlsxMutationVariables
+>
+
+/**
+ * __useUploadEntriesXlsxMutation__
+ *
+ * To run a mutation, you first call `useUploadEntriesXlsxMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUploadEntriesXlsxMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [uploadEntriesXlsxMutation, { data, loading, error }] = useUploadEntriesXlsxMutation({
+ *   variables: {
+ *      appId: // value for 'appId'
+ *      fileUrl: // value for 'fileUrl'
+ *   },
+ * });
+ */
+export function useUploadEntriesXlsxMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    UploadEntriesXlsxMutation,
+    UploadEntriesXlsxMutationVariables
+  >,
+) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useMutation<
+    UploadEntriesXlsxMutation,
+    UploadEntriesXlsxMutationVariables
+  >(UploadEntriesXlsxDocument, options)
+}
+export type UploadEntriesXlsxMutationHookResult = ReturnType<
+  typeof useUploadEntriesXlsxMutation
+>
+export type UploadEntriesXlsxMutationResult =
+  Apollo.MutationResult<UploadEntriesXlsxMutation>
+export type UploadEntriesXlsxMutationOptions = Apollo.BaseMutationOptions<
+  UploadEntriesXlsxMutation,
+  UploadEntriesXlsxMutationVariables
 >

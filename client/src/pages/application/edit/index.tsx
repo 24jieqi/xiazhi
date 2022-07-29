@@ -1,6 +1,15 @@
 import type { ActionType, ProColumns } from '@ant-design/pro-components'
 import { ProCard, ProTable } from '@ant-design/pro-components'
-import { Tag, Button, Empty, message, Space, Table, Tooltip } from 'antd'
+import {
+  Tag,
+  Button,
+  Empty,
+  message,
+  Space,
+  Table,
+  Tooltip,
+  Upload,
+} from 'antd'
 import React, { useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import dayjs from 'dayjs'
@@ -9,12 +18,14 @@ import {
   useChangeEntryAccessStatusMutation,
   useDeleteEntriesMutation,
   usePageAppEntriesLazyQuery,
+  useUploadEntriesXlsxMutation,
 } from '@/graphql/operations/__generated__/entry.generated'
 import { EntryItem } from '@/graphql/generated/types'
 import EntryModal from '@/pages/entry/components/entry-modal'
 import EntryForm from '@/pages/entry/components/entry-form'
 import ModifyRecordsModal from '@/pages/entry/components/modify-record-modal'
 import { appTypeOptions } from '../constant'
+import UploadXlsx from '../components/upload-xlsx'
 import styles from './split.module.less'
 
 type EntryListProps = {
@@ -29,6 +40,7 @@ const EntryList: React.FC<EntryListProps> = props => {
   const [pageAllPublicEntries] = usePageAppEntriesLazyQuery()
   const [changeEntryAccess] = useChangeEntryAccessStatusMutation()
   const [deleteEntries] = useDeleteEntriesMutation()
+  const [uploadXlxs] = useUploadEntriesXlsxMutation()
   const appId = Number(routeParams.id)
   async function handleMultiDelete(entryIds: number[], onSuccess?: () => void) {
     await deleteEntries({
@@ -52,6 +64,17 @@ const EntryList: React.FC<EntryListProps> = props => {
     })
     message.success('操作成功！')
     actionRef.current.reload()
+  }
+  async function handleUploadEntries(url: string, callback: () => void) {
+    await uploadXlxs({
+      variables: {
+        fileUrl: url,
+        appId,
+      },
+    })
+    actionRef.current.reload()
+    message.success('导入词条成功！')
+    callback()
   }
   const columns: ProColumns<EntryItem>[] = [
     {
@@ -135,16 +158,18 @@ const EntryList: React.FC<EntryListProps> = props => {
         row.archive ? null : (
           <a
             key="achieve"
-            onClick={() => {
-              handleChangeEntryAccess('archive', row)
+            onClick={async () => {
+              await handleChangeEntryAccess('archive', row)
+              onChange?.(null)
             }}>
             归档
           </a>
         ),
         <a
           key="delete"
-          onClick={() => {
-            handleChangeEntryAccess('deleted', row)
+          onClick={async () => {
+            await handleChangeEntryAccess('deleted', row)
+            onChange?.(null)
           }}>
           删除
         </a>,
@@ -190,14 +215,16 @@ const EntryList: React.FC<EntryListProps> = props => {
       }}
       toolbar={{
         actions: [
-          <Button disabled size="small" key="list" type="link">
+          <Button
+            size="small"
+            key="list"
+            type="link"
+            onClick={() =>
+              window.open('http://localhost:3000/assets/template.xlsx')
+            }>
             下载多语言模版
           </Button>,
-          <Tooltip key="export" title="敬请期待">
-            <Button size="small" key="list" type="primary">
-              导入
-            </Button>
-          </Tooltip>,
+          <UploadXlsx key="upload" onUploadSuccess={handleUploadEntries} />,
           <EntryModal
             initialFormData={{
               appId,
@@ -247,6 +274,13 @@ const EntryList: React.FC<EntryListProps> = props => {
               handleMultiDelete(selectedRowKeys as number[], () => {
                 onCleanSelected()
                 actionRef.current.reload()
+                // 当被选中的包含在删除列表中，清空表格
+                if (
+                  selectedEntry &&
+                  selectedRowKeys.includes(selectedEntry.entry_id)
+                ) {
+                  onChange?.(null)
+                }
               })
             }>
             批量删除
@@ -281,14 +315,16 @@ const AppEntryEditPage: React.FC = () => {
           {currentType?.label}
         </Tag>,
       ]}>
-      <ProCard colSpan={14} ghost>
+      <ProCard colSpan={16} ghost>
         <EntryList
           actionRef={actionRef}
-          onChange={cIp => setCurrent(cIp)}
+          onChange={currentItem => {
+            setCurrent(currentItem)
+          }}
           selectedEntry={current}
         />
       </ProCard>
-      <ProCard colSpan={10} title={current?.mainLangText}>
+      <ProCard colSpan={8} title={current?.mainLangText}>
         {current ? (
           <EntryForm
             onActionSuccess={handleAddOrUpdateSuccess}

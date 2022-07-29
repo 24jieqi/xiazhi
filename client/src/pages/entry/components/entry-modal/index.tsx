@@ -1,5 +1,10 @@
 import { PlusOutlined } from '@ant-design/icons'
-import { ModalForm, ProForm, ProFormText } from '@ant-design/pro-components'
+import {
+  ModalForm,
+  ProForm,
+  ProFormCheckbox,
+  ProFormText,
+} from '@ant-design/pro-components'
 import { Button, message } from 'antd'
 import React, { useEffect, useRef } from 'react'
 import { LangageTypeOption, LanguageTypeEnum } from '@/graphql/generated/types'
@@ -9,6 +14,7 @@ import {
   useUpdateEntryMutation,
 } from '@/graphql/operations/__generated__/entry.generated'
 import { entryKeyValidator } from '../validator'
+import { generateEntryKey } from '../utils'
 
 interface EntryModalProps {
   children?: JSX.Element
@@ -45,6 +51,14 @@ const EntryModal: React.FC<EntryModalProps> = ({
   const [updateEntry] = useUpdateEntryMutation()
   const langs = groupLangs(data?.listSupportLanguage)
   const [form] = ProForm.useForm()
+  function handleValuesChange(changedValues: Record<string, any>, values) {
+    const keys = Object.keys(changedValues)
+    if (keys.includes(LanguageTypeEnum.English) && values.autoGenerate) {
+      form.setFieldsValue({
+        key: generateEntryKey(changedValues[LanguageTypeEnum.English]),
+      })
+    }
+  }
   // 设置默认值
   useEffect(() => {
     if (typeof initialFormData !== 'undefined') {
@@ -55,6 +69,8 @@ const EntryModal: React.FC<EntryModalProps> = ({
   return (
     <ModalForm
       form={form}
+      onValuesChange={handleValuesChange}
+      initialValues={{ autoGenerate: true }}
       trigger={
         children || (
           <Button type="primary">
@@ -96,8 +112,10 @@ const EntryModal: React.FC<EntryModalProps> = ({
         {({ getFieldValue }) => {
           const appId = getFieldValue('appId')
           const entryId = getFieldValue('entryId')
+          const autoGenerate = getFieldValue('autoGenerate')
           return (
             <ProFormText
+              disabled={autoGenerate}
               validateTrigger="onBlur"
               rules={[
                 {
@@ -109,6 +127,11 @@ const EntryModal: React.FC<EntryModalProps> = ({
               label="词条key"
               tooltip="词条可读的描述，应用内唯一"
               placeholder="请输入词条key"
+              addonAfter={
+                <ProFormCheckbox noStyle name="autoGenerate">
+                  自动生成
+                </ProFormCheckbox>
+              }
             />
           )
         }}
