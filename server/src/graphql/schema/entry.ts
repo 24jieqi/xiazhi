@@ -11,6 +11,7 @@ import {
 } from "nexus";
 import { formatISO } from "date-fns";
 import { decodedToken } from "../token";
+import { convertXlsxData, readXlsxOrigin, splitUpdateOrCreateEntries } from "../utils/xlsx";
 
 export const RecordItem = objectType({
   name: "RecordItem",
@@ -275,6 +276,57 @@ export const EntryMutation = extendType({
           data: {
             entries: {
               disconnect: list
+            }
+          }
+        })
+        return true
+      }
+    })
+    t.field('uploadEntriesXlsx', {
+      type: 'Boolean',
+      description: '通过excel上传词条',
+      args: {
+        appId: nonNull(intArg()),
+        fileUrl: nonNull(stringArg())
+      },
+      async resolve(_, args, ctx) {
+        const { userId } = decodedToken(ctx.req)!
+        const file = await readXlsxOrigin(args.fileUrl)
+        const entries = convertXlsxData(file)
+        const entriesExist = await ctx.prisma.entry.findMany({
+          where: {
+            appApp_id: args.appId
+          }
+        })
+        const result = splitUpdateOrCreateEntries(entries, entriesExist)
+        // 更新已存在的词条（更新词条/创建编辑记录）
+        await ctx.prisma.$transaction(
+          result.update.map(item => ctx.prisma.entry.update({
+            where: {
+              entry_id: item.prevEntry?.entry_id!
+            },
+            data: {
+              langs: item.langs,
+              modifyRecords: {
+                create: {
+                  prevLangs: item.prevEntry?.langs || {},
+                  currLangs: item.langs,
+                  prevKey: item.prevEntry?.key,
+                  currKey: item.key,
+                  creator: userId
+                }
+              }
+            },
+          }))
+        )
+        // 新增词条
+        await ctx.prisma.app.update({
+          where: {
+            app_id: args.appId,
+          },
+          data: {
+            entries: {
+              create: result.create,
             }
           }
         })

@@ -186,6 +186,9 @@ type Mutation {
   """编辑用户信息"""
   updateUserInfo(avatar: String, name: String, nickName: String, phone: String, role: UserRoleEnum): Boolean
   uploadEntries(accessKey: String, entries: [UploadEntryItem]!): Boolean
+
+  """通过excel上传词条"""
+  uploadEntriesXlsx(appId: Int!, fileUrl: String!): Boolean
 }
 
 type Query {

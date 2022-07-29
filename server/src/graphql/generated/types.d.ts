@@ -239,6 +239,7 @@ export interface NexusGenFieldTypes {
     updateEntry: boolean | null; // Boolean
     updateUserInfo: boolean | null; // Boolean
     uploadEntries: boolean | null; // Boolean
+    uploadEntriesXlsx: boolean | null; // Boolean
   }
   Query: { // field return type
     countPositive: number | null; // Int
@@ -360,6 +361,7 @@ export interface NexusGenFieldTypeNames {
     updateEntry: 'Boolean'
     updateUserInfo: 'Boolean'
     uploadEntries: 'Boolean'
+    uploadEntriesXlsx: 'Boolean'
   }
   Query: { // field return type name
     countPositive: 'Int'
@@ -483,6 +485,10 @@ export interface NexusGenArgTypes {
     uploadEntries: { // args
       accessKey?: string | null; // String
       entries: Array<NexusGenInputs['UploadEntryItem'] | null>; // [UploadEntryItem]!
+    }
+    uploadEntriesXlsx: { // args
+      appId: number; // Int!
+      fileUrl: string; // String!
     }
   }
   Query: {
