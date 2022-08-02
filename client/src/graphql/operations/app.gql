@@ -113,3 +113,11 @@ mutation RefreshAccessKey($refreshAccessKeyId: Int!) {
 mutation ChangeAccessStatus($appId: Int!, $access: Boolean, $push: Boolean) {
   changeAccessStatus(appId: $appId, access: $access, push: $push)
 }
+
+mutation ArchivedApp($archivedAppId: Int!) {
+  archivedApp(id: $archivedAppId)
+}
+
+mutation DeleteApp($deleteAppId: Int!) {
+  deleteApp(id: $deleteAppId)
+}

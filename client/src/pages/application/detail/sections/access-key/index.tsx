@@ -1,32 +1,89 @@
-import { ProFormText, ProList } from '@ant-design/pro-components'
-import { Button, Form, Input, Popover, Switch, Tag, Typography } from 'antd'
-import React, { useEffect } from 'react'
+import { ProList } from '@ant-design/pro-components'
+import { Button, Modal, Switch, Tag, Typography } from 'antd'
+import React from 'react'
 import { useParams } from 'react-router-dom'
-import { RedoOutlined } from '@ant-design/icons'
+import { ExclamationCircleOutlined, RedoOutlined } from '@ant-design/icons'
 import {
+  useArchivedAppMutation,
+  useChangeAccessStatusMutation,
+  useDeleteAppMutation,
   useGetAccessKeyByAppIdQuery,
   useRefreshAccessKeyMutation,
 } from '@/graphql/operations/__generated__/app.generated'
+import AsyncSwitch from '@/components/async-switch'
 
 const { Paragraph } = Typography
 
 const AccessKeyManagement: React.FC = () => {
   const params = useParams()
-  const [form] = Form.useForm()
-  const { data } = useGetAccessKeyByAppIdQuery({
+  const appId = Number(params.id)
+  const {
+    data,
+    loading: getAccessInfoLoading,
+    refetch,
+  } = useGetAccessKeyByAppIdQuery({
     variables: {
-      getAccessKeyByAppIdId: Number(params.id),
+      getAccessKeyByAppIdId: appId,
     },
   })
   const [refreshAccessKey, { loading }] = useRefreshAccessKeyMutation()
+  const [changeAppAccessStatus] = useChangeAccessStatusMutation()
+  const [archiveApp] = useArchivedAppMutation()
+  const [deleteApp] = useDeleteAppMutation()
   async function handleRefreshAccessKey() {
-    const res = await refreshAccessKey({
+    await refreshAccessKey({
       variables: {
-        refreshAccessKeyId: Number(params.id),
+        refreshAccessKeyId: appId,
       },
     })
-    form.setFieldsValue({
-      accessKey: res.data?.refreshAccessKey,
+    refetch()
+  }
+  async function handleChangeAppAccessStatus(
+    type: 'access' | 'push',
+    checked: boolean,
+  ) {
+    try {
+      await changeAppAccessStatus({
+        variables: {
+          appId,
+          [type]: checked,
+        },
+      })
+      return checked
+    } catch (error) {
+      return checked
+    }
+  }
+  async function handleArchivedApp() {
+    Modal.confirm({
+      title: '请确认是否归档此应用？',
+      icon: <ExclamationCircleOutlined />,
+      content:
+        '归档是不可逆操作，归档后应用无法添加修改词条，不可编辑应用信息，但仍然可以正常访问。',
+      onOk: async () => {
+        await archiveApp({
+          variables: {
+            archivedAppId: appId,
+          },
+        })
+        refetch()
+      },
+    })
+  }
+  async function handleDeleteApp() {
+    Modal.confirm({
+      title: '请确认是否删除此应用？',
+      icon: <ExclamationCircleOutlined />,
+      content: '此操作不可逆，删除后应用不能再访问',
+      onOk: async () => {
+        await deleteApp({
+          variables: {
+            deleteAppId: appId,
+          },
+        })
+        refetch()
+        return true
+      },
     })
   }
   const dataSource = [
@@ -34,34 +91,31 @@ const AccessKeyManagement: React.FC = () => {
       title: '可访问',
       description: '用户设置公共API接口能否访问此应用的词条信息',
       actions: [
-        <Form.Item noStyle key="access" name="access" valuePropName="checked">
-          <Switch disabled />
-        </Form.Item>,
+        <AsyncSwitch
+          key="access"
+          defaultChecked={data?.getAccessKeyByAppId?.access}
+          onChange={checked => handleChangeAppAccessStatus('access', checked)}
+        />,
       ],
     },
     {
       title: '可推送',
       description: '用户设置能否通过API推送词条到应用',
       actions: [
-        <Form.Item key="push" name="push" noStyle valuePropName="checked">
-          <Switch disabled />
-        </Form.Item>,
+        <AsyncSwitch
+          key="push"
+          defaultChecked={data?.getAccessKeyByAppId?.push}
+          onChange={checked => handleChangeAppAccessStatus('push', checked)}
+        />,
       ],
     },
     {
       title: 'Access Key',
       subTitle: <Tag color="#5BD8A6">应用访问</Tag>,
       actions: [
-        <Form.Item shouldUpdate key="accessKey" noStyle>
-          {({ getFieldValue }) => {
-            const accessKey = getFieldValue('accessKey')
-            return (
-              <Paragraph style={{ marginBottom: 0 }} copyable>
-                {accessKey}
-              </Paragraph>
-            )
-          }}
-        </Form.Item>,
+        <Paragraph key="assessKey" style={{ marginBottom: 0 }} copyable>
+          {data?.getAccessKeyByAppId?.accessKey}
+        </Paragraph>,
         <Button
           onClick={handleRefreshAccessKey}
           loading={loading}
@@ -79,51 +133,43 @@ const AccessKeyManagement: React.FC = () => {
       description:
         '归档后，应用将被锁定，无法更改应用基本信息以及词条信息，无法邀请协作者',
       actions: [
-        <Form.Item
+        <Switch
           key="archived"
-          noStyle
-          name="archived"
-          valuePropName="checked">
-          <Switch key="access" disabled />
-        </Form.Item>,
+          checked={data?.getAccessKeyByAppId?.archived}
+          disabled={data?.getAccessKeyByAppId?.archived}
+          onChange={handleArchivedApp}
+        />,
       ],
     },
     {
       title: '删除',
-
       description: '删除后，应用将不可见，也不能访问，并且不可恢复',
       actions: [
-        <Form.Item key="deleted" noStyle name="deleted" valuePropName="checked">
-          <Switch disabled />
-        </Form.Item>,
+        <Switch
+          key="deleted"
+          checked={data?.getAccessKeyByAppId?.deleted}
+          disabled={data?.getAccessKeyByAppId?.deleted}
+          onChange={handleDeleteApp}
+        />,
       ],
     },
   ]
-  useEffect(() => {
-    if (data?.getAccessKeyByAppId) {
-      form.setFieldsValue({
-        ...data?.getAccessKeyByAppId,
-      })
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [data?.getAccessKeyByAppId])
   return (
-    <Form form={form}>
-      <ProList<any>
-        showActions="always"
-        onItem={(record: any) => {
-          return {}
-        }}
-        metas={{
-          title: {},
-          subTitle: {},
-          description: {},
-          actions: {},
-        }}
-        headerTitle="访问权限key设置"
-        dataSource={dataSource}
-      />
-    </Form>
+    <ProList<any>
+      loading={getAccessInfoLoading}
+      showActions="always"
+      onItem={(record: any) => {
+        return {}
+      }}
+      metas={{
+        title: {},
+        subTitle: {},
+        description: {},
+        actions: {},
+      }}
+      headerTitle="访问权限key设置"
+      dataSource={dataSource}
+    />
   )
 }
 

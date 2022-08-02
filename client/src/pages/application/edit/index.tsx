@@ -80,6 +80,7 @@ const EntryList: React.FC<EntryListProps> = props => {
     {
       title: '词条Key',
       dataIndex: 'key',
+      copyable: true,
       render(dom, entity) {
         return (
           <Space>
@@ -92,7 +93,6 @@ const EntryList: React.FC<EntryListProps> = props => {
     {
       title: '主语言',
       dataIndex: 'mainLangText',
-      copyable: true,
     },
     {
       title: '创建时间',

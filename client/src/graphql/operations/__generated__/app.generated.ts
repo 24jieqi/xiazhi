@@ -124,6 +124,18 @@ export type ChangeAccessStatusMutationVariables = SchemaTypes.Exact<{
 
 export type ChangeAccessStatusMutation = { changeAccessStatus?: boolean }
 
+export type ArchivedAppMutationVariables = SchemaTypes.Exact<{
+  archivedAppId: SchemaTypes.Scalars['Int']
+}>
+
+export type ArchivedAppMutation = { archivedApp?: boolean }
+
+export type DeleteAppMutationVariables = SchemaTypes.Exact<{
+  deleteAppId: SchemaTypes.Scalars['Int']
+}>
+
+export type DeleteAppMutation = { deleteApp?: boolean }
+
 export const GetCurrentAppsDocument = gql`
   query GetCurrentApps(
     $name: String
@@ -583,4 +595,99 @@ export type ChangeAccessStatusMutationResult =
 export type ChangeAccessStatusMutationOptions = Apollo.BaseMutationOptions<
   ChangeAccessStatusMutation,
   ChangeAccessStatusMutationVariables
+>
+export const ArchivedAppDocument = gql`
+  mutation ArchivedApp($archivedAppId: Int!) {
+    archivedApp(id: $archivedAppId)
+  }
+`
+export type ArchivedAppMutationFn = Apollo.MutationFunction<
+  ArchivedAppMutation,
+  ArchivedAppMutationVariables
+>
+
+/**
+ * __useArchivedAppMutation__
+ *
+ * To run a mutation, you first call `useArchivedAppMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useArchivedAppMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [archivedAppMutation, { data, loading, error }] = useArchivedAppMutation({
+ *   variables: {
+ *      archivedAppId: // value for 'archivedAppId'
+ *   },
+ * });
+ */
+export function useArchivedAppMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    ArchivedAppMutation,
+    ArchivedAppMutationVariables
+  >,
+) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useMutation<ArchivedAppMutation, ArchivedAppMutationVariables>(
+    ArchivedAppDocument,
+    options,
+  )
+}
+export type ArchivedAppMutationHookResult = ReturnType<
+  typeof useArchivedAppMutation
+>
+export type ArchivedAppMutationResult =
+  Apollo.MutationResult<ArchivedAppMutation>
+export type ArchivedAppMutationOptions = Apollo.BaseMutationOptions<
+  ArchivedAppMutation,
+  ArchivedAppMutationVariables
+>
+export const DeleteAppDocument = gql`
+  mutation DeleteApp($deleteAppId: Int!) {
+    deleteApp(id: $deleteAppId)
+  }
+`
+export type DeleteAppMutationFn = Apollo.MutationFunction<
+  DeleteAppMutation,
+  DeleteAppMutationVariables
+>
+
+/**
+ * __useDeleteAppMutation__
+ *
+ * To run a mutation, you first call `useDeleteAppMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeleteAppMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deleteAppMutation, { data, loading, error }] = useDeleteAppMutation({
+ *   variables: {
+ *      deleteAppId: // value for 'deleteAppId'
+ *   },
+ * });
+ */
+export function useDeleteAppMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    DeleteAppMutation,
+    DeleteAppMutationVariables
+  >,
+) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useMutation<DeleteAppMutation, DeleteAppMutationVariables>(
+    DeleteAppDocument,
+    options,
+  )
+}
+export type DeleteAppMutationHookResult = ReturnType<
+  typeof useDeleteAppMutation
+>
+export type DeleteAppMutationResult = Apollo.MutationResult<DeleteAppMutation>
+export type DeleteAppMutationOptions = Apollo.BaseMutationOptions<
+  DeleteAppMutation,
+  DeleteAppMutationVariables
 >
