@@ -66,6 +66,7 @@ export const AccessMutation = extendType({
           langs: entry?.langs,
           mainLangText: entry?.langs[LanguageType.CHINESE], // 设置主语言文本
           public: false,
+          uploaded: true
         }))
         await ctx.prisma.app.update({
           where: {
@@ -74,7 +75,7 @@ export const AccessMutation = extendType({
           data: {
             entries: {
               create: [
-                ...entries
+                ...entries,
               ]
             }
           }

@@ -38,6 +38,7 @@ model Entry {
   langs         Json?
   app           App?         @relation(fields: [appApp_id], references: [app_id])
   appApp_id     Int?
+  uploaded      Boolean      @default(false)
 }
 
 // 应用
