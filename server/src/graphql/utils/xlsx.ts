@@ -46,7 +46,6 @@ function excludeEmptyRows(rows: Row[]) {
  * @returns 
  */
 export function convertXlsxData(xlsxParsedData: XlsxPasedData): LangInsertItem[] {
-  console.log('123', JSON.stringify(xlsxParsedData))
   if (!xlsxParsedData || !xlsxParsedData.length) {
     return []
   }

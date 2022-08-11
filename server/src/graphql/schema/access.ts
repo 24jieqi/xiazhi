@@ -1,5 +1,5 @@
 import { LanguageType } from "@prisma/client";
-import { booleanArg, extendType, list, nonNull, objectType, stringArg, inputObjectType, arg } from "nexus";
+import { extendType, list, nonNull, stringArg, inputObjectType } from "nexus";
 
 export const AccessQuery = extendType({
   type: 'Query',

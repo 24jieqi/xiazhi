@@ -10,6 +10,7 @@
     "prisma:migrate": "npx prisma migrate dev --schema ./src/prisma/schema.prisma",
     "prisma:generate": "npx prisma generate --schema=./src/prisma/schema.prisma",
     "prisma:push": "npx prisma db push --schema=./src/prisma/schema.prisma",
+    "prisma:studio": "npx prisma studio --schema ./src/prisma/schema.prisma",
     "nexus:generate": "ts-node --transpile-only src/graphql/schema",
     "generate": "yarn prisma:generate && yarn nexus:generate",
     "build": "yarn clean && yarn generate && tsc"

@@ -1,4 +1,4 @@
-import { enumType, extendType, nonNull, objectType, stringArg } from "nexus";
+import { enumType, extendType, list, nonNull, objectType, stringArg } from "nexus";
 import bcrypt from 'bcrypt'
 import { decodedToken, generateToken } from "../token";
 import { sendRestEmail } from "../utils/mailer";
@@ -39,6 +39,31 @@ export const UserQuery = extendType({
         return await ctx.prisma.user.findUnique({
           where: {
             user_id: decoded?.userId
+          }
+        })
+      }
+    })
+    t.field("listUserFuzzyByUserName", {
+      description: "用户姓名的模糊查询",
+      type: list('UserInfo'),
+      args: {
+        keywords: nonNull(stringArg())
+      },
+      async resolve(_, args, ctx) {
+        decodedToken(ctx.req)
+        if (!args.keywords) {
+          return []
+        }
+        return await ctx.prisma.user.findMany({
+          where: {
+            name: {
+              contains: args.keywords
+            }
+          },
+          select: {
+            name: true,
+            email: true,
+            user_id: true
           }
         })
       }

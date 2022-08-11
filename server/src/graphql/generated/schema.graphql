@@ -71,6 +71,13 @@ enum AppTypeEnum {
   TOOL
 }
 
+"""协作信息项"""
+type CollaborateInfo {
+  app: AppItem
+  assignedAt: DateTime!
+  collaborator: UserInfo
+}
+
 """
 A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
 """
@@ -163,8 +170,14 @@ type Mutation {
   """删除（批量）应用词条"""
   deleteEntries(appId: Int!, entryIds: [Int!]!): Boolean
 
+  """退出协作"""
+  existCollaboration(appId: Int!): Boolean
+
   """反馈(新增/修改描述)"""
   feedback(feedbackId: Int, message: String, result: Boolean!, userId: Int): Int
+
+  """邀请协作者"""
+  inviteCollaborators(appId: Int!, userIdList: [Int!]!): Boolean
 
   """邮箱&密码登录"""
   login(email: String!, password: String!): String
@@ -174,6 +187,9 @@ type Mutation {
 
   """用户邮箱&密码注册"""
   register(email: String!, password: String!): String
+
+  """移除协作者"""
+  removeCollaborators(appId: Int!, userIdList: [Int!]!): Boolean
   resetPassword(oldPassword: String!, password: String!): Boolean
 
   """发送重设密码链接"""
@@ -201,6 +217,9 @@ type Query {
   """根据accessKey获取所有应用词条"""
   getAllEntries(accessKey: String!): [EntryItem]
 
+  """获取应用的协作者列表"""
+  getAppCollaborators(appId: Int!): [CollaborateInfo]
+
   """通过应用id获取应用基本信息"""
   getAppInfoById(id: Int!): AppItem
 
@@ -210,6 +229,9 @@ type Query {
   """获取当前登录用户的基本信息"""
   getCurrentUser: UserInfo
   listSupportLanguage: [LangageTypeOption]
+
+  """用户姓名的模糊查询"""
+  listUserFuzzyByUserName(keywords: String!): [UserInfo]
 
   """获取所有公共词条（分页）"""
   pageAllPublicEntries(pageNo: Int!, pageSize: Int!): EntryPaging

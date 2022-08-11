@@ -43,43 +43,50 @@ model Entry {
 
 // 应用
 model App {
-  app_id      Int            @id @default(autoincrement())
-  name        String
-  description String?
-  type        AppType
-  languages   LanguageType[]
-  pictures    String[]
-  createdAt   DateTime       @default(now())
-  entries     Entry[]
-  accessKey   String?
-  deleted     Boolean        @default(false)
-  archived    Boolean        @default(false)
-  push        Boolean        @default(true)
-  access      Boolean        @default(true)
-  creator     User?          @relation(fields: [creatorId], references: [user_id])
-  creatorId   Int?
+  app_id              Int                   @id @default(autoincrement())
+  name                String
+  description         String?
+  type                AppType
+  languages           LanguageType[]
+  pictures            String[]
+  createdAt           DateTime              @default(now())
+  entries             Entry[]
+  accessKey           String?
+  deleted             Boolean               @default(false)
+  archived            Boolean               @default(false)
+  push                Boolean               @default(true)
+  access              Boolean               @default(true)
+  creator             User?                 @relation(fields: [creatorId], references: [user_id])
+  creatorId           Int?
+  CollaboratorsOnApps CollaboratorsOnApps[]
 }
 
 // 应用协作者关联表
-model Collaborator {
-  collaborator_id Int @id @default(autoincrement())
-  app_id          Int
-  user_id         Int
+model CollaboratorsOnApps {
+  collaborator   User     @relation(fields: [collaboratorId], references: [user_id])
+  app            App      @relation(fields: [appId], references: [app_id])
+  collaboratorId Int
+  appId          Int
+  assignedAt     DateTime @default(now())
+  assignedBy     String?
+
+  @@id([collaboratorId, appId])
 }
 
 model User {
-  user_id   Int        @id @default(autoincrement())
-  account   String?
-  email     String     @unique
-  phone     String?    @unique
-  nickName  String?
-  name      String?
-  role      UserRole?
-  avatar    String?
-  password  String
-  createdAt DateTime   @default(now())
-  apps      App[]
-  Feedback  Feedback[]
+  user_id             Int                   @id @default(autoincrement())
+  account             String?
+  email               String                @unique
+  phone               String?               @unique
+  nickName            String?
+  name                String?
+  role                UserRole?
+  avatar              String?
+  password            String
+  createdAt           DateTime              @default(now())
+  apps                App[]
+  Feedback            Feedback[]
+  CollaboratorsOnApps CollaboratorsOnApps[]
 }
 
 model Langs {
