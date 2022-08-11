@@ -121,3 +121,48 @@ mutation ArchivedApp($archivedAppId: Int!) {
 mutation DeleteApp($deleteAppId: Int!) {
   deleteApp(id: $deleteAppId)
 }
+
+query GetAppCollaborators($appId: Int!) {
+  getAppCollaborators(appId: $appId) {
+    assignedAt
+    collaborator {
+      name
+      user_id
+      email
+      nickName
+      phone
+      role
+      avatar
+    }
+    app {
+      app_id
+      name
+      description
+      type
+      languages
+      pictures
+      access
+      push
+      accessKey
+      creatorId
+      creator {
+        name
+        user_id
+        email
+        nickName
+        phone
+        role
+        avatar
+      }
+      entryCount
+    }
+  }
+}
+
+mutation InviteCollaborators($appId: Int!, $userIdList: [Int!]!) {
+  inviteCollaborators(appId: $appId, userIdList: $userIdList)
+}
+
+mutation RemoveCollaborators($appId: Int!, $userIdList: [Int!]!) {
+  removeCollaborators(appId: $appId, userIdList: $userIdList)
+}

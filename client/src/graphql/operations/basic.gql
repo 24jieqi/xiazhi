@@ -4,3 +4,11 @@ query ListSupportLanguage {
     value
   }
 }
+
+query ListUserFuzzyByUserName($keywords: String!) {
+  listUserFuzzyByUserName(keywords: $keywords) {
+    name
+    user_id
+    email
+  }
+}

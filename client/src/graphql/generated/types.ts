@@ -82,6 +82,14 @@ export enum AppTypeEnum {
   Tool = 'TOOL',
 }
 
+/** 协作信息项 */
+export type CollaborateInfo = {
+  __typename?: 'CollaborateInfo'
+  app?: Maybe<AppItem>
+  assignedAt: Scalars['DateTime']
+  collaborator?: Maybe<UserInfo>
+}
+
 /** 词条基本信息 */
 export type EntryItem = {
   __typename?: 'EntryItem'
@@ -160,14 +168,20 @@ export type Mutation = {
   deleteApp?: Maybe<Scalars['Boolean']>
   /** 删除（批量）应用词条 */
   deleteEntries?: Maybe<Scalars['Boolean']>
+  /** 退出协作 */
+  existCollaboration?: Maybe<Scalars['Boolean']>
   /** 反馈(新增/修改描述) */
   feedback?: Maybe<Scalars['Int']>
+  /** 邀请协作者 */
+  inviteCollaborators?: Maybe<Scalars['Boolean']>
   /** 邮箱&密码登录 */
   login?: Maybe<Scalars['String']>
   /** 刷新应用accessKey */
   refreshAccessKey?: Maybe<Scalars['String']>
   /** 用户邮箱&密码注册 */
   register?: Maybe<Scalars['String']>
+  /** 移除协作者 */
+  removeCollaborators?: Maybe<Scalars['Boolean']>
   resetPassword?: Maybe<Scalars['Boolean']>
   /** 发送重设密码链接 */
   sendResetPasswordEmail?: Maybe<Scalars['Boolean']>
@@ -230,11 +244,20 @@ export type MutationDeleteEntriesArgs = {
   entryIds: Array<Scalars['Int']>
 }
 
+export type MutationExistCollaborationArgs = {
+  appId: Scalars['Int']
+}
+
 export type MutationFeedbackArgs = {
   feedbackId?: InputMaybe<Scalars['Int']>
   message?: InputMaybe<Scalars['String']>
   result: Scalars['Boolean']
   userId?: InputMaybe<Scalars['Int']>
+}
+
+export type MutationInviteCollaboratorsArgs = {
+  appId: Scalars['Int']
+  userIdList: Array<Scalars['Int']>
 }
 
 export type MutationLoginArgs = {
@@ -249,6 +272,11 @@ export type MutationRefreshAccessKeyArgs = {
 export type MutationRegisterArgs = {
   email: Scalars['String']
   password: Scalars['String']
+}
+
+export type MutationRemoveCollaboratorsArgs = {
+  appId: Scalars['Int']
+  userIdList: Array<Scalars['Int']>
 }
 
 export type MutationResetPasswordArgs = {
@@ -299,6 +327,8 @@ export type Query = {
   getAccessKeyByAppId?: Maybe<AppAccessInfo>
   /** 根据accessKey获取所有应用词条 */
   getAllEntries?: Maybe<Array<Maybe<EntryItem>>>
+  /** 获取应用的协作者列表 */
+  getAppCollaborators?: Maybe<Array<Maybe<CollaborateInfo>>>
   /** 通过应用id获取应用基本信息 */
   getAppInfoById?: Maybe<AppItem>
   /** 获取当前用户创建的应用列表 */
@@ -306,6 +336,8 @@ export type Query = {
   /** 获取当前登录用户的基本信息 */
   getCurrentUser?: Maybe<UserInfo>
   listSupportLanguage?: Maybe<Array<Maybe<LangageTypeOption>>>
+  /** 用户姓名的模糊查询 */
+  listUserFuzzyByUserName?: Maybe<Array<Maybe<UserInfo>>>
   /** 获取所有公共词条（分页） */
   pageAllPublicEntries?: Maybe<EntryPaging>
   /** 获取应用所有词条（分页） */
@@ -324,6 +356,10 @@ export type QueryGetAllEntriesArgs = {
   accessKey: Scalars['String']
 }
 
+export type QueryGetAppCollaboratorsArgs = {
+  appId: Scalars['Int']
+}
+
 export type QueryGetAppInfoByIdArgs = {
   id: Scalars['Int']
 }
@@ -334,6 +370,10 @@ export type QueryGetCurrentAppsArgs = {
   name?: InputMaybe<Scalars['String']>
   push?: InputMaybe<Scalars['Boolean']>
   type?: InputMaybe<AppTypeEnum>
+}
+
+export type QueryListUserFuzzyByUserNameArgs = {
+  keywords: Scalars['String']
 }
 
 export type QueryPageAllPublicEntriesArgs = {

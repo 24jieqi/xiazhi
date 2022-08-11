@@ -11,10 +11,13 @@ import {
   useRefreshAccessKeyMutation,
 } from '@/graphql/operations/__generated__/app.generated'
 import AsyncSwitch from '@/components/async-switch'
+import { AppSection } from '../interface'
 
 const { Paragraph } = Typography
 
-const AccessKeyManagement: React.FC = () => {
+interface AccessKeyManagementProps extends AppSection {}
+
+const AccessKeyManagement: React.FC<AccessKeyManagementProps> = () => {
   const params = useParams()
   const appId = Number(params.id)
   const {

@@ -136,6 +136,65 @@ export type DeleteAppMutationVariables = SchemaTypes.Exact<{
 
 export type DeleteAppMutation = { deleteApp?: boolean }
 
+export type GetAppCollaboratorsQueryVariables = SchemaTypes.Exact<{
+  appId: SchemaTypes.Scalars['Int']
+}>
+
+export type GetAppCollaboratorsQuery = {
+  getAppCollaborators?: Array<{
+    __typename?: 'CollaborateInfo'
+    assignedAt: number
+    collaborator?: {
+      __typename?: 'UserInfo'
+      name?: string
+      user_id?: number
+      email?: string
+      nickName?: string
+      phone?: string
+      role?: SchemaTypes.UserRoleEnum
+      avatar?: string
+    }
+    app?: {
+      __typename?: 'AppItem'
+      app_id?: number
+      name?: string
+      description?: string
+      type?: SchemaTypes.AppTypeEnum
+      languages?: Array<SchemaTypes.LanguageTypeEnum>
+      pictures?: Array<string>
+      access?: boolean
+      push?: boolean
+      accessKey?: string
+      creatorId?: number
+      entryCount?: number
+      creator?: {
+        __typename?: 'UserInfo'
+        name?: string
+        user_id?: number
+        email?: string
+        nickName?: string
+        phone?: string
+        role?: SchemaTypes.UserRoleEnum
+        avatar?: string
+      }
+    }
+  }>
+}
+
+export type InviteCollaboratorsMutationVariables = SchemaTypes.Exact<{
+  appId: SchemaTypes.Scalars['Int']
+  userIdList: Array<SchemaTypes.Scalars['Int']>
+}>
+
+export type InviteCollaboratorsMutation = { inviteCollaborators?: boolean }
+
+export type RemoveCollaboratorsMutationVariables = SchemaTypes.Exact<{
+  appId: SchemaTypes.Scalars['Int']
+  userIdList: Array<SchemaTypes.Scalars['Int']>
+}>
+
+export type RemoveCollaboratorsMutation = { removeCollaborators?: boolean }
+
 export const GetCurrentAppsDocument = gql`
   query GetCurrentApps(
     $name: String
@@ -690,4 +749,191 @@ export type DeleteAppMutationResult = Apollo.MutationResult<DeleteAppMutation>
 export type DeleteAppMutationOptions = Apollo.BaseMutationOptions<
   DeleteAppMutation,
   DeleteAppMutationVariables
+>
+export const GetAppCollaboratorsDocument = gql`
+  query GetAppCollaborators($appId: Int!) {
+    getAppCollaborators(appId: $appId) {
+      assignedAt
+      collaborator {
+        name
+        user_id
+        email
+        nickName
+        phone
+        role
+        avatar
+      }
+      app {
+        app_id
+        name
+        description
+        type
+        languages
+        pictures
+        access
+        push
+        accessKey
+        creatorId
+        creator {
+          name
+          user_id
+          email
+          nickName
+          phone
+          role
+          avatar
+        }
+        entryCount
+      }
+    }
+  }
+`
+
+/**
+ * __useGetAppCollaboratorsQuery__
+ *
+ * To run a query within a React component, call `useGetAppCollaboratorsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetAppCollaboratorsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetAppCollaboratorsQuery({
+ *   variables: {
+ *      appId: // value for 'appId'
+ *   },
+ * });
+ */
+export function useGetAppCollaboratorsQuery(
+  baseOptions: Apollo.QueryHookOptions<
+    GetAppCollaboratorsQuery,
+    GetAppCollaboratorsQueryVariables
+  >,
+) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useQuery<
+    GetAppCollaboratorsQuery,
+    GetAppCollaboratorsQueryVariables
+  >(GetAppCollaboratorsDocument, options)
+}
+export function useGetAppCollaboratorsLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<
+    GetAppCollaboratorsQuery,
+    GetAppCollaboratorsQueryVariables
+  >,
+) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useLazyQuery<
+    GetAppCollaboratorsQuery,
+    GetAppCollaboratorsQueryVariables
+  >(GetAppCollaboratorsDocument, options)
+}
+export type GetAppCollaboratorsQueryHookResult = ReturnType<
+  typeof useGetAppCollaboratorsQuery
+>
+export type GetAppCollaboratorsLazyQueryHookResult = ReturnType<
+  typeof useGetAppCollaboratorsLazyQuery
+>
+export type GetAppCollaboratorsQueryResult = Apollo.QueryResult<
+  GetAppCollaboratorsQuery,
+  GetAppCollaboratorsQueryVariables
+>
+export const InviteCollaboratorsDocument = gql`
+  mutation InviteCollaborators($appId: Int!, $userIdList: [Int!]!) {
+    inviteCollaborators(appId: $appId, userIdList: $userIdList)
+  }
+`
+export type InviteCollaboratorsMutationFn = Apollo.MutationFunction<
+  InviteCollaboratorsMutation,
+  InviteCollaboratorsMutationVariables
+>
+
+/**
+ * __useInviteCollaboratorsMutation__
+ *
+ * To run a mutation, you first call `useInviteCollaboratorsMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useInviteCollaboratorsMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [inviteCollaboratorsMutation, { data, loading, error }] = useInviteCollaboratorsMutation({
+ *   variables: {
+ *      appId: // value for 'appId'
+ *      userIdList: // value for 'userIdList'
+ *   },
+ * });
+ */
+export function useInviteCollaboratorsMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    InviteCollaboratorsMutation,
+    InviteCollaboratorsMutationVariables
+  >,
+) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useMutation<
+    InviteCollaboratorsMutation,
+    InviteCollaboratorsMutationVariables
+  >(InviteCollaboratorsDocument, options)
+}
+export type InviteCollaboratorsMutationHookResult = ReturnType<
+  typeof useInviteCollaboratorsMutation
+>
+export type InviteCollaboratorsMutationResult =
+  Apollo.MutationResult<InviteCollaboratorsMutation>
+export type InviteCollaboratorsMutationOptions = Apollo.BaseMutationOptions<
+  InviteCollaboratorsMutation,
+  InviteCollaboratorsMutationVariables
+>
+export const RemoveCollaboratorsDocument = gql`
+  mutation RemoveCollaborators($appId: Int!, $userIdList: [Int!]!) {
+    removeCollaborators(appId: $appId, userIdList: $userIdList)
+  }
+`
+export type RemoveCollaboratorsMutationFn = Apollo.MutationFunction<
+  RemoveCollaboratorsMutation,
+  RemoveCollaboratorsMutationVariables
+>
+
+/**
+ * __useRemoveCollaboratorsMutation__
+ *
+ * To run a mutation, you first call `useRemoveCollaboratorsMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useRemoveCollaboratorsMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [removeCollaboratorsMutation, { data, loading, error }] = useRemoveCollaboratorsMutation({
+ *   variables: {
+ *      appId: // value for 'appId'
+ *      userIdList: // value for 'userIdList'
+ *   },
+ * });
+ */
+export function useRemoveCollaboratorsMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    RemoveCollaboratorsMutation,
+    RemoveCollaboratorsMutationVariables
+  >,
+) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useMutation<
+    RemoveCollaboratorsMutation,
+    RemoveCollaboratorsMutationVariables
+  >(RemoveCollaboratorsDocument, options)
+}
+export type RemoveCollaboratorsMutationHookResult = ReturnType<
+  typeof useRemoveCollaboratorsMutation
+>
+export type RemoveCollaboratorsMutationResult =
+  Apollo.MutationResult<RemoveCollaboratorsMutation>
+export type RemoveCollaboratorsMutationOptions = Apollo.BaseMutationOptions<
+  RemoveCollaboratorsMutation,
+  RemoveCollaboratorsMutationVariables
 >
