@@ -2,7 +2,6 @@ import { useNavigate } from 'react-router-dom'
 import { useCallback, useEffect } from 'react'
 import { Modal } from 'antd'
 import usePermissions from '@/stores/permissions'
-import { mainRoutes } from '@/router/config'
 import config from '@/config'
 import { LOGIN_PATH } from '@/router/config/basePath'
 

@@ -5,12 +5,14 @@ import { useChangeAccessStatusMutation } from '@/graphql/operations/__generated_
 interface AccessSwitchProps {
   appId: number
   type: 'access' | 'push'
+  disabled?: boolean
   initialChecked?: boolean
   onChangeSuccess?: () => void
 }
 
 const AccessSwitch: React.FC<AccessSwitchProps> = ({
   initialChecked = false,
+  disabled = false,
   onChangeSuccess,
   appId,
   type,
@@ -30,6 +32,7 @@ const AccessSwitch: React.FC<AccessSwitchProps> = ({
   }
   return (
     <Switch
+      disabled={disabled}
       loading={loading}
       checked={checked}
       onChange={handleChangeCheckedStatus}

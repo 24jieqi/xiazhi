@@ -21,3 +21,15 @@ mutation UpdateUserInfo(
     avatar: $avatar
   )
 }
+
+query GetCurrentUser {
+  getCurrentUser {
+    name
+    user_id
+    email
+    nickName
+    phone
+    role
+    avatar
+  }
+}

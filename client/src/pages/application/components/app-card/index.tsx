@@ -1,5 +1,5 @@
-import { EditOutlined, SettingOutlined } from '@ant-design/icons'
-import { Avatar, Card, Col, Popover, Row, Space, Statistic } from 'antd'
+import { EditTwoTone, SettingOutlined, SettingTwoTone } from '@ant-design/icons'
+import { Avatar, Card, Col, Popover, Row, Statistic, Tag } from 'antd'
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
 import { AppItem } from '@/graphql/generated/types'
@@ -7,6 +7,7 @@ import {
   APP_DETAIL,
   EDIT_APP,
 } from '@/router/config/main-routes/application/path'
+import useUser from '@/stores/user'
 
 const { Meta } = Card
 
@@ -25,6 +26,7 @@ function getCoverUrl(pictures: string[]) {
 }
 
 const AppCard: React.FC<AppCardProps> = ({ data }) => {
+  const { info } = useUser()
   const navigate = useNavigate()
   function handleRedirectAppSetting() {
     navigate(`${APP_DETAIL}/${data.app_id}`)
@@ -32,9 +34,20 @@ const AppCard: React.FC<AppCardProps> = ({ data }) => {
   function handleRedirectAppEdit() {
     navigate(`${EDIT_APP}/${data.app_id}`)
   }
+  const isCollaborator = info.user_id !== data.creatorId
   return (
     <Card
-      title={data.name}
+      title={
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+          }}>
+          <p>{data.name}</p>
+          {isCollaborator ? <Tag color="#2db7f5">协作</Tag> : null}
+        </div>
+      }
       style={{ width: 300 }}
       cover={
         <img
@@ -44,10 +57,11 @@ const AppCard: React.FC<AppCardProps> = ({ data }) => {
         />
       }
       actions={[
-        <SettingOutlined key="setting" onClick={handleRedirectAppSetting} />,
-        <EditOutlined key="edit" onClick={handleRedirectAppEdit} />,
-        // <EllipsisOutlined key="ellipsis" />,
-      ]}>
+        isCollaborator ? null : (
+          <SettingTwoTone key="setting" onClick={handleRedirectAppSetting} />
+        ),
+        <EditTwoTone key="edit" onClick={handleRedirectAppEdit} />,
+      ].filter(Boolean)}>
       <Meta
         avatar={
           <Popover

@@ -10,11 +10,13 @@ import {
   EDIT_APP,
   NEW_APP,
 } from '@/router/config/main-routes/application/path'
+import useUser from '@/stores/user'
 import { appSupportLangsTableEnum, appTypeTableEnum } from '../constant'
 import AccessSwitch from '../components/access-switch'
 
 const AppListPage: React.FC = () => {
   const navigate = useNavigate()
+  const { info } = useUser()
   function handleRedirectAppSetting(app: AppItem) {
     navigate(`${APP_DETAIL}/${app.app_id}`)
   }
@@ -31,6 +33,7 @@ const AppListPage: React.FC = () => {
       dataIndex: 'name',
       width: 300,
       render(_, record) {
+        const isCollaborator = info.user_id !== record.creatorId
         return (
           <Space>
             <a onClick={() => handleRedirectAppSetting(record)}>
@@ -50,7 +53,7 @@ const AppListPage: React.FC = () => {
                 }
               />
             </Popover>
-            {Math.random() > 0.5 ? <Tag color="#108ee9">协作者</Tag> : null}
+            {isCollaborator ? <Tag color="#108ee9">协作</Tag> : null}
           </Space>
         )
       },
@@ -89,9 +92,11 @@ const AppListPage: React.FC = () => {
       dataIndex: 'access',
       valueType: 'switch',
       initialValue: true,
+      align: 'center',
       render: (_, record) => {
         return (
           <AccessSwitch
+            disabled={info.user_id !== record.creatorId}
             appId={record.app_id}
             type="access"
             initialChecked={record.access}
@@ -113,9 +118,11 @@ const AppListPage: React.FC = () => {
       valueType: 'switch',
       initialValue: true,
       tooltip: '表示是否可以通过相关接口推送词条到平台',
+      align: 'center',
       render: (_, record) => {
         return (
           <AccessSwitch
+            disabled={info.user_id !== record.creatorId}
             appId={record.app_id}
             type="push"
             initialChecked={record.push}

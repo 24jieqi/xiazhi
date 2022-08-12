@@ -1,11 +1,14 @@
 /* eslint-disable react/no-unstable-nested-components */
 import { UserOutlined } from '@ant-design/icons'
 import { ProLayout } from '@ant-design/pro-components'
-import { Avatar } from 'antd'
-import React, { useState } from 'react'
+import { Avatar, Popover } from 'antd'
+import React, { useEffect, useState } from 'react'
 import { Link, Outlet, useLocation } from 'react-router-dom'
+import useUser from '@/stores/user'
 import FeedbackModal from './Feedback'
 import defaultProps from './menuConfig'
+import UserCard from './UserCard'
+import styles from './style.module.less'
 
 const settings = {
   fixSiderbar: true,
@@ -18,6 +21,11 @@ const settings = {
 const CommonLayout: React.FC = () => {
   const location = useLocation()
   const [pathname, setPathname] = useState(location.pathname)
+  const { fetchUser } = useUser()
+  useEffect(() => {
+    fetchUser()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
   return (
     <div
       style={{
@@ -44,7 +52,12 @@ const CommonLayout: React.FC = () => {
         )}
         rightContentRender={() => (
           <div>
-            <Avatar shape="square" size="small" icon={<UserOutlined />} />
+            <Popover
+              overlayClassName={styles.userCard}
+              trigger="hover"
+              content={<UserCard />}>
+              <Avatar shape="square" size="small" icon={<UserOutlined />} />
+            </Popover>
           </div>
         )}
         menuFooterRender={() => <FeedbackModal />}
