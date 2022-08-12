@@ -117,7 +117,18 @@ export const AppQuery = queryType({
         const decoded = decodedToken(ctx.req);
         const records = await ctx.prisma.app.findMany({
           where: {
-            creatorId: decoded?.userId,
+            OR: [
+              {
+                creatorId: decoded?.userId
+              },
+              {
+                CollaboratorsOnApps: {
+                  some: {
+                    collaboratorId: decoded?.userId
+                  }
+                }
+              }
+            ],
             name: {
               contains: args.name!
             },

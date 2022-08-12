@@ -87,20 +87,12 @@ export const CollaboratorMutation = extendType({
         if (!app || app.creatorId !== info?.userId) {
           return false
         }
-        const disconnectData = args.userIdList.map(userId => ({
-          collaboratorId_appId: {
-            appId: app.app_id,
-            collaboratorId: userId
-          }
-        }))
-        // 解除应用和协作者的关联关系
-        await ctx.prisma.app.update({
+        // 删除记录
+        await ctx.prisma.collaboratorsOnApps.deleteMany({
           where: {
-            app_id: app.app_id
-          },
-          data: {
-            CollaboratorsOnApps: {
-              disconnect: disconnectData
+            appId: args.appId,
+            collaboratorId: {
+              in: args.userIdList
             }
           }
         })
@@ -115,16 +107,11 @@ export const CollaboratorMutation = extendType({
       },
       async resolve(_, args, ctx) {
         const info = decodedToken(ctx.req)
-        await ctx.prisma.app.update({
+        await ctx.prisma.collaboratorsOnApps.delete({
           where: {
-            app_id: args.appId,
-          },
-          data: {
-            CollaboratorsOnApps: {
-              disconnect: [{ collaboratorId_appId: {
-                appId: args.appId,
-                collaboratorId: info?.userId!
-              } }]
+            collaboratorId_appId: {
+              appId: args.appId,
+              collaboratorId: info?.userId!
             }
           }
         })

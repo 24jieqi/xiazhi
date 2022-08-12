@@ -96,7 +96,7 @@ export const EntryMutation = extendType({
         key: stringArg(),
       },
       async resolve(_, args, ctx) {
-        decodedToken(ctx.req);
+        const info = decodedToken(ctx.req);
         // 主要语言校验
         const mainLangText = args.langs[LanguageType.CHINESE];
         if (!mainLangText) {
@@ -123,6 +123,7 @@ export const EntryMutation = extendType({
             langs: args.langs,
             mainLangText: args.langs[LanguageType.CHINESE], // 设置主语言文本
             public: !args.appId,
+            createBy: info?.userId
           }
         });
         // 传入appId后，关联到APP中
