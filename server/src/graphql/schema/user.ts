@@ -82,6 +82,14 @@ export const UserMutation = extendType({
         password: nonNull(stringArg()),
       },
       async resolve(_, args, ctx){
+        const existUser = await ctx.prisma.user.findUnique({
+          where: {
+            email: args.email
+          }
+        })
+        if (existUser) {
+          throw new Error('邮箱不可用！')
+        }
         const passwordHash = await bcrypt.hash(args.password, 10)
         const user = await ctx.prisma.user.create({
           data: {
@@ -89,7 +97,10 @@ export const UserMutation = extendType({
             password: passwordHash,
           }
         })
-        return generateToken(user.user_id)
+        const token = generateToken(user.user_id)
+        // 发送邮件，不阻塞整个注册流程（后续可以再次发送验证）
+        sendRestEmail(args.email, `http://localhost:3000/verify?t=${token}`)
+        return token
       }
     })
     t.field('checkEmailValidation', {

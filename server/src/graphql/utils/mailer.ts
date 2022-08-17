@@ -22,12 +22,37 @@ async function createTransporter() {
   }
 }
 /**
+ * 发送邮箱验证邮件
+ * @param address
+ * @param url 
+ * @returns 
+ */
+export async function sendVerifyEmail(address: string, url: string) {
+  try {
+    await createTransporter()
+    const email = {
+      from: '"夏至多语言词库平台 邮箱验证"<mailerceshi@163.com>',
+      to: address,
+      subject: '邮箱验证',
+      html: `
+        <p>夏至多语言词库平台邮箱验证</p>
+        <p><span>点击</span><a href="${url}">${url}</a><span>验证邮箱</span></p>
+      `
+    }
+    await transporter.sendMail(email)
+    return true
+  } catch (error) {
+    return false
+  }
+}
+
+/**
  * 发送重置密码邮件
  * @param address
  * @param url 
  * @returns 
  */
-export async function sendRestEmail(address: string, url: string) {
+ export async function sendRestEmail(address: string, url: string) {
   try {
     await createTransporter()
     const email = {

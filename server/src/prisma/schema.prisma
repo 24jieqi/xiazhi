@@ -88,6 +88,7 @@ model User {
   apps                App[]
   Feedback            Feedback[]
   CollaboratorsOnApps CollaboratorsOnApps[]
+  verifyType          String?
 }
 
 model Langs {
