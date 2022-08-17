@@ -17,6 +17,7 @@ const httpLink = new HttpLink({
 // 请求处理
 const requestMiddleware = new ApolloLink((operation, forward) => {
   operation.setContext(({ headers = {} }) => {
+    console.log('headers', headers)
     const token = permissionStore.getState().token
     if (token) {
       Object.assign(headers, { Authorization: token })

@@ -3,7 +3,7 @@ import { LockOutlined, UserOutlined } from '@ant-design/icons'
 import { LoginFormPage, ProFormText } from '@ant-design/pro-components'
 import { Button } from 'antd'
 import React from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useLoginMutation } from '@/graphql/operations/__generated__/auth.generated'
 import usePermissions from '@/stores/permissions'
 import { REDIRECT } from '@/router/config/basePath'
@@ -40,6 +40,12 @@ const Login: React.FC = () => {
         backgroundImageUrl="https://gw.alipayobjects.com/zos/rmsportal/FfdJeJRQWjEeGTpqgBKj.png"
         title="夏至"
         subTitle="多语言词库平台"
+        actions={
+          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+            <a>忘记密码</a>
+            <Link to="/regist">注册</Link>
+          </div>
+        }
         activityConfig={{
           style: {
             boxShadow: '0px 0px 8px rgba(0, 0, 0, 0.2)',

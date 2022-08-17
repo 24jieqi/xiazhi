@@ -4,6 +4,7 @@ import { Navigate, RouteObject } from 'react-router-dom'
 import Layouts from '@/layouts/common-layout/index'
 import InitPage from '@/pages/others/redirect'
 import NoDataPage from '@/pages/others/404'
+import RegistPage from '@/pages/auth/regist'
 import { REDIRECT } from './basePath'
 import modules from './main-routes'
 
@@ -24,6 +25,10 @@ const commonRoutes: CustomRouteConfig[] = [
   {
     path: REDIRECT,
     element: <InitPage />,
+  },
+  {
+    path: '/regist',
+    element: <RegistPage />,
   },
 ]
 
