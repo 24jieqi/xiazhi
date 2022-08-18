@@ -1,7 +1,7 @@
 import { enumType, extendType, list, nonNull, objectType, stringArg } from "nexus";
 import bcrypt from 'bcrypt'
 import { decodedToken, generateToken } from "../token";
-import { sendRestEmail } from "../utils/mailer";
+import { sendRestEmail, sendVerifyEmail } from "../utils/mailer";
 
 export const UserRoleEnum = enumType({
   description: '用户角色枚举',
@@ -25,6 +25,7 @@ export const IUser = objectType({
     t.string('phone')
     t.field('role', { type: UserRoleEnum, description: '角色' })
     t.string('avatar', { description: '用户头像' })
+    t.string('verifyType', { description: '用户验证方式，为空表示暂未验证' })
   }
 })
 
@@ -97,7 +98,7 @@ export const UserMutation = extendType({
             password: passwordHash,
           }
         })
-        const token = generateToken(user.user_id)
+        const token = generateToken(user.user_id, '30m')
         // 发送邮件，不阻塞整个注册流程（后续可以再次发送验证）
         sendRestEmail(args.email, `http://localhost:3000/verify?t=${token}`)
         return token
@@ -133,8 +134,26 @@ export const UserMutation = extendType({
         if (!user) {
           throw new Error('用户不存在')
         }
-        const token = generateToken(user?.user_id)
-        return await sendRestEmail(args.email, `http://localhost:3000/reset_password?t=${token}`)
+        const token = generateToken(user?.user_id, '30m')
+        return await sendRestEmail(args.email, `http://localhost:3001/reset_password?t=${token}`)
+      }
+    })
+    t.field('sendVerifyEmail', {
+      description: '发送验证邮件',
+      type: 'Boolean',
+      async resolve(_, args, ctx) {
+        const info = decodedToken(ctx.req)
+        const user = await ctx.prisma.user.findUnique({
+          where: {
+            user_id: info?.userId
+          }
+        })
+        if (!user) {
+          throw new Error('用户不存在')
+        }
+        const token = generateToken(user.user_id, '30m')
+        await sendVerifyEmail(user.email, `http://localhost:3001/verify?t=${token}`)
+        return true
       }
     })
     t.field('resetPassword', {
@@ -214,6 +233,22 @@ export const UserMutation = extendType({
           }
         })
         return true
+      }
+    })
+    t.field('verifyEmail',{
+      description: '邮箱验证',
+      type: 'String',
+      async resolve(_, args, ctx) {
+        const info = decodedToken(ctx.req)
+        await ctx.prisma.user.update({
+          where: {
+            user_id: info?.userId
+          },
+          data: {
+            verifyType: 'email'
+          }
+        })
+        return generateToken(info?.userId!)
       }
     })
   }

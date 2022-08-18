@@ -146,6 +146,7 @@ export interface NexusGenObjects {
     phone?: string | null; // String
     role?: NexusGenEnums['UserRoleEnum'] | null; // UserRoleEnum
     user_id?: number | null; // Int
+    verifyType?: string | null; // String
   }
 }
 
@@ -248,11 +249,13 @@ export interface NexusGenFieldTypes {
     removeCollaborators: boolean | null; // Boolean
     resetPassword: boolean | null; // Boolean
     sendResetPasswordEmail: boolean | null; // Boolean
+    sendVerifyEmail: boolean | null; // Boolean
     updateAppBasicInfo: number | null; // Int
     updateEntry: boolean | null; // Boolean
     updateUserInfo: boolean | null; // Boolean
     uploadEntries: boolean | null; // Boolean
     uploadEntriesXlsx: boolean | null; // Boolean
+    verifyEmail: string | null; // String
   }
   Query: { // field return type
     countPositive: number | null; // Int
@@ -288,6 +291,7 @@ export interface NexusGenFieldTypes {
     phone: string | null; // String
     role: NexusGenEnums['UserRoleEnum'] | null; // UserRoleEnum
     user_id: number | null; // Int
+    verifyType: string | null; // String
   }
 }
 
@@ -380,11 +384,13 @@ export interface NexusGenFieldTypeNames {
     removeCollaborators: 'Boolean'
     resetPassword: 'Boolean'
     sendResetPasswordEmail: 'Boolean'
+    sendVerifyEmail: 'Boolean'
     updateAppBasicInfo: 'Int'
     updateEntry: 'Boolean'
     updateUserInfo: 'Boolean'
     uploadEntries: 'Boolean'
     uploadEntriesXlsx: 'Boolean'
+    verifyEmail: 'String'
   }
   Query: { // field return type name
     countPositive: 'Int'
@@ -420,6 +426,7 @@ export interface NexusGenFieldTypeNames {
     phone: 'String'
     role: 'UserRoleEnum'
     user_id: 'Int'
+    verifyType: 'String'
   }
 }
 

@@ -11,7 +11,7 @@ async function createTransporter() {
       secure: false,
       auth: {
         user: 'mailerceshi@163.com',
-        pass: 'motao123456'
+        pass: 'VPUUZCDBXBUEYJYC', // 使用密码无效，应使用授权码
       }
     })
   }
@@ -28,22 +28,17 @@ async function createTransporter() {
  * @returns 
  */
 export async function sendVerifyEmail(address: string, url: string) {
-  try {
-    await createTransporter()
-    const email = {
-      from: '"夏至多语言词库平台 邮箱验证"<mailerceshi@163.com>',
-      to: address,
-      subject: '邮箱验证',
-      html: `
-        <p>夏至多语言词库平台邮箱验证</p>
-        <p><span>点击</span><a href="${url}">${url}</a><span>验证邮箱</span></p>
-      `
-    }
-    await transporter.sendMail(email)
-    return true
-  } catch (error) {
-    return false
+  await createTransporter()
+  const email = {
+    from: '"夏至多语言词库平台 邮箱验证"<mailerceshi@163.com>',
+    to: address,
+    subject: '邮箱验证',
+    html: `
+      <p>夏至多语言词库平台邮箱验证</p>
+      <p><span>点击</span><a href="${url}">${url}</a><span>验证邮箱</span></p>
+    `
   }
+  await transporter.sendMail(email)
 }
 
 /**

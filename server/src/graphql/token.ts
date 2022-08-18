@@ -38,14 +38,14 @@ function decodedToken(req: Koa.ParameterizedContext, requireAuth = true) {
  * @param userId
  * @returns
  */
-function generateToken(userId: number) {
+function generateToken(userId: number, expiresIn = '24h') {
   return jwt.sign(
     {
       userId,
     },
     SECRET_KEY,
     {
-      expiresIn: "24h",
+      expiresIn,
     }
   );
 }
