@@ -283,6 +283,11 @@ type Mutation {
   sendResetPasswordEmail(email: String!): Boolean
 
   """
+  发送验证邮件
+  """
+  sendVerifyEmail: Boolean
+
+  """
   更新应用基本信息
   """
   updateAppBasicInfo(
@@ -309,6 +314,11 @@ type Mutation {
   通过excel上传词条
   """
   uploadEntriesXlsx(appId: Int!, fileUrl: String!): Boolean
+
+  """
+  邮箱验证
+  """
+  verifyEmail: String
 }
 
 type Query {
@@ -447,6 +457,11 @@ type UserInfo {
   用户id
   """
   user_id: Int
+
+  """
+  用户验证方式，为空表示暂未验证
+  """
+  verifyType: String
 }
 
 """

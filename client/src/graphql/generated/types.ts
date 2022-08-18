@@ -185,6 +185,8 @@ export type Mutation = {
   resetPassword?: Maybe<Scalars['Boolean']>
   /** 发送重设密码链接 */
   sendResetPasswordEmail?: Maybe<Scalars['Boolean']>
+  /** 发送验证邮件 */
+  sendVerifyEmail?: Maybe<Scalars['Boolean']>
   /** 更新应用基本信息 */
   updateAppBasicInfo?: Maybe<Scalars['Int']>
   updateEntry?: Maybe<Scalars['Boolean']>
@@ -193,6 +195,8 @@ export type Mutation = {
   uploadEntries?: Maybe<Scalars['Boolean']>
   /** 通过excel上传词条 */
   uploadEntriesXlsx?: Maybe<Scalars['Boolean']>
+  /** 邮箱验证 */
+  verifyEmail?: Maybe<Scalars['String']>
 }
 
 export type MutationAddLangageArgs = {
@@ -440,6 +444,8 @@ export type UserInfo = {
   role?: Maybe<UserRoleEnum>
   /** 用户id */
   user_id?: Maybe<Scalars['Int']>
+  /** 用户验证方式，为空表示暂未验证 */
+  verifyType?: Maybe<Scalars['String']>
 }
 
 /** 用户角色枚举 */

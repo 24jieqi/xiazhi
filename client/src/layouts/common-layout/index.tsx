@@ -1,7 +1,7 @@
 /* eslint-disable react/no-unstable-nested-components */
 import { UserOutlined } from '@ant-design/icons'
 import { ProLayout } from '@ant-design/pro-components'
-import { Avatar, Popover } from 'antd'
+import { Alert, Avatar, Button, notification, Popover, Spin } from 'antd'
 import React, { useEffect, useState } from 'react'
 import { Link, Outlet, useLocation } from 'react-router-dom'
 import useUser from '@/stores/user'
@@ -9,6 +9,7 @@ import FeedbackModal from './Feedback'
 import defaultProps from './menuConfig'
 import UserCard from './UserCard'
 import styles from './style.module.less'
+import { useSendVerifyEmailMutation } from '@/graphql/operations/__generated__/auth.generated'
 
 const settings = {
   fixSiderbar: true,
@@ -18,14 +19,61 @@ const settings = {
   fixedHeader: true,
 }
 
+const notificationKey = 'verify-email-key'
+
 const CommonLayout: React.FC = () => {
   const location = useLocation()
   const [pathname, setPathname] = useState(location.pathname)
-  const { fetchUser } = useUser()
+  const { fetchUser, info } = useUser()
+  const [sendVerifyEmail, { loading }] = useSendVerifyEmailMutation()
+  async function handleSendVerifyEmail() {
+    notification.info({
+      key: notificationKey,
+      message: '邮件发送中...',
+      description: (
+        <div style={{ textAlign: 'center' }}>
+          <Spin spinning />
+        </div>
+      ),
+    })
+    await sendVerifyEmail()
+    notification.success({
+      key: notificationKey,
+      message: '邮件发送成功',
+      description: '请检查你的邮箱，并按步骤完成激活',
+    })
+    setTimeout(() => {
+      notification.close(notificationKey)
+    }, 1000)
+  }
   useEffect(() => {
     fetchUser()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+  useEffect(() => {
+    if (info?.user_id && !info.verifyType) {
+      notification.warn({
+        message: '邮箱激活',
+        key: notificationKey,
+        description: (
+          <>
+            <p>
+              检测到你尚未激活邮件，为了保证功能的正常使用，请尽快检查邮件并完成激活。
+            </p>
+            <Button
+              onClick={handleSendVerifyEmail}
+              type="link"
+              loading={loading}
+              style={{ paddingLeft: 0, paddingRight: 0 }}>
+              发送邮件
+            </Button>
+          </>
+        ),
+        duration: 0,
+      })
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [info])
   return (
     <div
       style={{

@@ -9,6 +9,7 @@ import {
 } from '@ant-design/pro-components'
 import { debounce } from 'lodash'
 import dayjs from 'dayjs'
+import { PlusOutlined } from '@ant-design/icons'
 import {
   useGetAppCollaboratorsQuery,
   useInviteCollaboratorsMutation,
@@ -17,6 +18,7 @@ import {
 import { useListUserFuzzyByUserNameLazyQuery } from '@/graphql/operations/__generated__/basic.generated'
 import { AppSection } from '../interface'
 import styles from './style.module.less'
+import AddCollaboratorsModal from './components/add-modal'
 
 const { Divider } = ProCard
 
@@ -79,106 +81,99 @@ const CollaboratorManagement: React.FC<CollaboratorManagementProps> = ({
   if (!data?.getAppCollaborators || !data?.getAppCollaborators.length) {
     return (
       <Empty description="还未添加协作者">
-        <ModalForm<FormData>
-          onValuesChange={handleValuesChange}
-          onFinish={handleAddCollaborators}
-          title="添加协作者"
-          trigger={<Button type="primary">现在添加</Button>}>
-          <ProFormText
-            name="keywords"
-            label="协作者名称"
-            placeholder="请输入协作者名称模糊查询"
-          />
-          <ProForm.Item
-            label="协作者列表"
-            name="userList"
-            rules={[
-              {
-                required: true,
-                message: '请添加至少一个协作者',
-              },
-            ]}>
-            <CheckCard.Group multiple loading={loading}>
-              {userList.map(user => (
-                <CheckCard
-                  key={user.user_id}
-                  title={user.name}
-                  description={user.email}
-                  value={user.user_id}
-                />
-              ))}
-            </CheckCard.Group>
-          </ProForm.Item>
-        </ModalForm>
+        <AddCollaboratorsModal
+          trggier={<Button type="primary">现在添加</Button>}
+          appId={app?.app_id}
+          onInviteSuccess={() => {
+            refetch()
+          }}
+        />
       </Empty>
     )
   }
   return (
-    <Space>
-      {data.getAppCollaborators.map((collaborator, index) => (
-        <ProCard.Group
-          className={styles.card}
-          extra={
-            <Button
-              loading={removeLoading}
-              type="link"
-              size="small"
-              onClick={() =>
-                handleRemoveCollaborator(collaborator.collaborator.user_id)
-              }>
-              移除
+    <ProCard
+      headStyle={{ padding: 0 }}
+      bodyStyle={{ padding: 0 }}
+      extra={
+        <AddCollaboratorsModal
+          trggier={
+            <Button icon={<PlusOutlined />} type="primary" size="small">
+              添加
             </Button>
           }
-          bordered
-          direction="row"
-          hoverable
-          title={
-            <div>
-              <Popover
-                title="协作者信息"
-                content={
-                  <div>
-                    <p>邮件：{collaborator?.collaborator.email}</p>
-                    <p>
-                      加入时间：
-                      {dayjs(collaborator.assignedAt).format(
-                        'YYYY-MM-DD HH:mm:ss',
-                      )}
-                    </p>
-                  </div>
+          appId={app?.app_id}
+          onInviteSuccess={() => {
+            refetch()
+          }}
+        />
+      }>
+      <Space>
+        {data.getAppCollaborators.map((collaborator, index) => (
+          <ProCard.Group
+            className={styles.card}
+            extra={
+              <Button
+                loading={removeLoading}
+                type="link"
+                size="small"
+                onClick={() =>
+                  handleRemoveCollaborator(collaborator.collaborator.user_id)
                 }>
-                <Avatar
-                  size="small"
-                  className={styles.avatar}
-                  style={{ marginRight: 8 }}
-                  src={
-                    collaborator.collaborator.avatar ||
-                    'https://joeschmoe.io/api/v1/random'
-                  }
-                />
-                <span>{collaborator.collaborator.name}</span>
-              </Popover>
-            </div>
-          }
-          key={index}>
-          <ProCard>
-            <Statistic title="总计新增" value={10} suffix="/ 100" />
-          </ProCard>
-          <Divider type="vertical" />
-          <ProCard>
-            <Statistic title="今日新增" value={0} suffix="/ 21" />
-          </ProCard>
-          <Divider type="vertical" />
-          <ProCard wrap gutter={[12, 12]}>
-            <Statistic title="修改词条" value={22} suffix="次" />
-          </ProCard>
-          {/* <Divider type="vertical" />
+                移除
+              </Button>
+            }
+            bordered
+            direction="row"
+            hoverable
+            title={
+              <div>
+                <Popover
+                  title="协作者信息"
+                  content={
+                    <div>
+                      <p>邮件：{collaborator?.collaborator.email}</p>
+                      <p>
+                        加入时间：
+                        {dayjs(collaborator.assignedAt).format(
+                          'YYYY-MM-DD HH:mm:ss',
+                        )}
+                      </p>
+                    </div>
+                  }>
+                  <Avatar
+                    size="small"
+                    className={styles.avatar}
+                    style={{ marginRight: 8 }}
+                    src={
+                      collaborator.collaborator.avatar ||
+                      'https://joeschmoe.io/api/v1/random'
+                    }
+                  />
+                  <span>{collaborator.collaborator.name}</span>
+                </Popover>
+              </div>
+            }
+            key={index}>
+            <ProCard>
+              <Statistic title="总计新增" value={10} suffix="/ 100" />
+            </ProCard>
+            <Divider type="vertical" />
+            <ProCard>
+              <Statistic title="今日新增" value={0} suffix="/ 21" />
+            </ProCard>
+            <Divider type="vertical" />
+            <ProCard wrap gutter={[12, 12]}>
+              <Statistic title="修改词条" value={22} suffix="次" />
+            </ProCard>
+            {/* <Divider type="vertical" />
           <ProCard>
             <Statistic title="贡献度排名" value={1} />
           </ProCard> */}
-        </ProCard.Group>
-      ))}
-    </Space>
+          </ProCard.Group>
+        ))}
+      </Space>
+    </ProCard>
   )
 }
 

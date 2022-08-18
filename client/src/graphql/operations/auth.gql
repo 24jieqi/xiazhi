@@ -31,5 +31,14 @@ query GetCurrentUser {
     phone
     role
     avatar
+    verifyType
   }
+}
+
+mutation SendVerifyEmail {
+  sendVerifyEmail
+}
+
+mutation VerifyEmail {
+  verifyEmail
 }

@@ -7,6 +7,7 @@ import NoDataPage from '@/pages/others/404'
 import RegistPage from '@/pages/auth/regist'
 import { REDIRECT } from './basePath'
 import modules from './main-routes'
+import EmailVerifyPage from '@/pages/auth/verify'
 
 export interface CustomRouteConfig extends RouteObject {}
 
@@ -29,6 +30,10 @@ const commonRoutes: CustomRouteConfig[] = [
   {
     path: '/regist',
     element: <RegistPage />,
+  },
+  {
+    path: '/verify',
+    element: <EmailVerifyPage />,
   },
 ]
 
