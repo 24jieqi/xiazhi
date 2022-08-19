@@ -42,3 +42,11 @@ mutation SendVerifyEmail {
 mutation VerifyEmail {
   verifyEmail
 }
+
+mutation SendResetPasswordEmail($email: String!) {
+  sendResetPasswordEmail(email: $email)
+}
+
+mutation ResetPassword($password: String!) {
+  resetPassword(password: $password)
+}

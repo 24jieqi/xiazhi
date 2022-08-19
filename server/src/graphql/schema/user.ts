@@ -135,7 +135,7 @@ export const UserMutation = extendType({
           throw new Error('用户不存在')
         }
         const token = generateToken(user?.user_id, '30m')
-        return await sendRestEmail(args.email, `http://localhost:3001/reset_password?t=${token}`)
+        return await sendRestEmail(args.email, `http://localhost:3001/password_reset?t=${token}`)
       }
     })
     t.field('sendVerifyEmail', {
@@ -159,7 +159,6 @@ export const UserMutation = extendType({
     t.field('resetPassword', {
       type: 'Boolean',
       args: {
-        oldPassword: nonNull(stringArg()),
         password: nonNull(stringArg()),
       },
       async resolve(_, args, ctx) {
@@ -169,8 +168,8 @@ export const UserMutation = extendType({
             user_id: decoded?.userId
           }
         })
-        const isEqual = await bcrypt.compare(args.oldPassword, targetUser!.password)
-        if(isEqual) {
+        const isEqual = await bcrypt.compare(args.password, targetUser!.password)
+        if(!isEqual) {
           await ctx.prisma.user.update({
             where: {
               user_id: targetUser?.user_id
@@ -181,7 +180,7 @@ export const UserMutation = extendType({
           })
           return true
         } else {
-          throw new Error('密码不正确！')
+          throw new Error('密码无改动，无需修改！')
         }
       }
     }),

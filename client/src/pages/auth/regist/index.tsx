@@ -17,7 +17,7 @@ import {
 } from '@/graphql/operations/__generated__/auth.generated'
 import { getPictureUrlList } from '@/pages/application/add'
 
-const roleValueEnums = {
+export const roleValueEnums = {
   [UserRoleEnum.Developer]: '开发',
   [UserRoleEnum.Manager]: '项目管理',
   [UserRoleEnum.Translator]: '专职翻译',

@@ -24,7 +24,7 @@ function getFileMime(url: string) {
   return reg.exec(url)
 }
 
-function generateUploadFileList(files: string[]) {
+export function generateUploadFileList(files: string[]) {
   if (!files || !files.length) {
     return []
   }

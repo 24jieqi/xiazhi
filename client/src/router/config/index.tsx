@@ -5,9 +5,10 @@ import Layouts from '@/layouts/common-layout/index'
 import InitPage from '@/pages/others/redirect'
 import NoDataPage from '@/pages/others/404'
 import RegistPage from '@/pages/auth/regist'
+import ResetPasswordPage from '@/pages/auth/reset-password'
+import EmailVerifyPage from '@/pages/auth/verify'
 import { REDIRECT } from './basePath'
 import modules from './main-routes'
-import EmailVerifyPage from '@/pages/auth/verify'
 
 export interface CustomRouteConfig extends RouteObject {}
 
@@ -34,6 +35,10 @@ const commonRoutes: CustomRouteConfig[] = [
   {
     path: '/verify',
     element: <EmailVerifyPage />,
+  },
+  {
+    path: '/password_reset',
+    element: <ResetPasswordPage />,
   },
 ]
 

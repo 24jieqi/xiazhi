@@ -2,6 +2,7 @@ import { PageContainer, ProCard } from '@ant-design/pro-components'
 import React, { useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { useGetAppInfoByIdQuery } from '@/graphql/operations/__generated__/app.generated'
+import useCollaboratorPermissions from '@/pages/auth/useCollaboratorPermission'
 import AppBasicInfo from './sections/basic-info'
 import AccessKeyManagement from './sections/access-key'
 import CollaboratorManagement from './sections/collaborator'
@@ -30,6 +31,10 @@ export default () => {
   })
   const appInfo = data?.getAppInfoById || {}
   const ActiveComp = SectionCompMap[tabActiveKey]
+  useCollaboratorPermissions({
+    creatorId: appInfo?.creatorId,
+    showAlert: true,
+  })
   return (
     <div
       style={{

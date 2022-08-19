@@ -501,7 +501,6 @@ export interface NexusGenArgTypes {
       userIdList: number[]; // [Int!]!
     }
     resetPassword: { // args
-      oldPassword: string; // String!
       password: string; // String!
     }
     sendResetPasswordEmail: { // args

@@ -10,13 +10,13 @@ import {
   EDIT_APP,
   NEW_APP,
 } from '@/router/config/main-routes/application/path'
-import useUser from '@/stores/user'
+import useCollaboratorPermissions from '@/pages/auth/useCollaboratorPermission'
 import { appSupportLangsTableEnum, appTypeTableEnum } from '../constant'
 import AccessSwitch from '../components/access-switch'
 
 const AppListPage: React.FC = () => {
   const navigate = useNavigate()
-  const { info } = useUser()
+  const { checkIsCollaborator } = useCollaboratorPermissions()
   function handleRedirectAppSetting(app: AppItem) {
     navigate(`${APP_DETAIL}/${app.app_id}`)
   }
@@ -33,12 +33,16 @@ const AppListPage: React.FC = () => {
       dataIndex: 'name',
       width: 300,
       render(_, record) {
-        const isCollaborator = info.user_id !== record.creatorId
+        const isCollaborator = checkIsCollaborator(record.creatorId)
         return (
           <Space>
-            <a onClick={() => handleRedirectAppSetting(record)}>
-              {record.name}
-            </a>
+            {isCollaborator ? (
+              <span>{record.name}</span>
+            ) : (
+              <a onClick={() => handleRedirectAppSetting(record)}>
+                {record.name}
+              </a>
+            )}
             <Popover
               title="创建者信息"
               content={
@@ -96,7 +100,7 @@ const AppListPage: React.FC = () => {
       render: (_, record) => {
         return (
           <AccessSwitch
-            disabled={info.user_id !== record.creatorId}
+            disabled={checkIsCollaborator(record.creatorId)}
             appId={record.app_id}
             type="access"
             initialChecked={record.access}
@@ -122,7 +126,7 @@ const AppListPage: React.FC = () => {
       render: (_, record) => {
         return (
           <AccessSwitch
-            disabled={info.user_id !== record.creatorId}
+            disabled={checkIsCollaborator(record.creatorId)}
             appId={record.app_id}
             type="push"
             initialChecked={record.push}

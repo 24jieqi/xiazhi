@@ -42,7 +42,7 @@ const Login: React.FC = () => {
         subTitle="多语言词库平台"
         actions={
           <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-            <a>忘记密码</a>
+            <Link to="/password_reset">忘记密码</Link>
             <Link to="/regist">注册</Link>
           </div>
         }

@@ -284,7 +284,6 @@ export type MutationRemoveCollaboratorsArgs = {
 }
 
 export type MutationResetPasswordArgs = {
-  oldPassword: Scalars['String']
   password: Scalars['String']
 }
 

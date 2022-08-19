@@ -190,7 +190,7 @@ type Mutation {
 
   """移除协作者"""
   removeCollaborators(appId: Int!, userIdList: [Int!]!): Boolean
-  resetPassword(oldPassword: String!, password: String!): Boolean
+  resetPassword(password: String!): Boolean
 
   """发送重设密码链接"""
   sendResetPasswordEmail(email: String!): Boolean
