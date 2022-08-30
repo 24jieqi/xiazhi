@@ -76,6 +76,10 @@ const EntryList: React.FC<EntryListProps> = props => {
     message.success('导入词条成功！')
     callback()
   }
+  async function handleRollbackSucess() {
+    await actionRef.current?.reload()
+    selectedEntry && onChange?.(null)
+  }
   const columns: ProColumns<EntryItem>[] = [
     {
       title: '词条Key',
@@ -144,8 +148,13 @@ const EntryList: React.FC<EntryListProps> = props => {
       dataIndex: 'modifyRecords',
       hideInSearch: true,
       render(_, record) {
+        const { entry_id, langs, key, modifyRecords } = record
         return (
-          <ModifyRecordsModal modifyRecords={record?.modifyRecords || []} />
+          <ModifyRecordsModal
+            onRollbackSucess={handleRollbackSucess}
+            records={{ entry_id, langs, key }}
+            modifyRecords={modifyRecords || []}
+          />
         )
       },
     },

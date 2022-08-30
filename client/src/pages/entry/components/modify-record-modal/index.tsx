@@ -1,12 +1,45 @@
 import React, { cloneElement, useMemo, useState } from 'react'
-import { Button, Modal, Space, Tag } from 'antd'
+import { Button, message, Modal, Space, Tag } from 'antd'
 import dayjs from 'dayjs'
 import { ProList } from '@ant-design/pro-components'
-import { LanguageTypeEnum, RecordItem } from '@/graphql/generated/types'
+import {
+  EntryItem,
+  LanguageTypeEnum,
+  RecordItem,
+} from '@/graphql/generated/types'
+import { useUpdateEntryMutation } from '@/graphql/operations/__generated__/entry.generated'
 
 interface ModifyRecordsProps {
   modifyRecords: RecordItem[]
+  records: {
+    entry_id: number
+    langs: EntryItem['langs']
+    key: string
+  }
+  onRollbackSucess: () => void
   children?: React.ReactElement
+}
+
+interface ProListType {
+  data: {
+    prevLangs: RecordItem['prevLangs']
+    langs: EntryItem['langs']
+    entry_id: number
+    key: string
+  }
+}
+
+const LANGUAGE_ARRAY = [
+  LanguageTypeEnum.Chinese,
+  LanguageTypeEnum.English,
+  LanguageTypeEnum.Thai,
+  LanguageTypeEnum.Vietnamese,
+]
+const LANGUAGE_MAP = {
+  [LanguageTypeEnum.Chinese]: '中文',
+  [LanguageTypeEnum.English]: '英文',
+  [LanguageTypeEnum.Thai]: '泰文',
+  [LanguageTypeEnum.Vietnamese]: '泰文',
 }
 
 function langDiff(
@@ -50,14 +83,56 @@ function langDiff(
 
 const ModifyRecordsModal: React.FC<ModifyRecordsProps> = ({
   modifyRecords,
+  records,
   children,
+  onRollbackSucess,
 }) => {
   const [visible, setVisible] = useState(false)
+  const [updateEntry] = useUpdateEntryMutation()
   function handleShowModal() {
     setVisible(true)
   }
   function handleCloseModal() {
     setVisible(false)
+  }
+  function formateRollbackMessage(langs) {
+    return Object.keys(langs)
+      .map(lang => {
+        if (LANGUAGE_ARRAY.includes(lang as LanguageTypeEnum)) {
+          return `${LANGUAGE_MAP[lang]}:${langs[lang]}`
+        }
+        return null
+      })
+      .filter(lang => lang)
+  }
+  function handleRollback(record: ProListType) {
+    const {
+      data: { langs, prevLangs, key, entry_id },
+    } = record
+    const current = formateRollbackMessage(langs)
+    const preview = formateRollbackMessage(prevLangs)
+    if (JSON.stringify(current) === JSON.stringify(preview)) {
+      message.warning('回滚词条与当前一致，不支持回滚')
+      return
+    }
+    Modal.confirm({
+      title: '确认回滚?',
+      content: `确认将词条【${current.join('，')}】回滚为【${preview.join(
+        '，',
+      )}】?`,
+      onOk: async () => {
+        await updateEntry({
+          variables: {
+            entryId: entry_id,
+            key,
+            langs: prevLangs,
+          },
+        })
+        onRollbackSucess()
+        setVisible(false)
+        message.success('回滚成功')
+      },
+    })
   }
   const ActionComp = children ? (
     cloneElement(children, { onClick: handleShowModal })
@@ -70,6 +145,12 @@ const ModifyRecordsModal: React.FC<ModifyRecordsProps> = ({
     return modifyRecords.map(record => {
       const diffResult = langDiff(record.prevLangs, record.currLangs)
       return {
+        data: {
+          prevLangs: { ...record.prevLangs },
+          entry_id: records.entry_id,
+          langs: records.langs,
+          key: records.key,
+        },
         title: dayjs(record.createdAt).format('YY-MM-DD HH:mm'),
         subTitle: record.creatorInfo?.name,
         content: (
@@ -121,7 +202,7 @@ const ModifyRecordsModal: React.FC<ModifyRecordsProps> = ({
         avatar: record.creatorInfo?.avatar,
       }
     })
-  }, [modifyRecords])
+  }, [modifyRecords, records])
   return (
     <>
       {ActionComp}
@@ -133,7 +214,7 @@ const ModifyRecordsModal: React.FC<ModifyRecordsProps> = ({
         visible={visible}
         onOk={handleCloseModal}
         onCancel={handleCloseModal}>
-        <ProList<any>
+        <ProList<ProListType>
           grid={{ gutter: 16, column: 2 }}
           showActions="always"
           onItem={(record: any) => {
@@ -143,7 +224,16 @@ const ModifyRecordsModal: React.FC<ModifyRecordsProps> = ({
             title: {},
             subTitle: {},
             content: {},
-            actions: {},
+            actions: {
+              render: (_, row) => [
+                <Button
+                  key={row.data.entry_id}
+                  type="link"
+                  onClick={() => handleRollback(row)}>
+                  回滚
+                </Button>,
+              ],
+            },
             avatar: {
               // render(_, entity) {
               //   return (
