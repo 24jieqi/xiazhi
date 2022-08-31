@@ -90,6 +90,15 @@ export type CollaborateInfo = {
   collaborator?: Maybe<UserInfo>
 }
 
+/** 协作者应用统计维度 */
+export type CollaboratorStatistics = {
+  __typename?: 'CollaboratorStatistics'
+  addCount: Scalars['Int']
+  addCountToday: Scalars['Int']
+  modifyCount: Scalars['Int']
+  userId: Scalars['Int']
+}
+
 /** 词条基本信息 */
 export type EntryItem = {
   __typename?: 'EntryItem'
@@ -332,6 +341,8 @@ export type Query = {
   getAllEntries?: Maybe<Array<Maybe<EntryItem>>>
   /** 获取应用的协作者列表 */
   getAppCollaborators?: Maybe<Array<Maybe<CollaborateInfo>>>
+  /** 获取应用协作者的统计信息 */
+  getAppCollaboratorsStatistics?: Maybe<Array<Maybe<CollaboratorStatistics>>>
   /** 通过应用id获取应用基本信息 */
   getAppInfoById?: Maybe<AppItem>
   /** 获取当前用户创建的应用列表 */
@@ -360,6 +371,10 @@ export type QueryGetAllEntriesArgs = {
 }
 
 export type QueryGetAppCollaboratorsArgs = {
+  appId: Scalars['Int']
+}
+
+export type QueryGetAppCollaboratorsStatisticsArgs = {
   appId: Scalars['Int']
 }
 
