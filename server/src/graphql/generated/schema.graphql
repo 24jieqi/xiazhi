@@ -78,6 +78,14 @@ type CollaborateInfo {
   collaborator: UserInfo
 }
 
+"""协作者应用统计维度"""
+type CollaboratorStatistics {
+  addCount: Int!
+  addCountToday: Int!
+  modifyCount: Int!
+  userId: Int!
+}
+
 """
 A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
 """
@@ -225,6 +233,9 @@ type Query {
 
   """获取应用的协作者列表"""
   getAppCollaborators(appId: Int!): [CollaborateInfo]
+
+  """获取应用协作者的统计信息"""
+  getAppCollaboratorsStatistics(appId: Int!): [CollaboratorStatistics]
 
   """通过应用id获取应用基本信息"""
   getAppInfoById(id: Int!): AppItem

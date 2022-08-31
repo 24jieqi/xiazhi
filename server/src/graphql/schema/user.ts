@@ -1,4 +1,4 @@
-import { enumType, extendType, list, nonNull, objectType, stringArg } from "nexus";
+import { enumType, extendType, intArg, list, nonNull, objectType, stringArg } from "nexus";
 import bcrypt from 'bcrypt'
 import { decodedToken, generateToken } from "../token";
 import { sendRestEmail, sendVerifyEmail } from "../utils/mailer";
@@ -48,7 +48,7 @@ export const UserQuery = extendType({
       description: "用户姓名的模糊查询",
       type: list('UserInfo'),
       args: {
-        keywords: nonNull(stringArg())
+        keywords: nonNull(stringArg()),
       },
       async resolve(_, args, ctx) {
         decodedToken(ctx.req)
@@ -59,7 +59,7 @@ export const UserQuery = extendType({
           where: {
             name: {
               contains: args.keywords
-            }
+            },
           },
           select: {
             name: true,

@@ -123,7 +123,7 @@ export const EntryMutation = extendType({
             langs: args.langs,
             mainLangText: args.langs[LanguageType.CHINESE], // 设置主语言文本
             public: !args.appId,
-            createBy: info?.userId
+            createBy: info?.userId,
           }
         });
         // 传入appId后，关联到APP中

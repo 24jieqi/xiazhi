@@ -92,6 +92,12 @@ export interface NexusGenObjects {
     assignedAt: NexusGenScalars['DateTime']; // DateTime!
     collaborator?: NexusGenRootTypes['UserInfo'] | null; // UserInfo
   }
+  CollaboratorStatistics: { // root type
+    addCount: number; // Int!
+    addCountToday: number; // Int!
+    modifyCount: number; // Int!
+    userId: number; // Int!
+  }
   EntryItem: { // root type
     archive?: boolean | null; // Boolean
     createdAt?: NexusGenScalars['DateTime'] | null; // DateTime
@@ -195,6 +201,12 @@ export interface NexusGenFieldTypes {
     assignedAt: NexusGenScalars['DateTime']; // DateTime!
     collaborator: NexusGenRootTypes['UserInfo'] | null; // UserInfo
   }
+  CollaboratorStatistics: { // field return type
+    addCount: number; // Int!
+    addCountToday: number; // Int!
+    modifyCount: number; // Int!
+    userId: number; // Int!
+  }
   EntryItem: { // field return type
     archive: boolean | null; // Boolean
     createdAt: NexusGenScalars['DateTime'] | null; // DateTime
@@ -262,6 +274,7 @@ export interface NexusGenFieldTypes {
     getAccessKeyByAppId: NexusGenRootTypes['AppAccessInfo'] | null; // AppAccessInfo
     getAllEntries: Array<NexusGenRootTypes['EntryItem'] | null> | null; // [EntryItem]
     getAppCollaborators: Array<NexusGenRootTypes['CollaborateInfo'] | null> | null; // [CollaborateInfo]
+    getAppCollaboratorsStatistics: Array<NexusGenRootTypes['CollaboratorStatistics'] | null> | null; // [CollaboratorStatistics]
     getAppInfoById: NexusGenRootTypes['AppItem'] | null; // AppItem
     getCurrentApps: NexusGenRootTypes['AppPaging'] | null; // AppPaging
     getCurrentUser: NexusGenRootTypes['UserInfo'] | null; // UserInfo
@@ -330,6 +343,12 @@ export interface NexusGenFieldTypeNames {
     assignedAt: 'DateTime'
     collaborator: 'UserInfo'
   }
+  CollaboratorStatistics: { // field return type name
+    addCount: 'Int'
+    addCountToday: 'Int'
+    modifyCount: 'Int'
+    userId: 'Int'
+  }
   EntryItem: { // field return type name
     archive: 'Boolean'
     createdAt: 'DateTime'
@@ -397,6 +416,7 @@ export interface NexusGenFieldTypeNames {
     getAccessKeyByAppId: 'AppAccessInfo'
     getAllEntries: 'EntryItem'
     getAppCollaborators: 'CollaborateInfo'
+    getAppCollaboratorsStatistics: 'CollaboratorStatistics'
     getAppInfoById: 'AppItem'
     getCurrentApps: 'AppPaging'
     getCurrentUser: 'UserInfo'
@@ -541,6 +561,9 @@ export interface NexusGenArgTypes {
       accessKey: string; // String!
     }
     getAppCollaborators: { // args
+      appId: number; // Int!
+    }
+    getAppCollaboratorsStatistics: { // args
       appId: number; // Int!
     }
     getAppInfoById: { // args
