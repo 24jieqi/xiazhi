@@ -134,6 +134,7 @@ export interface NexusGenObjects {
     currKey?: string | null; // String
     currLangs?: NexusGenScalars['JSONObject'] | null; // JSONObject
     entryEntry_id?: number | null; // Int
+    isRollback?: boolean | null; // Boolean
     prevKey?: string | null; // String
     prevLangs?: NexusGenScalars['JSONObject'] | null; // JSONObject
     record_id: number; // Int!
@@ -279,6 +280,7 @@ export interface NexusGenFieldTypes {
     currKey: string | null; // String
     currLangs: NexusGenScalars['JSONObject'] | null; // JSONObject
     entryEntry_id: number | null; // Int
+    isRollback: boolean | null; // Boolean
     prevKey: string | null; // String
     prevLangs: NexusGenScalars['JSONObject'] | null; // JSONObject
     record_id: number; // Int!
@@ -414,6 +416,7 @@ export interface NexusGenFieldTypeNames {
     currKey: 'String'
     currLangs: 'JSONObject'
     entryEntry_id: 'Int'
+    isRollback: 'Boolean'
     prevKey: 'String'
     prevLangs: 'JSONObject'
     record_id: 'Int'
@@ -514,6 +517,7 @@ export interface NexusGenArgTypes {
     }
     updateEntry: { // args
       entryId: number; // Int!
+      isRollback: boolean; // Boolean!
       key?: string | null; // String
       langs?: NexusGenScalars['JSONObject'] | null; // JSONObject
     }

@@ -200,7 +200,7 @@ type Mutation {
 
   """更新应用基本信息"""
   updateAppBasicInfo(appId: Int!, description: String, pictures: [String!]!, type: AppTypeEnum!): Int
-  updateEntry(entryId: Int!, key: String, langs: JSONObject): Boolean
+  updateEntry(entryId: Int!, isRollback: Boolean!, key: String, langs: JSONObject): Boolean
 
   """编辑用户信息"""
   updateUserInfo(avatar: String, name: String, nickName: String, phone: String, role: UserRoleEnum): Boolean
@@ -260,6 +260,7 @@ type RecordItem {
   currKey: String
   currLangs: JSONObject
   entryEntry_id: Int
+  isRollback: Boolean
   prevKey: String
   prevLangs: JSONObject
   record_id: Int!
