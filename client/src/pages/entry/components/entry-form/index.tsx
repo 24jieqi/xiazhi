@@ -82,6 +82,7 @@ const EntryForm: React.FC<EntryFormProps> = ({
             variables: {
               entryId: initialFormData.entryId,
               key: formData.key,
+              isRollback: false,
               langs: {
                 ...omit(formData, ['key']),
               },

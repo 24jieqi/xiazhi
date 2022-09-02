@@ -39,8 +39,18 @@ mutation CreateEntry($appId: Int, $langs: JSONObject, $key: String) {
   createEntry(appId: $appId, langs: $langs, key: $key)
 }
 
-mutation UpdateEntry($entryId: Int!, $langs: JSONObject, $key: String) {
-  updateEntry(entryId: $entryId, langs: $langs, key: $key)
+mutation UpdateEntry(
+  $entryId: Int!
+  $langs: JSONObject
+  $key: String
+  $isRollback: Boolean!
+) {
+  updateEntry(
+    entryId: $entryId
+    langs: $langs
+    key: $key
+    isRollback: $isRollback
+  )
 }
 
 query PageAppEntries(

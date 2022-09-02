@@ -61,6 +61,7 @@ export type UpdateEntryMutationVariables = SchemaTypes.Exact<{
   entryId: SchemaTypes.Scalars['Int']
   langs?: SchemaTypes.InputMaybe<SchemaTypes.Scalars['JSONObject']>
   key?: SchemaTypes.InputMaybe<SchemaTypes.Scalars['String']>
+  isRollback: SchemaTypes.Scalars['Boolean']
 }>
 
 export type UpdateEntryMutation = { updateEntry?: boolean }
@@ -294,8 +295,18 @@ export type CreateEntryMutationOptions = Apollo.BaseMutationOptions<
   CreateEntryMutationVariables
 >
 export const UpdateEntryDocument = gql`
-  mutation UpdateEntry($entryId: Int!, $langs: JSONObject, $key: String) {
-    updateEntry(entryId: $entryId, langs: $langs, key: $key)
+  mutation UpdateEntry(
+    $entryId: Int!
+    $langs: JSONObject
+    $key: String
+    $isRollback: Boolean!
+  ) {
+    updateEntry(
+      entryId: $entryId
+      langs: $langs
+      key: $key
+      isRollback: $isRollback
+    )
   }
 `
 export type UpdateEntryMutationFn = Apollo.MutationFunction<
@@ -319,6 +330,7 @@ export type UpdateEntryMutationFn = Apollo.MutationFunction<
  *      entryId: // value for 'entryId'
  *      langs: // value for 'langs'
  *      key: // value for 'key'
+ *      isRollback: // value for 'isRollback'
  *   },
  * });
  */

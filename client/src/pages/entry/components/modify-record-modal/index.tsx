@@ -126,6 +126,7 @@ const ModifyRecordsModal: React.FC<ModifyRecordsProps> = ({
             entryId: entry_id,
             key,
             langs: prevLangs,
+            isRollback: true,
           },
         })
         onRollbackSucess()

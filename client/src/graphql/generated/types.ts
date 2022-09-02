@@ -300,6 +300,7 @@ export type MutationUpdateAppBasicInfoArgs = {
 
 export type MutationUpdateEntryArgs = {
   entryId: Scalars['Int']
+  isRollback: Scalars['Boolean']
   key?: InputMaybe<Scalars['String']>
   langs?: InputMaybe<Scalars['JSONObject']>
 }
@@ -416,6 +417,7 @@ export type RecordItem = {
   currKey?: Maybe<Scalars['String']>
   currLangs?: Maybe<Scalars['JSONObject']>
   entryEntry_id?: Maybe<Scalars['Int']>
+  isRollback?: Maybe<Scalars['Boolean']>
   prevKey?: Maybe<Scalars['String']>
   prevLangs?: Maybe<Scalars['JSONObject']>
   record_id: Scalars['Int']

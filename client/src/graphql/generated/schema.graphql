@@ -296,7 +296,12 @@ type Mutation {
     pictures: [String!]!
     type: AppTypeEnum!
   ): Int
-  updateEntry(entryId: Int!, key: String, langs: JSONObject): Boolean
+  updateEntry(
+    entryId: Int!
+    isRollback: Boolean!
+    key: String
+    langs: JSONObject
+  ): Boolean
 
   """
   编辑用户信息
@@ -410,6 +415,7 @@ type RecordItem {
   currKey: String
   currLangs: JSONObject
   entryEntry_id: Int
+  isRollback: Boolean
   prevKey: String
   prevLangs: JSONObject
   record_id: Int!
