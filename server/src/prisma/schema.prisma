@@ -21,7 +21,6 @@ model Record {
   prevKey       String?
   currKey       String?
   creator       Int?
-  isRollback    Boolean
 }
 
 // 词条

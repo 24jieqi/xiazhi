@@ -260,7 +260,6 @@ type RecordItem {
   currKey: String
   currLangs: JSONObject
   entryEntry_id: Int
-  isRollback: Boolean
   prevKey: String
   prevLangs: JSONObject
   record_id: Int!

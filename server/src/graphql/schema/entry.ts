@@ -28,7 +28,6 @@ export const RecordItem = objectType({
     t.json("currLangs");
     t.string("prevKey");
     t.string("currKey");
-    t.boolean("isRollback");
     t.int("creator");
     t.field("creatorInfo", {
       type: "UserInfo",
@@ -184,16 +183,17 @@ export const EntryMutation = extendType({
             langs: args.langs,
             mainLangText: args.langs[LanguageType.CHINESE], // 设置主语言文本
             modifyRecords: {
-              create: [
-                {
-                  prevLangs: currentEntry?.langs || {},
-                  currLangs: args.langs,
-                  prevKey: currentEntry?.key,
-                  currKey: args.key,
-                  creator: userId,
-                  isRollback: args.isRollback,
-                },
-              ],
+              create: !args.isRollback
+                ? [
+                    {
+                      prevLangs: currentEntry?.langs || {},
+                      currLangs: args.langs,
+                      prevKey: currentEntry?.key,
+                      currKey: args.key,
+                      creator: userId,
+                    },
+                  ]
+                : [],
             },
           },
         });
