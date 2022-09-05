@@ -95,31 +95,50 @@ const ModifyRecordsModal: React.FC<ModifyRecordsProps> = ({
   function handleCloseModal() {
     setVisible(false)
   }
-  function formateRollbackMessage(langs) {
-    return Object.keys(langs)
-      .map(lang => {
-        if (LANGUAGE_ARRAY.includes(lang as LanguageTypeEnum)) {
-          return `${LANGUAGE_MAP[lang]}:${langs[lang]}`
-        }
-        return null
+  function formateRollbackMessage(langs: Array<any>, type: string) {
+    return langs
+      .map(result => {
+        let str = ''
+        LANGUAGE_ARRAY.forEach(lang => {
+          const curr = result[type][lang]
+          if (curr !== undefined) {
+            str = `${LANGUAGE_MAP[lang]}:${curr}`
+          }
+        })
+        return str
       })
-      .filter(lang => lang)
+      .filter(result => result)
+  }
+  function rollbackDiffLang(currLang, prevLang) {
+    const result = []
+    Object.keys(currLang).forEach(lang => {
+      if (currLang[lang] !== prevLang[lang]) {
+        result.push({
+          curr: {
+            [lang]: currLang[lang],
+          },
+          prev: {
+            [lang]: prevLang[lang],
+          },
+        })
+      }
+    })
+    return result
   }
   function handleRollback(record: ProListType) {
     const {
       data: { langs, prevLangs, key, entry_id },
     } = record
-    const current = formateRollbackMessage(langs)
-    const preview = formateRollbackMessage(prevLangs)
-    if (JSON.stringify(current) === JSON.stringify(preview)) {
+    const diffResult = rollbackDiffLang(langs, prevLangs)
+    if (!diffResult.length) {
       message.warning('回滚词条与当前一致，不支持回滚')
       return
     }
+    const curr = formateRollbackMessage(diffResult, 'curr')
+    const prev = formateRollbackMessage(diffResult, 'prev')
     Modal.confirm({
       title: '确认回滚?',
-      content: `确认将词条【${current.join('，')}】回滚为【${preview.join(
-        '，',
-      )}】?`,
+      content: `确认将词条【${curr.join('，')}】回滚为【${prev.join('，')}】?`,
       onOk: async () => {
         await updateEntry({
           variables: {
