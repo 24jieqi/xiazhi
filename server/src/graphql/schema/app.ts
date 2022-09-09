@@ -41,7 +41,7 @@ export const AppItem = objectType({
     t.list.string("pictures", { description: "应用截图" });
     t.boolean("access", { description: "是否可访问" });
     t.boolean("push", { description: "是否支持词条推送" });
-    t.string('accessKey', { description: '可访问key' })
+    t.string("accessKey", { description: "可访问key" });
     t.int("creatorId");
     t.field("creator", {
       type: "UserInfo",
@@ -105,13 +105,13 @@ export const AppQuery = queryType({
     });
     t.field("getCurrentApps", {
       description: "获取当前用户创建的应用列表",
-      type: 'AppPaging',
+      type: "AppPaging",
       args: {
         name: stringArg(),
-        type: 'AppTypeEnum',
+        type: "AppTypeEnum",
         languages: list(nonNull(LanguageTypeEnum)),
         access: booleanArg(),
-        push: booleanArg()
+        push: booleanArg(),
       },
       async resolve(_root, args, ctx) {
         const decoded = decodedToken(ctx.req);
@@ -119,33 +119,33 @@ export const AppQuery = queryType({
           where: {
             OR: [
               {
-                creatorId: decoded?.userId
+                creatorId: decoded?.userId,
               },
               {
                 CollaboratorsOnApps: {
                   some: {
-                    collaboratorId: decoded?.userId
-                  }
-                }
-              }
+                    collaboratorId: decoded?.userId,
+                  },
+                },
+              },
             ],
             name: {
-              contains: args.name!
+              contains: args.name!,
             },
             type: args.type!,
             languages: {
-              hasEvery: args.languages || []
+              hasEvery: args.languages || [],
             },
             access: args.access!,
-            push: args.push!
+            push: args.push!,
           },
         });
         return {
           total: records.length,
           records: records,
           current: 1,
-          pageSize: records.length
-        }
+          pageSize: records.length,
+        };
       },
     });
   },
@@ -203,19 +203,19 @@ export const AppMutation = mutationType({
         pictures: nonNull(list(nonNull("String"))),
       },
       async resolve(_, args, ctx) {
-        decodedToken(ctx.req)
+        decodedToken(ctx.req);
         await ctx.prisma.app.update({
           where: {
-            app_id: args.appId
+            app_id: args.appId,
           },
           data: {
             type: args.type,
             description: args.description,
-            pictures: args.pictures
-          }
-        })
-        return 1
-      }
+            pictures: args.pictures,
+          },
+        });
+        return 1;
+      },
     });
   },
 });
@@ -233,6 +233,15 @@ export const AppAccessInfo = objectType({
     t.boolean("push", { description: "是否支持进行词条推送" });
     t.boolean("access", { description: "应用是否可以访问" });
     t.string("accessKey", { description: "应用访问key，重置后失效" });
+  },
+});
+
+export const TransformAppEntryInfo = objectType({
+  name: "TransformAppEntryInfo",
+  description: "词条要转换的应用词库信息",
+  definition(t) {
+    t.string("label");
+    t.int("value");
   },
 });
 
@@ -256,6 +265,36 @@ export const AppAccessQuery = extendType({
   },
 });
 
+export const TransformAppEntry = extendType({
+  type: "Query",
+  definition(t) {
+    t.list.field("getTransformAppInfoById", {
+      type: "TransformAppEntryInfo",
+      description: "根据应用id获取要转换的应用词库",
+      args: {
+        id: nonNull(intArg()),
+      },
+      async resolve(_, args, ctx) {
+        const res = await ctx.prisma.app.findMany({
+          where: {
+            NOT: {
+              app_id: args.id,
+            },
+          },
+          select: {
+            app_id: true,
+            name: true,
+          },
+        });
+        return res.map((item) => ({
+          label: item.name,
+          value: item.app_id,
+        }));
+      },
+    });
+  },
+});
+
 export const AppAccessMutation = extendType({
   type: "Mutation",
   definition(t) {
@@ -266,7 +305,7 @@ export const AppAccessMutation = extendType({
         id: nonNull(intArg()),
       },
       async resolve(_, args, ctx) {
-        decodedToken(ctx.req)
+        decodedToken(ctx.req);
         const accessKey = await bcrypt.hash(String(Date.now()), 10);
         await ctx.prisma.app.update({
           where: {
@@ -320,8 +359,8 @@ export const AppAccessMutation = extendType({
               disconnect: true,
             },
             entries: {
-              set: []
-            }
+              set: [],
+            },
           },
           include: {
             creator: true,
@@ -331,26 +370,26 @@ export const AppAccessMutation = extendType({
       },
     });
     t.field("changeAccessStatus", {
-      type: 'Boolean',
-      description: '更改应用在可访问和推送上的状态',
+      type: "Boolean",
+      description: "更改应用在可访问和推送上的状态",
       args: {
         appId: nonNull(intArg()),
         access: booleanArg(),
-        push: booleanArg()
+        push: booleanArg(),
       },
       async resolve(_, args, ctx) {
-        decodedToken(ctx.req)
+        decodedToken(ctx.req);
         await ctx.prisma.app.update({
           where: {
             app_id: args.appId,
           },
           data: {
             access: args.access!,
-            push: args.push!
-          }
-        })
-        return true
-      }
-    })
+            push: args.push!,
+          },
+        });
+        return true;
+      },
+    });
   },
 });

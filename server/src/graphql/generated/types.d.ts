@@ -138,6 +138,10 @@ export interface NexusGenObjects {
     prevLangs?: NexusGenScalars['JSONObject'] | null; // JSONObject
     record_id: number; // Int!
   }
+  TransformAppEntryInfo: { // root type
+    label?: string | null; // String
+    value?: number | null; // Int
+  }
   UserInfo: { // root type
     avatar?: string | null; // String
     email?: string | null; // String
@@ -250,6 +254,7 @@ export interface NexusGenFieldTypes {
     resetPassword: boolean | null; // Boolean
     sendResetPasswordEmail: boolean | null; // Boolean
     sendVerifyEmail: boolean | null; // Boolean
+    transformEntry: boolean | null; // Boolean
     updateAppBasicInfo: number | null; // Int
     updateEntry: boolean | null; // Boolean
     updateUserInfo: boolean | null; // Boolean
@@ -265,6 +270,7 @@ export interface NexusGenFieldTypes {
     getAppInfoById: NexusGenRootTypes['AppItem'] | null; // AppItem
     getCurrentApps: NexusGenRootTypes['AppPaging'] | null; // AppPaging
     getCurrentUser: NexusGenRootTypes['UserInfo'] | null; // UserInfo
+    getTransformAppInfoById: Array<NexusGenRootTypes['TransformAppEntryInfo'] | null> | null; // [TransformAppEntryInfo]
     listSupportLanguage: Array<NexusGenRootTypes['LangageTypeOption'] | null> | null; // [LangageTypeOption]
     listUserFuzzyByUserName: Array<NexusGenRootTypes['UserInfo'] | null> | null; // [UserInfo]
     pageAllPublicEntries: NexusGenRootTypes['EntryPaging'] | null; // EntryPaging
@@ -282,6 +288,10 @@ export interface NexusGenFieldTypes {
     prevKey: string | null; // String
     prevLangs: NexusGenScalars['JSONObject'] | null; // JSONObject
     record_id: number; // Int!
+  }
+  TransformAppEntryInfo: { // field return type
+    label: string | null; // String
+    value: number | null; // Int
   }
   UserInfo: { // field return type
     avatar: string | null; // String
@@ -385,6 +395,7 @@ export interface NexusGenFieldTypeNames {
     resetPassword: 'Boolean'
     sendResetPasswordEmail: 'Boolean'
     sendVerifyEmail: 'Boolean'
+    transformEntry: 'Boolean'
     updateAppBasicInfo: 'Int'
     updateEntry: 'Boolean'
     updateUserInfo: 'Boolean'
@@ -400,6 +411,7 @@ export interface NexusGenFieldTypeNames {
     getAppInfoById: 'AppItem'
     getCurrentApps: 'AppPaging'
     getCurrentUser: 'UserInfo'
+    getTransformAppInfoById: 'TransformAppEntryInfo'
     listSupportLanguage: 'LangageTypeOption'
     listUserFuzzyByUserName: 'UserInfo'
     pageAllPublicEntries: 'EntryPaging'
@@ -417,6 +429,10 @@ export interface NexusGenFieldTypeNames {
     prevKey: 'String'
     prevLangs: 'JSONObject'
     record_id: 'Int'
+  }
+  TransformAppEntryInfo: { // field return type name
+    label: 'String'
+    value: 'Int'
   }
   UserInfo: { // field return type name
     avatar: 'String'
@@ -506,6 +522,10 @@ export interface NexusGenArgTypes {
     sendResetPasswordEmail: { // args
       email: string; // String!
     }
+    transformEntry: { // args
+      entryId: number; // Int!
+      targetAppId: number; // Int!
+    }
     updateAppBasicInfo: { // args
       appId: number; // Int!
       description?: string | null; // String
@@ -554,6 +574,9 @@ export interface NexusGenArgTypes {
       push?: boolean | null; // Boolean
       type?: NexusGenEnums['AppTypeEnum'] | null; // AppTypeEnum
     }
+    getTransformAppInfoById: { // args
+      id: number; // Int!
+    }
     listUserFuzzyByUserName: { // args
       keywords: string; // String!
     }
@@ -577,7 +600,7 @@ export interface NexusGenArgTypes {
       pageSize: number; // Int!
     }
     validEntryKey: { // args
-      appId: number; // Int!
+      appId?: number | null; // Int
       entryId?: number | null; // Int
       key?: string | null; // String
     }

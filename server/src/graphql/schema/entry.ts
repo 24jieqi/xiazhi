@@ -345,6 +345,26 @@ export const EntryMutation = extendType({
         return true;
       },
     });
+    t.field("transformEntry", {
+      type: "Boolean",
+      description: "公共词条、私有词条相互转换",
+      args: {
+        entryId: nonNull(intArg()),
+        targetAppId: nonNull(intArg()),
+      },
+      async resolve(_, args, ctx) {
+        await ctx.prisma.entry.update({
+          where: {
+            entry_id: args.entryId,
+          },
+          data: {
+            appApp_id: args.targetAppId === -1 ? null : args.targetAppId,
+            public: args.targetAppId === -1 ? true : false,
+          },
+        });
+        return true;
+      },
+    });
   },
 });
 
@@ -453,18 +473,23 @@ export const EntryQuery = extendType({
       description: "词条key应用内唯一校验",
       type: "Boolean",
       args: {
-        appId: nonNull(intArg()),
+        appId: intArg(),
         entryId: intArg(),
         key: stringArg(),
       },
       async resolve(_, args, ctx) {
+        const condition: any = {
+          entry_id: {
+            not: args.entryId || undefined,
+          },
+          key: args.key,
+        };
+        if (!!args.appId) {
+          condition["appApp_id"] = args.appId;
+        }
         const targetEntries = await ctx.prisma.entry.findMany({
           where: {
-            appApp_id: args.appId,
-            entry_id: {
-              not: args.entryId || undefined,
-            },
-            key: args.key,
+            ...condition,
           },
         });
         if (targetEntries && targetEntries.length) {
