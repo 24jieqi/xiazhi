@@ -101,3 +101,10 @@ export const appSupportLangsTableEnum = {
     text: '越南语',
   },
 }
+
+export const LANGUAGE_ARRAY = [
+  LanguageTypeEnum.Chinese,
+  LanguageTypeEnum.English,
+  LanguageTypeEnum.Thai,
+  LanguageTypeEnum.Vietnamese,
+]

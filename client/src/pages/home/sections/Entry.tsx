@@ -1,6 +1,6 @@
 /* eslint-disable max-params */
 /* eslint-disable react/no-unstable-nested-components */
-import { EditOutlined, PlusOutlined } from '@ant-design/icons'
+import { EditOutlined, PlusOutlined, SwapOutlined } from '@ant-design/icons'
 import type { ActionType, ProColumns } from '@ant-design/pro-components'
 import { ProTable } from '@ant-design/pro-components'
 import { Button } from 'antd'
@@ -9,10 +9,14 @@ import { EntryItem, LanguageTypeEnum } from '@/graphql/generated/types'
 import { usePageAllPublicEntriesLazyQuery } from '@/graphql/operations/__generated__/entry.generated'
 import EntryModal from '@/pages/entry/components/entry-modal'
 import ModifyRecordsModal from '@/pages/entry/components/modify-record-modal'
+import TransformEntryModal, {
+  TransformEntryModalRefProps,
+} from '@/pages/entry/components/transform-entry-modal'
 
 export default () => {
   const [pageAllPublicEntries] = usePageAllPublicEntriesLazyQuery()
   const actionRef = useRef<ActionType>()
+  const transformEntryRef = useRef<TransformEntryModalRefProps>(null)
   const [editableKeys, setEditableRowKeys] = useState<React.Key[]>([])
   const columns: ProColumns<EntryItem>[] = [
     {
@@ -111,56 +115,76 @@ export default () => {
             编辑
           </Button>
         </EntryModal>,
+        <Button
+          type="link"
+          key="transform"
+          icon={<SwapOutlined />}
+          onClick={() => {
+            transformEntryRef.current?.open({
+              currentAppId: -1,
+              entryId: record.entry_id,
+              langObj: record.langs,
+              key: record.key,
+            })
+          }}>
+          转换
+        </Button>,
       ],
     },
   ]
 
   return (
-    <ProTable<EntryItem>
-      columns={columns}
-      actionRef={actionRef}
-      cardBordered
-      bordered
-      scroll={{ x: 960 }}
-      request={async (params = {}, sort, filter) => {
-        const res = await pageAllPublicEntries({
-          variables: {
-            pageNo: params.current,
-            pageSize: params.pageSize,
+    <>
+      <ProTable<EntryItem>
+        columns={columns}
+        actionRef={actionRef}
+        cardBordered
+        bordered
+        scroll={{ x: 960 }}
+        request={async (params = {}, sort, filter) => {
+          const res = await pageAllPublicEntries({
+            variables: {
+              pageNo: params.current,
+              pageSize: params.pageSize,
+            },
+          })
+          const data = res?.data?.pageAllPublicEntries
+          return {
+            data: data.records,
+            success: true,
+            total: data.total,
+          }
+        }}
+        rowKey="entry_id"
+        search={{
+          labelWidth: 'auto',
+        }}
+        pagination={{
+          pageSize: 10,
+        }}
+        dateFormatter="string"
+        headerTitle="公共词条库"
+        toolBarRender={() => [
+          <EntryModal key="new" onActionSuccess={actionRef.current?.reload}>
+            <Button key="button" type="primary">
+              <PlusOutlined />
+              新建
+            </Button>
+          </EntryModal>,
+        ]}
+        editable={{
+          type: 'multiple',
+          editableKeys,
+          onSave: async (rowKey, data, row) => {
+            console.log(rowKey, data, row)
           },
-        })
-        const data = res?.data?.pageAllPublicEntries
-        return {
-          data: data.records,
-          success: true,
-          total: data.total,
-        }
-      }}
-      rowKey="entry_id"
-      search={{
-        labelWidth: 'auto',
-      }}
-      pagination={{
-        pageSize: 10,
-      }}
-      dateFormatter="string"
-      headerTitle="公共词条库"
-      toolBarRender={() => [
-        <EntryModal key="new" onActionSuccess={actionRef.current?.reload}>
-          <Button key="button" type="primary">
-            <PlusOutlined />
-            新建
-          </Button>
-        </EntryModal>,
-      ]}
-      editable={{
-        type: 'multiple',
-        editableKeys,
-        onSave: async (rowKey, data, row) => {
-          console.log(rowKey, data, row)
-        },
-        onChange: setEditableRowKeys,
-      }}
-    />
+          onChange: setEditableRowKeys,
+        }}
+      />
+      <TransformEntryModal
+        ref={transformEntryRef}
+        onActionSuccess={() => actionRef.current.reload()}
+      />
+    </>
   )
 }

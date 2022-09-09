@@ -24,6 +24,9 @@ import { EntryItem } from '@/graphql/generated/types'
 import EntryModal from '@/pages/entry/components/entry-modal'
 import EntryForm from '@/pages/entry/components/entry-form'
 import ModifyRecordsModal from '@/pages/entry/components/modify-record-modal'
+import TransformEntryModal, {
+  TransformEntryModalRefProps,
+} from '@/pages/entry/components/transform-entry-modal'
 import { appTypeOptions } from '../constant'
 import UploadXlsx from '../components/upload-xlsx'
 import styles from './split.module.less'
@@ -36,6 +39,7 @@ type EntryListProps = {
 
 const EntryList: React.FC<EntryListProps> = props => {
   const routeParams = useParams()
+  const transformEntryRef = useRef<TransformEntryModalRefProps>(null)
   const { onChange, selectedEntry, actionRef } = props
   const [pageAllPublicEntries] = usePageAppEntriesLazyQuery()
   const [changeEntryAccess] = useChangeEntryAccessStatusMutation()
@@ -182,121 +186,139 @@ const EntryList: React.FC<EntryListProps> = props => {
           }}>
           删除
         </a>,
+        <a
+          key="transform"
+          onClick={() => {
+            transformEntryRef.current?.open({
+              currentAppId: +routeParams.id,
+              entryId: row.entry_id,
+              langObj: row.langs,
+              key: row.key,
+            })
+          }}>
+          转换
+        </a>,
       ],
     },
   ]
   return (
-    <ProTable<EntryItem>
-      actionRef={actionRef}
-      columns={columns}
-      request={async (params = {}) => {
-        const res = await pageAllPublicEntries({
-          variables: {
-            pageNo: params.current,
-            pageSize: params.pageSize,
-            appId: Number(routeParams.id),
-            startTime: params.startTime,
-            endTime: params.endTime,
-            key: params.key,
-            mainLangText: params.mainLangText,
-            latest: (params.state as any[])?.includes('latest'),
-            archive: (params.state as any[])?.includes('archived'),
-          },
-        })
-        const data = res?.data?.pageAppEntries
-        return {
-          data: data.records,
-          success: true,
-          total: data.total,
-        }
-      }}
-      rowKey="entry_id"
-      search={{
-        labelWidth: 'auto',
-      }}
-      pagination={{
-        pageSize: 10,
-      }}
-      rowClassName={record => {
-        return record?.entry_id === selectedEntry?.entry_id
-          ? styles['split-row-select-active']
-          : ''
-      }}
-      toolbar={{
-        actions: [
-          <Button
-            size="small"
-            key="list"
-            type="link"
-            onClick={() =>
-              window.open('http://localhost:3000/assets/template.xlsx')
-            }>
-            下载多语言模版
-          </Button>,
-          <UploadXlsx key="upload" onUploadSuccess={handleUploadEntries} />,
-          <EntryModal
-            initialFormData={{
-              appId,
-            }}
-            key="add"
-            onActionSuccess={() => {
-              actionRef.current.reload()
-            }}>
-            <Button size="small" type="primary">
-              新增词条
-            </Button>
-          </EntryModal>,
-        ],
-      }}
-      onRow={record => {
-        if (record.archive) {
-          return {}
-        }
-        return {
-          onClick: () => {
-            if (record.entry_id) {
-              onChange(record)
-            }
-          },
-        }
-      }}
-      rowSelection={{
-        selections: [Table.SELECTION_ALL, Table.SELECTION_INVERT],
-        defaultSelectedRowKeys: [],
-      }}
-      tableAlertRender={({ selectedRowKeys, onCleanSelected }) => {
-        return (
-          <Space size={24}>
-            <span>
-              已选 {selectedRowKeys.length} 项
-              <a style={{ marginLeft: 8 }} onClick={onCleanSelected}>
-                取消选择
-              </a>
-            </span>
-          </Space>
-        )
-      }}
-      tableAlertOptionRender={({ selectedRowKeys, onCleanSelected }) => {
-        return (
-          <a
-            onClick={() =>
-              handleMultiDelete(selectedRowKeys as number[], () => {
-                onCleanSelected()
+    <>
+      <ProTable<EntryItem>
+        actionRef={actionRef}
+        columns={columns}
+        request={async (params = {}) => {
+          const res = await pageAllPublicEntries({
+            variables: {
+              pageNo: params.current,
+              pageSize: params.pageSize,
+              appId: Number(routeParams.id),
+              startTime: params.startTime,
+              endTime: params.endTime,
+              key: params.key,
+              mainLangText: params.mainLangText,
+              latest: (params.state as any[])?.includes('latest'),
+              archive: (params.state as any[])?.includes('archived'),
+            },
+          })
+          const data = res?.data?.pageAppEntries
+          return {
+            data: data.records,
+            success: true,
+            total: data.total,
+          }
+        }}
+        rowKey="entry_id"
+        search={{
+          labelWidth: 'auto',
+        }}
+        pagination={{
+          pageSize: 10,
+        }}
+        rowClassName={record => {
+          return record?.entry_id === selectedEntry?.entry_id
+            ? styles['split-row-select-active']
+            : ''
+        }}
+        toolbar={{
+          actions: [
+            <Button
+              size="small"
+              key="list"
+              type="link"
+              onClick={() =>
+                window.open('http://localhost:3000/assets/template.xlsx')
+              }>
+              下载多语言模版
+            </Button>,
+            <UploadXlsx key="upload" onUploadSuccess={handleUploadEntries} />,
+            <EntryModal
+              initialFormData={{
+                appId,
+              }}
+              key="add"
+              onActionSuccess={() => {
                 actionRef.current.reload()
-                // 当被选中的包含在删除列表中，清空表格
-                if (
-                  selectedEntry &&
-                  selectedRowKeys.includes(selectedEntry.entry_id)
-                ) {
-                  onChange?.(null)
-                }
-              })
-            }>
-            批量删除
-          </a>
-        )
-      }}
-    />
+              }}>
+              <Button size="small" type="primary">
+                新增词条
+              </Button>
+            </EntryModal>,
+          ],
+        }}
+        onRow={record => {
+          if (record.archive) {
+            return {}
+          }
+          return {
+            onClick: () => {
+              if (record.entry_id) {
+                onChange(record)
+              }
+            },
+          }
+        }}
+        rowSelection={{
+          selections: [Table.SELECTION_ALL, Table.SELECTION_INVERT],
+          defaultSelectedRowKeys: [],
+        }}
+        tableAlertRender={({ selectedRowKeys, onCleanSelected }) => {
+          return (
+            <Space size={24}>
+              <span>
+                已选 {selectedRowKeys.length} 项
+                <a style={{ marginLeft: 8 }} onClick={onCleanSelected}>
+                  取消选择
+                </a>
+              </span>
+            </Space>
+          )
+        }}
+        tableAlertOptionRender={({ selectedRowKeys, onCleanSelected }) => {
+          return (
+            <a
+              onClick={() =>
+                handleMultiDelete(selectedRowKeys as number[], () => {
+                  onCleanSelected()
+                  actionRef.current.reload()
+                  // 当被选中的包含在删除列表中，清空表格
+                  if (
+                    selectedEntry &&
+                    selectedRowKeys.includes(selectedEntry.entry_id)
+                  ) {
+                    onChange?.(null)
+                  }
+                })
+              }>
+              批量删除
+            </a>
+          )
+        }}
+      />
+      <TransformEntryModal
+        ref={transformEntryRef}
+        onActionSuccess={() => actionRef.current.reload()}
+      />
+    </>
   )
 }
 

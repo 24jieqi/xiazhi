@@ -8,6 +8,10 @@ import {
   RecordItem,
 } from '@/graphql/generated/types'
 import { useUpdateEntryMutation } from '@/graphql/operations/__generated__/entry.generated'
+import {
+  appSupportLangsTableEnum,
+  LANGUAGE_ARRAY,
+} from '@/pages/application/constant'
 
 interface ModifyRecordsProps {
   modifyRecords: RecordItem[]
@@ -27,19 +31,6 @@ interface ProListType {
     entry_id: number
     key: string
   }
-}
-
-const LANGUAGE_ARRAY = [
-  LanguageTypeEnum.Chinese,
-  LanguageTypeEnum.English,
-  LanguageTypeEnum.Thai,
-  LanguageTypeEnum.Vietnamese,
-]
-const LANGUAGE_MAP = {
-  [LanguageTypeEnum.Chinese]: '中文',
-  [LanguageTypeEnum.English]: '英文',
-  [LanguageTypeEnum.Thai]: '泰文',
-  [LanguageTypeEnum.Vietnamese]: '泰文',
 }
 
 function langDiff(
@@ -102,7 +93,7 @@ const ModifyRecordsModal: React.FC<ModifyRecordsProps> = ({
         LANGUAGE_ARRAY.forEach(lang => {
           const curr = result[type][lang]
           if (curr !== undefined) {
-            str = `${LANGUAGE_MAP[lang]}:${curr}`
+            str = `${appSupportLangsTableEnum[lang].text}:${curr}`
           }
         })
         return str

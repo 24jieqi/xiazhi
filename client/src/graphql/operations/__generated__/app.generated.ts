@@ -84,6 +84,18 @@ export type GetAppInfoByIdQuery = {
   }
 }
 
+export type GetTransformAppInfoByIdQueryVariables = SchemaTypes.Exact<{
+  getTransformAppInfoByIdId: SchemaTypes.Scalars['Int']
+}>
+
+export type GetTransformAppInfoByIdQuery = {
+  getTransformAppInfoById?: Array<{
+    __typename?: 'TransformAppEntryInfo'
+    label?: string
+    value?: number
+  }>
+}
+
 export type UpdateAppBasicInfoMutationVariables = SchemaTypes.Exact<{
   appId: SchemaTypes.Scalars['Int']
   type: SchemaTypes.AppTypeEnum
@@ -431,6 +443,65 @@ export type GetAppInfoByIdLazyQueryHookResult = ReturnType<
 export type GetAppInfoByIdQueryResult = Apollo.QueryResult<
   GetAppInfoByIdQuery,
   GetAppInfoByIdQueryVariables
+>
+export const GetTransformAppInfoByIdDocument = gql`
+  query GetTransformAppInfoById($getTransformAppInfoByIdId: Int!) {
+    getTransformAppInfoById(id: $getTransformAppInfoByIdId) {
+      label
+      value
+    }
+  }
+`
+
+/**
+ * __useGetTransformAppInfoByIdQuery__
+ *
+ * To run a query within a React component, call `useGetTransformAppInfoByIdQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetTransformAppInfoByIdQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetTransformAppInfoByIdQuery({
+ *   variables: {
+ *      getTransformAppInfoByIdId: // value for 'getTransformAppInfoByIdId'
+ *   },
+ * });
+ */
+export function useGetTransformAppInfoByIdQuery(
+  baseOptions: Apollo.QueryHookOptions<
+    GetTransformAppInfoByIdQuery,
+    GetTransformAppInfoByIdQueryVariables
+  >,
+) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useQuery<
+    GetTransformAppInfoByIdQuery,
+    GetTransformAppInfoByIdQueryVariables
+  >(GetTransformAppInfoByIdDocument, options)
+}
+export function useGetTransformAppInfoByIdLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<
+    GetTransformAppInfoByIdQuery,
+    GetTransformAppInfoByIdQueryVariables
+  >,
+) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useLazyQuery<
+    GetTransformAppInfoByIdQuery,
+    GetTransformAppInfoByIdQueryVariables
+  >(GetTransformAppInfoByIdDocument, options)
+}
+export type GetTransformAppInfoByIdQueryHookResult = ReturnType<
+  typeof useGetTransformAppInfoByIdQuery
+>
+export type GetTransformAppInfoByIdLazyQueryHookResult = ReturnType<
+  typeof useGetTransformAppInfoByIdLazyQuery
+>
+export type GetTransformAppInfoByIdQueryResult = Apollo.QueryResult<
+  GetTransformAppInfoByIdQuery,
+  GetTransformAppInfoByIdQueryVariables
 >
 export const UpdateAppBasicInfoDocument = gql`
   mutation UpdateAppBasicInfo(

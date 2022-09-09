@@ -187,6 +187,8 @@ export type Mutation = {
   sendResetPasswordEmail?: Maybe<Scalars['Boolean']>
   /** 发送验证邮件 */
   sendVerifyEmail?: Maybe<Scalars['Boolean']>
+  /** 公共词条、私有词条相互转换 */
+  transformEntry?: Maybe<Scalars['Boolean']>
   /** 更新应用基本信息 */
   updateAppBasicInfo?: Maybe<Scalars['Int']>
   updateEntry?: Maybe<Scalars['Boolean']>
@@ -291,6 +293,11 @@ export type MutationSendResetPasswordEmailArgs = {
   email: Scalars['String']
 }
 
+export type MutationTransformEntryArgs = {
+  entryId: Scalars['Int']
+  targetAppId: Scalars['Int']
+}
+
 export type MutationUpdateAppBasicInfoArgs = {
   appId: Scalars['Int']
   description?: InputMaybe<Scalars['String']>
@@ -339,6 +346,8 @@ export type Query = {
   getCurrentApps?: Maybe<AppPaging>
   /** 获取当前登录用户的基本信息 */
   getCurrentUser?: Maybe<UserInfo>
+  /** 根据应用id获取要转换的应用词库 */
+  getTransformAppInfoById?: Maybe<Array<Maybe<TransformAppEntryInfo>>>
   listSupportLanguage?: Maybe<Array<Maybe<LangageTypeOption>>>
   /** 用户姓名的模糊查询 */
   listUserFuzzyByUserName?: Maybe<Array<Maybe<UserInfo>>>
@@ -376,6 +385,10 @@ export type QueryGetCurrentAppsArgs = {
   type?: InputMaybe<AppTypeEnum>
 }
 
+export type QueryGetTransformAppInfoByIdArgs = {
+  id: Scalars['Int']
+}
+
 export type QueryListUserFuzzyByUserNameArgs = {
   keywords: Scalars['String']
 }
@@ -403,7 +416,7 @@ export type QueryPageFeedbackNegativeArgs = {
 }
 
 export type QueryValidEntryKeyArgs = {
-  appId: Scalars['Int']
+  appId?: InputMaybe<Scalars['Int']>
   entryId?: InputMaybe<Scalars['Int']>
   key?: InputMaybe<Scalars['String']>
 }
@@ -420,6 +433,13 @@ export type RecordItem = {
   prevKey?: Maybe<Scalars['String']>
   prevLangs?: Maybe<Scalars['JSONObject']>
   record_id: Scalars['Int']
+}
+
+/** 词条要转换的应用词库信息 */
+export type TransformAppEntryInfo = {
+  __typename?: 'TransformAppEntryInfo'
+  label?: Maybe<Scalars['String']>
+  value?: Maybe<Scalars['Int']>
 }
 
 /** 新增词条上传信息 */

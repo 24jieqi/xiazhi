@@ -130,10 +130,14 @@ mutation DeleteEntries($appId: Int!, $entryIds: [Int!]!) {
   deleteEntries(appId: $appId, entryIds: $entryIds)
 }
 
-query ValidEntryKey($appId: Int!, $entryId: Int, $key: String) {
+query ValidEntryKey($appId: Int, $entryId: Int, $key: String) {
   validEntryKey(appId: $appId, entryId: $entryId, key: $key)
 }
 
 mutation UploadEntriesXlsx($appId: Int!, $fileUrl: String!) {
   uploadEntriesXlsx(appId: $appId, fileUrl: $fileUrl)
+}
+
+mutation TransformEntry($entryId: Int!, $targetAppId: Int!) {
+  transformEntry(entryId: $entryId, targetAppId: $targetAppId)
 }

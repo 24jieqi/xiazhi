@@ -80,6 +80,13 @@ query GetAppInfoById($getAppInfoByIdId: Int!) {
   }
 }
 
+query GetTransformAppInfoById($getTransformAppInfoByIdId: Int!) {
+  getTransformAppInfoById(id: $getTransformAppInfoByIdId) {
+    label
+    value
+  }
+}
+
 mutation UpdateAppBasicInfo(
   $appId: Int!
   $type: AppTypeEnum!
