@@ -83,7 +83,7 @@ const EntryForm: React.FC<EntryFormProps> = ({
               entryId: initialFormData.entryId,
               key: formData.key,
               langs: {
-                ...omit(formData, ['key']),
+                ...omit(formData, ['key', 'autoGenerate']),
               },
             },
           })
@@ -96,7 +96,7 @@ const EntryForm: React.FC<EntryFormProps> = ({
               key: formData.key,
               appId: allData.appId,
               langs: {
-                ...omit(formData, ['key']),
+                ...omit(formData, ['key', 'autoGenerate']),
               },
             },
           })
