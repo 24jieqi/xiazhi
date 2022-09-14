@@ -1,7 +1,10 @@
-import { enumType, extendType, intArg, list, nonNull, objectType, stringArg } from "nexus";
+import { enumType, extendType, list, nonNull, objectType, stringArg } from "nexus";
 import bcrypt from 'bcrypt'
 import { decodedToken, generateToken } from "../token";
 import { sendRestEmail, sendVerifyEmail } from "../utils/mailer";
+import { getIpAddress } from "../../utils";
+
+const ipAddress = getIpAddress()
 
 export const UserRoleEnum = enumType({
   description: '用户角色枚举',
@@ -135,7 +138,7 @@ export const UserMutation = extendType({
           throw new Error('用户不存在')
         }
         const token = generateToken(user?.user_id, '30m')
-        return await sendRestEmail(args.email, `http://localhost:3001/password_reset?t=${token}`)
+        return await sendRestEmail(args.email, `${ipAddress}/password_reset?t=${token}`)
       }
     })
     t.field('sendVerifyEmail', {
@@ -152,7 +155,7 @@ export const UserMutation = extendType({
           throw new Error('用户不存在')
         }
         const token = generateToken(user.user_id, '30m')
-        await sendVerifyEmail(user.email, `http://localhost:3001/verify?t=${token}`)
+        await sendVerifyEmail(user.email, `${ipAddress}/verify?t=${token}`)
         return true
       }
     })

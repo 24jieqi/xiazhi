@@ -9,6 +9,7 @@ import historyApiFallback from "koa2-connect-history-api-fallback"
 import schema from "../graphql";
 import { createContext } from "../graphql/context";
 import { historyApiFallbackWhiteList } from "./constants";
+import { getIpAddress } from "../utils";
 
 const httpServer = http.createServer();
 
@@ -39,6 +40,8 @@ app.use(cors())
 
 const PORT = 3000;
 
+const ipAddress = getIpAddress()
+
 export default async function startApolloServer() {
   await apolloServer.start();
   apolloServer.applyMiddleware({ app });
@@ -47,7 +50,7 @@ export default async function startApolloServer() {
     httpServer.listen({ port: PORT }, resolve)
   );
   console.log(
-    `🚀 Server ready at http://localhost:${PORT}${apolloServer.graphqlPath}`
+    `🚀 Server ready at ${ipAddress}:${PORT}${apolloServer.graphqlPath}`
   );
   return { apolloServer, app };
 }
