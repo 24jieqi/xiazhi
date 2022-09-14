@@ -51,7 +51,7 @@ export async function sendVerifyEmail(address: string, url: string) {
   try {
     await createTransporter()
     const email = {
-      from: '"夏至 重置密码"<mailerceshi@163.com>',
+      from: '"夏至多语言词库平台 重置密码"<mailerceshi@163.com>',
       to: address,
       subject: '重置密码',
       html: `

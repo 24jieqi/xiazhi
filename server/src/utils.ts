@@ -6,7 +6,6 @@ import os from 'os'
  */
 export function getIpAddress() {
   var ifaces=os.networkInterfaces()
-  console.log('ifaces', ifaces)
   try {
     for (const dev in ifaces) {
       let iface = ifaces[dev]!
@@ -20,4 +19,16 @@ export function getIpAddress() {
   } catch(err) {
     return null
   }
+}
+
+/**
+ * 获取服务器对外访问地址
+ * @param https 
+ * @param ipAddress 
+ * @param port 
+ * @returns 
+ */
+export function getServerAddress(https = false, ipAddress: string, port: number) {
+  const protocal = https ? 'https://' : 'http://'
+  return `${protocal}${ipAddress}:${port}`
 }

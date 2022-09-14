@@ -3,6 +3,7 @@ import bcrypt from 'bcrypt'
 import { decodedToken, generateToken } from "../token";
 import { sendRestEmail, sendVerifyEmail } from "../utils/mailer";
 import { getIpAddress } from "../../utils";
+import { serverAddress } from "../../api/constants";
 
 const ipAddress = getIpAddress()
 
@@ -103,7 +104,7 @@ export const UserMutation = extendType({
         })
         const token = generateToken(user.user_id, '30m')
         // 发送邮件，不阻塞整个注册流程（后续可以再次发送验证）
-        sendRestEmail(args.email, `http://localhost:3000/verify?t=${token}`)
+        sendVerifyEmail(args.email, `${serverAddress}/verify?t=${token}`)
         return token
       }
     })
@@ -138,7 +139,7 @@ export const UserMutation = extendType({
           throw new Error('用户不存在')
         }
         const token = generateToken(user?.user_id, '30m')
-        return await sendRestEmail(args.email, `${ipAddress}/password_reset?t=${token}`)
+        return await sendRestEmail(args.email, `${serverAddress}/password_reset?t=${token}`)
       }
     })
     t.field('sendVerifyEmail', {
@@ -155,7 +156,7 @@ export const UserMutation = extendType({
           throw new Error('用户不存在')
         }
         const token = generateToken(user.user_id, '30m')
-        await sendVerifyEmail(user.email, `${ipAddress}/verify?t=${token}`)
+        await sendVerifyEmail(user.email, `${serverAddress}/verify?t=${token}`)
         return true
       }
     })
