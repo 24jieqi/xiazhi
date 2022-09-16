@@ -41,15 +41,17 @@ mutation CreateEntry($appId: Int, $langs: JSONObject, $key: String) {
 
 mutation UpdateEntry(
   $entryId: Int!
+  $appId: Int
+  $isRollback: Boolean!
   $langs: JSONObject
   $key: String
-  $isRollback: Boolean!
 ) {
   updateEntry(
     entryId: $entryId
+    appId: $appId
+    isRollback: $isRollback
     langs: $langs
     key: $key
-    isRollback: $isRollback
   )
 }
 

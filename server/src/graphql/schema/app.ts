@@ -270,25 +270,43 @@ export const TransformAppEntry = extendType({
   definition(t) {
     t.list.field("getTransformAppInfoById", {
       type: "TransformAppEntryInfo",
-      description: "根据应用id获取要转换的应用词库",
+      description: "根据应用id获取要共享的应用词库",
       args: {
-        id: nonNull(intArg()),
+        entryId: nonNull(intArg()),
       },
       async resolve(_, args, ctx) {
-        const res = await ctx.prisma.app.findMany({
+        const entryData = await ctx.prisma.entry.findUnique({
           where: {
-            NOT: {
-              app_id: args.id,
-            },
+            entry_id: args.entryId,
           },
+          include: {
+            app: true,
+          },
+        });
+        const appData = await ctx.prisma.app.findMany({
           select: {
             app_id: true,
             name: true,
           },
         });
-        return res.map((item) => ({
-          label: item.name,
-          value: item.app_id,
+        // 大于0代表该词条有关联的应用
+        if (entryData!.app?.length > 0) {
+          return appData
+            .filter((appItem) => {
+              return (
+                entryData?.app.findIndex(
+                  (entryItem) => entryItem.appId === appItem.app_id
+                ) === -1
+              );
+            })
+            .map((appItem) => ({
+              label: appItem?.name,
+              value: appItem?.app_id,
+            }));
+        }
+        return appData.map((appItem) => ({
+          label: appItem?.name,
+          value: appItem?.app_id,
         }));
       },
     });

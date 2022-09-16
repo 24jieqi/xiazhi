@@ -75,7 +75,7 @@ export const appSupportLangsOptions = [
   },
   {
     value: LanguageTypeEnum.English,
-    label: '英语',
+    label: '英文',
   },
   {
     value: LanguageTypeEnum.Thai,
@@ -92,7 +92,7 @@ export const appSupportLangsTableEnum = {
     text: '中文',
   },
   [LanguageTypeEnum.English]: {
-    text: '英语',
+    text: '英文',
   },
   [LanguageTypeEnum.Thai]: {
     text: '泰语',

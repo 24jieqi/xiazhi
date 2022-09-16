@@ -17,6 +17,7 @@ interface ModifyRecordsProps {
   modifyRecords: RecordItem[]
   records: {
     entry_id: number
+    appId?: number
     langs: EntryItem['langs']
     key: string
   }
@@ -133,6 +134,7 @@ const ModifyRecordsModal: React.FC<ModifyRecordsProps> = ({
       onOk: async () => {
         await updateEntry({
           variables: {
+            appId: records.appId,
             entryId: entry_id,
             key,
             langs: prevLangs,
@@ -160,7 +162,7 @@ const ModifyRecordsModal: React.FC<ModifyRecordsProps> = ({
           prevLangs: { ...record.prevLangs },
           entry_id: records.entry_id,
           langs: records.langs,
-          key: records.key,
+          key: record.prevKey,
         },
         title: dayjs(record.createdAt).format('YY-MM-DD HH:mm'),
         subTitle: record.creatorInfo?.name,

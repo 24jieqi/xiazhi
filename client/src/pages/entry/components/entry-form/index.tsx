@@ -3,8 +3,8 @@ import {
   ProFormCheckbox,
   ProFormText,
 } from '@ant-design/pro-components'
-import { Checkbox, message } from 'antd'
-import React, { useEffect, useRef } from 'react'
+import { message } from 'antd'
+import React, { useEffect } from 'react'
 import { LangageTypeOption, LanguageTypeEnum } from '@/graphql/generated/types'
 import { useListSupportLanguageQuery } from '@/graphql/operations/__generated__/basic.generated'
 import {
@@ -80,6 +80,7 @@ const EntryForm: React.FC<EntryFormProps> = ({
         if (initialFormData?.entryId) {
           await updateEntry({
             variables: {
+              appId: initialFormData.appId,
               entryId: initialFormData.entryId,
               key: formData.key,
               isRollback: false,

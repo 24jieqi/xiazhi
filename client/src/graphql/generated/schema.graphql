@@ -302,6 +302,7 @@ type Mutation {
     type: AppTypeEnum!
   ): Int
   updateEntry(
+    appId: Int
     entryId: Int!
     isRollback: Boolean!
     key: String
@@ -374,9 +375,9 @@ type Query {
   getCurrentUser: UserInfo
 
   """
-  根据应用id获取要转换的应用词库
+  根据应用id获取要共享的应用词库
   """
-  getTransformAppInfoById(id: Int!): [TransformAppEntryInfo]
+  getTransformAppInfoById(entryId: Int!): [TransformAppEntryInfo]
   listSupportLanguage: [LangageTypeOption]
 
   """

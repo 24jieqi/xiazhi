@@ -14,7 +14,7 @@ import {
 
 interface ParamsType {
   entryId: number
-  currentAppId: number
+  currentAppId?: number
   langObj: any
   key: string
 }
@@ -42,7 +42,7 @@ const TransformEntryModal: React.ForwardRefRenderFunction<
     open: params => {
       getTransformAppInfo({
         variables: {
-          getTransformAppInfoByIdId: params.currentAppId,
+          entryId: params.entryId,
         },
       })
       setData(params)
@@ -53,7 +53,7 @@ const TransformEntryModal: React.ForwardRefRenderFunction<
     const formData = await form.validateFields()
     const res = await validEntryKey({
       variables: {
-        appId: formData.targetAppId === -1 ? null : formData.targetAppId,
+        appId: formData.targetAppId === -1 ? undefined : formData.targetAppId,
         entryId: data.entryId,
         key: data.key,
       },
@@ -94,7 +94,7 @@ const TransformEntryModal: React.ForwardRefRenderFunction<
 
   const options = useMemo(() => {
     let arr = transformAppInfo?.getTransformAppInfoById || []
-    if (data && data.currentAppId !== -1) {
+    if (data?.currentAppId) {
       arr = [].concat(
         [
           {

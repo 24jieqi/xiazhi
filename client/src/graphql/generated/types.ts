@@ -306,6 +306,7 @@ export type MutationUpdateAppBasicInfoArgs = {
 }
 
 export type MutationUpdateEntryArgs = {
+  appId?: InputMaybe<Scalars['Int']>
   entryId: Scalars['Int']
   isRollback: Scalars['Boolean']
   key?: InputMaybe<Scalars['String']>
@@ -346,7 +347,7 @@ export type Query = {
   getCurrentApps?: Maybe<AppPaging>
   /** 获取当前登录用户的基本信息 */
   getCurrentUser?: Maybe<UserInfo>
-  /** 根据应用id获取要转换的应用词库 */
+  /** 根据应用id获取要共享的应用词库 */
   getTransformAppInfoById?: Maybe<Array<Maybe<TransformAppEntryInfo>>>
   listSupportLanguage?: Maybe<Array<Maybe<LangageTypeOption>>>
   /** 用户姓名的模糊查询 */
@@ -386,7 +387,7 @@ export type QueryGetCurrentAppsArgs = {
 }
 
 export type QueryGetTransformAppInfoByIdArgs = {
-  id: Scalars['Int']
+  entryId: Scalars['Int']
 }
 
 export type QueryListUserFuzzyByUserNameArgs = {

@@ -121,7 +121,6 @@ export default () => {
           icon={<SwapOutlined />}
           onClick={() => {
             transformEntryRef.current?.open({
-              currentAppId: -1,
               entryId: record.entry_id,
               langObj: record.langs,
               key: record.key,

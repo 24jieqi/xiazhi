@@ -80,8 +80,8 @@ query GetAppInfoById($getAppInfoByIdId: Int!) {
   }
 }
 
-query GetTransformAppInfoById($getTransformAppInfoByIdId: Int!) {
-  getTransformAppInfoById(id: $getTransformAppInfoByIdId) {
+query GetTransformAppInfoById($entryId: Int!) {
+  getTransformAppInfoById(entryId: $entryId) {
     label
     value
   }

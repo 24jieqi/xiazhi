@@ -164,7 +164,7 @@ const AppListPage: React.FC = () => {
             total: data.total,
           }
         }}
-        rowKey="entry_id"
+        rowKey="app_id"
         search={{
           labelWidth: 'auto',
         }}

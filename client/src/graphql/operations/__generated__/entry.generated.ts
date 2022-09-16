@@ -59,9 +59,10 @@ export type CreateEntryMutation = { createEntry?: number }
 
 export type UpdateEntryMutationVariables = SchemaTypes.Exact<{
   entryId: SchemaTypes.Scalars['Int']
+  appId?: SchemaTypes.InputMaybe<SchemaTypes.Scalars['Int']>
+  isRollback: SchemaTypes.Scalars['Boolean']
   langs?: SchemaTypes.InputMaybe<SchemaTypes.Scalars['JSONObject']>
   key?: SchemaTypes.InputMaybe<SchemaTypes.Scalars['String']>
-  isRollback: SchemaTypes.Scalars['Boolean']
 }>
 
 export type UpdateEntryMutation = { updateEntry?: boolean }
@@ -304,15 +305,17 @@ export type CreateEntryMutationOptions = Apollo.BaseMutationOptions<
 export const UpdateEntryDocument = gql`
   mutation UpdateEntry(
     $entryId: Int!
+    $appId: Int
+    $isRollback: Boolean!
     $langs: JSONObject
     $key: String
-    $isRollback: Boolean!
   ) {
     updateEntry(
       entryId: $entryId
+      appId: $appId
+      isRollback: $isRollback
       langs: $langs
       key: $key
-      isRollback: $isRollback
     )
   }
 `
@@ -335,9 +338,10 @@ export type UpdateEntryMutationFn = Apollo.MutationFunction<
  * const [updateEntryMutation, { data, loading, error }] = useUpdateEntryMutation({
  *   variables: {
  *      entryId: // value for 'entryId'
+ *      appId: // value for 'appId'
+ *      isRollback: // value for 'isRollback'
  *      langs: // value for 'langs'
  *      key: // value for 'key'
- *      isRollback: // value for 'isRollback'
  *   },
  * });
  */

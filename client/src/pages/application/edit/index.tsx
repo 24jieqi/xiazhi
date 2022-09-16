@@ -23,10 +23,10 @@ import {
 import { EntryItem } from '@/graphql/generated/types'
 import EntryModal from '@/pages/entry/components/entry-modal'
 import EntryForm from '@/pages/entry/components/entry-form'
-import ModifyRecordsModal from '@/pages/entry/components/modify-record-modal'
 import TransformEntryModal, {
   TransformEntryModalRefProps,
 } from '@/pages/entry/components/transform-entry-modal'
+import ModifyRecordsModal from '@/pages/entry/components/modify-record-modal'
 import { appTypeOptions } from '../constant'
 import UploadXlsx from '../components/upload-xlsx'
 import styles from './split.module.less'
@@ -156,7 +156,7 @@ const EntryList: React.FC<EntryListProps> = props => {
         return (
           <ModifyRecordsModal
             onRollbackSucess={handleRollbackSucess}
-            records={{ entry_id, langs, key }}
+            records={{ entry_id, appId, langs, key }}
             modifyRecords={modifyRecords || []}
           />
         )
@@ -253,7 +253,7 @@ const EntryList: React.FC<EntryListProps> = props => {
             <UploadXlsx key="upload" onUploadSuccess={handleUploadEntries} />,
             <EntryModal
               initialFormData={{
-                appId,
+                appId: Number(appId),
               }}
               key="add"
               onActionSuccess={() => {

@@ -111,7 +111,9 @@ export const EntryMutation = extendType({
           const records = await ctx.prisma.entry.findMany({
             where: {
               app: {
-                app_id: args.appId,
+                every: {
+                  appId: args.appId,
+                },
               },
               mainLangText: mainLangText,
             },
@@ -138,7 +140,9 @@ export const EntryMutation = extendType({
             },
             data: {
               entries: {
-                connect: [{ entry_id: entry.entry_id }],
+                create: {
+                  entryId: entry.entry_id,
+                },
               },
             },
           });
@@ -150,6 +154,7 @@ export const EntryMutation = extendType({
       type: "Boolean",
       args: {
         entryId: nonNull(intArg()),
+        appId: intArg(),
         langs: "JSONObject",
         key: stringArg(),
         isRollback: nonNull(booleanArg()),
@@ -160,12 +165,19 @@ export const EntryMutation = extendType({
           where: {
             entry_id: args.entryId,
           },
+          include: {
+            app: true,
+          },
         });
         // 在某个应用中查找排除自身词条key相同的词条列表
         const entries = await ctx.prisma.entry.findMany({
           where: {
             key: args.key,
-            appApp_id: currentEntry?.appApp_id,
+            app: {
+              some: {
+                appId: args.appId || undefined,
+              },
+            },
             entry_id: {
               not: args.entryId,
             },
@@ -219,13 +231,16 @@ export const EntryMutation = extendType({
           where: {
             entry_id: args.entryId,
           },
+          include: {
+            app: true,
+          },
         });
         // 无法操作公共词条
         if (entry && entry?.public) {
           throw new Error("无法更改公共词条状态");
         }
         // 只有词条和APPId是匹配的，才进行更新
-        if (entry?.appApp_id && entry.appApp_id === args.appId) {
+        if (entry?.app && entry.app.find((e) => e.appId === args.appId)) {
           // 更新词条
           await ctx.prisma.entry.update({
             where: {
@@ -236,19 +251,33 @@ export const EntryMutation = extendType({
               deleted: args.deleted || undefined,
             },
           });
-          // 断开应用和词条的联系
-          await ctx.prisma.app.update({
-            where: {
-              app_id: args.appId,
-            },
-            data: {
-              entries: {
-                disconnect: args.deleted
-                  ? [{ entry_id: args.entryId }]
-                  : undefined,
+          if (args.deleted) {
+            await ctx.prisma.entry.update({
+              where: {
+                entry_id: args.entryId,
               },
-            },
-          });
+              data: {
+                app: {
+                  deleteMany: entry.app.map((entryItem) => ({
+                    entryId: entryItem.entryId,
+                    appId: entryItem.appId,
+                  })),
+                },
+              },
+            });
+            const deleteRecords = prisma?.record.deleteMany({
+              where: {
+                entryEntry_id: args.entryId,
+              },
+            });
+            const deleteEntrys = ctx.prisma.entry.delete({
+              where: {
+                entry_id: args.entryId,
+              },
+            });
+            // 删除词条以及相关修改记录;
+            await prisma?.$transaction([deleteRecords!, deleteEntrys]);
+          }
           return true;
         }
         throw new Error("参数不匹配，请检测后重试");
@@ -274,21 +303,37 @@ export const EntryMutation = extendType({
             deleted: true,
           },
         });
-        const list = args.entryIds.map((entryId) => ({ entry_id: entryId }));
-        // 解除和应用的关系
+        // 解除和应用的关系;
         await ctx.prisma.app.update({
           where: {
             app_id: args.appId,
           },
-          include: {
-            entries: true,
-          },
           data: {
             entries: {
-              disconnect: list,
+              deleteMany: {
+                entryId: {
+                  in: args.entryIds,
+                },
+              },
             },
           },
         });
+        const deleteRecords = prisma?.record.deleteMany({
+          where: {
+            entryEntry_id: {
+              in: args.entryIds,
+            },
+          },
+        });
+        const deleteEntrys = ctx.prisma.entry.deleteMany({
+          where: {
+            entry_id: {
+              in: args.entryIds,
+            },
+          },
+        });
+        // 删除词条以及相关修改记录;
+        await prisma?.$transaction([deleteRecords!, deleteEntrys]);
         return true;
       },
     });
@@ -305,7 +350,11 @@ export const EntryMutation = extendType({
         const entries = convertXlsxData(file);
         const entriesExist = await ctx.prisma.entry.findMany({
           where: {
-            appApp_id: args.appId,
+            app: {
+              some: {
+                appId: args.appId,
+              },
+            },
           },
         });
         const result = splitUpdateOrCreateEntries(entries, entriesExist);
@@ -332,16 +381,32 @@ export const EntryMutation = extendType({
           )
         );
         // 新增词条
-        await ctx.prisma.app.update({
-          where: {
-            app_id: args.appId,
-          },
-          data: {
-            entries: {
-              create: result.create,
-            },
-          },
-        });
+        const entriyList = await ctx.prisma.$transaction(
+          result.create.map((entry) =>
+            ctx.prisma.entry.create({
+              data: {
+                ...entry,
+              },
+            })
+          )
+        );
+        const entryListId = entriyList.map((entry) => entry.entry_id);
+        await ctx.prisma.$transaction(
+          entryListId.map((entryId) =>
+            ctx.prisma.app.update({
+              where: {
+                app_id: args.appId,
+              },
+              data: {
+                entries: {
+                  create: {
+                    entryId: entryId,
+                  },
+                },
+              },
+            })
+          )
+        );
         return true;
       },
     });
@@ -353,13 +418,27 @@ export const EntryMutation = extendType({
         targetAppId: nonNull(intArg()),
       },
       async resolve(_, args, ctx) {
+        const isPublic = args.targetAppId === -1;
+        const dataParams = {
+          public: isPublic,
+          app: isPublic
+            ? {
+                deleteMany: {
+                  entryId: args.entryId,
+                },
+              }
+            : {
+                create: {
+                  appId: args.targetAppId,
+                },
+              },
+        };
         await ctx.prisma.entry.update({
           where: {
             entry_id: args.entryId,
           },
           data: {
-            appApp_id: args.targetAppId === -1 ? null : args.targetAppId,
-            public: args.targetAppId === -1 ? true : false,
+            ...dataParams,
           },
         });
         return true;
@@ -419,7 +498,9 @@ export const EntryQuery = extendType({
         const records = await ctx.prisma.entry.findMany({
           where: {
             app: {
-              app_id: args.appId,
+              some: {
+                appId: args.appId,
+              },
             },
             mainLangText: {
               contains: args.mainLangText || undefined,
@@ -444,7 +525,9 @@ export const EntryQuery = extendType({
         const total = await ctx.prisma.entry.count({
           where: {
             app: {
-              app_id: args.appId,
+              some: {
+                appId: args.appId,
+              },
             },
             mainLangText: {
               contains: args.mainLangText || undefined,
@@ -485,7 +568,11 @@ export const EntryQuery = extendType({
           key: args.key,
         };
         if (!!args.appId) {
-          condition["appApp_id"] = args.appId;
+          condition["app"] = {
+            some: {
+              appId: args.appId,
+            },
+          };
         }
         const targetEntries = await ctx.prisma.entry.findMany({
           where: {

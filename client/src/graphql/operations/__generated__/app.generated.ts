@@ -85,7 +85,7 @@ export type GetAppInfoByIdQuery = {
 }
 
 export type GetTransformAppInfoByIdQueryVariables = SchemaTypes.Exact<{
-  getTransformAppInfoByIdId: SchemaTypes.Scalars['Int']
+  entryId: SchemaTypes.Scalars['Int']
 }>
 
 export type GetTransformAppInfoByIdQuery = {
@@ -445,8 +445,8 @@ export type GetAppInfoByIdQueryResult = Apollo.QueryResult<
   GetAppInfoByIdQueryVariables
 >
 export const GetTransformAppInfoByIdDocument = gql`
-  query GetTransformAppInfoById($getTransformAppInfoByIdId: Int!) {
-    getTransformAppInfoById(id: $getTransformAppInfoByIdId) {
+  query GetTransformAppInfoById($entryId: Int!) {
+    getTransformAppInfoById(entryId: $entryId) {
       label
       value
     }
@@ -465,7 +465,7 @@ export const GetTransformAppInfoByIdDocument = gql`
  * @example
  * const { data, loading, error } = useGetTransformAppInfoByIdQuery({
  *   variables: {
- *      getTransformAppInfoByIdId: // value for 'getTransformAppInfoByIdId'
+ *      entryId: // value for 'entryId'
  *   },
  * });
  */

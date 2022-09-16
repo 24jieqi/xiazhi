@@ -59,6 +59,11 @@ const EntryModal: React.FC<EntryModalProps> = ({
       })
     }
   }
+  function handleVisibleChange(visible: boolean) {
+    if (!visible) {
+      form.resetFields()
+    }
+  }
   // 设置默认值
   useEffect(() => {
     if (typeof initialFormData !== 'undefined') {
@@ -70,6 +75,7 @@ const EntryModal: React.FC<EntryModalProps> = ({
     <ModalForm
       form={form}
       onValuesChange={handleValuesChange}
+      onVisibleChange={handleVisibleChange}
       initialValues={{ autoGenerate: true }}
       trigger={
         children || (
@@ -84,6 +90,7 @@ const EntryModal: React.FC<EntryModalProps> = ({
         if (initialFormData?.entryId) {
           await updateEntry({
             variables: {
+              appId: initialFormData.appId,
               entryId: initialFormData.entryId,
               key: formData.key,
               langs: {
