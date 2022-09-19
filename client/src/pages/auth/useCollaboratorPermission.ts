@@ -15,10 +15,15 @@ const useCollaboratorPermissions = (
   },
 ) => {
   const { info } = useUser()
-  const isCollaborator = info.user_id !== creatorId
   const navigate = useNavigate()
   useEffect(() => {
-    if (isCollaborator && showAlert) {
+    if (
+      typeof creatorId === 'undefined' ||
+      typeof info?.user_id === 'undefined'
+    ) {
+      return
+    }
+    if (info?.user_id !== creatorId && showAlert) {
       Modal.error({
         title: '权限错误',
         content: '你暂无权限访问此页面',
@@ -29,12 +34,12 @@ const useCollaboratorPermissions = (
       })
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isCollaborator, showAlert])
+  }, [creatorId, showAlert, info?.user_id])
   function checkIsCollaborator(creatorId: number) {
     return info.user_id !== creatorId
   }
   return {
-    isCollaborator,
+    isCollaborator: info.user_id !== creatorId,
     checkIsCollaborator,
   }
 }

@@ -207,6 +207,20 @@ export type RemoveCollaboratorsMutationVariables = SchemaTypes.Exact<{
 
 export type RemoveCollaboratorsMutation = { removeCollaborators?: boolean }
 
+export type GetAppCollaboratorsStatisticsQueryVariables = SchemaTypes.Exact<{
+  appId: SchemaTypes.Scalars['Int']
+}>
+
+export type GetAppCollaboratorsStatisticsQuery = {
+  getAppCollaboratorsStatistics?: Array<{
+    __typename?: 'CollaboratorStatistics'
+    addCount: number
+    addCountToday: number
+    modifyCount: number
+    userId: number
+  }>
+}
+
 export const GetCurrentAppsDocument = gql`
   query GetCurrentApps(
     $name: String
@@ -1007,4 +1021,65 @@ export type RemoveCollaboratorsMutationResult =
 export type RemoveCollaboratorsMutationOptions = Apollo.BaseMutationOptions<
   RemoveCollaboratorsMutation,
   RemoveCollaboratorsMutationVariables
+>
+export const GetAppCollaboratorsStatisticsDocument = gql`
+  query GetAppCollaboratorsStatistics($appId: Int!) {
+    getAppCollaboratorsStatistics(appId: $appId) {
+      addCount
+      addCountToday
+      modifyCount
+      userId
+    }
+  }
+`
+
+/**
+ * __useGetAppCollaboratorsStatisticsQuery__
+ *
+ * To run a query within a React component, call `useGetAppCollaboratorsStatisticsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetAppCollaboratorsStatisticsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetAppCollaboratorsStatisticsQuery({
+ *   variables: {
+ *      appId: // value for 'appId'
+ *   },
+ * });
+ */
+export function useGetAppCollaboratorsStatisticsQuery(
+  baseOptions: Apollo.QueryHookOptions<
+    GetAppCollaboratorsStatisticsQuery,
+    GetAppCollaboratorsStatisticsQueryVariables
+  >,
+) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useQuery<
+    GetAppCollaboratorsStatisticsQuery,
+    GetAppCollaboratorsStatisticsQueryVariables
+  >(GetAppCollaboratorsStatisticsDocument, options)
+}
+export function useGetAppCollaboratorsStatisticsLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<
+    GetAppCollaboratorsStatisticsQuery,
+    GetAppCollaboratorsStatisticsQueryVariables
+  >,
+) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useLazyQuery<
+    GetAppCollaboratorsStatisticsQuery,
+    GetAppCollaboratorsStatisticsQueryVariables
+  >(GetAppCollaboratorsStatisticsDocument, options)
+}
+export type GetAppCollaboratorsStatisticsQueryHookResult = ReturnType<
+  typeof useGetAppCollaboratorsStatisticsQuery
+>
+export type GetAppCollaboratorsStatisticsLazyQueryHookResult = ReturnType<
+  typeof useGetAppCollaboratorsStatisticsLazyQuery
+>
+export type GetAppCollaboratorsStatisticsQueryResult = Apollo.QueryResult<
+  GetAppCollaboratorsStatisticsQuery,
+  GetAppCollaboratorsStatisticsQueryVariables
 >

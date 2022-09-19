@@ -173,3 +173,12 @@ mutation InviteCollaborators($appId: Int!, $userIdList: [Int!]!) {
 mutation RemoveCollaborators($appId: Int!, $userIdList: [Int!]!) {
   removeCollaborators(appId: $appId, userIdList: $userIdList)
 }
+
+query GetAppCollaboratorsStatistics($appId: Int!) {
+  getAppCollaboratorsStatistics(appId: $appId) {
+    addCount
+    addCountToday
+    modifyCount
+    userId
+  }
+}

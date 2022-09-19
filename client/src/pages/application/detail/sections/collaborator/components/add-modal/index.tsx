@@ -4,7 +4,6 @@ import {
   ProForm,
   ProFormText,
 } from '@ant-design/pro-components'
-import { Button } from 'antd'
 import { debounce } from 'lodash'
 import React from 'react'
 import { useInviteCollaboratorsMutation } from '@/graphql/operations/__generated__/app.generated'
