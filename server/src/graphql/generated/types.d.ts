@@ -45,7 +45,6 @@ export interface NexusGenInputs {
 
 export interface NexusGenEnums {
   AppTypeEnum: "CONTACT" | "EDUCATION" | "EFFICIENCY" | "FINANCE" | "GAME" | "MUSIC" | "OTHER" | "TOOL"
-  LanguageTypeEnum: "CHINESE" | "ENGLISH" | "THAI" | "VIETNAMESE"
   UserRoleEnum: "DEVELOPER" | "MANAGER" | "OTHER" | "TRANSLATOR"
 }
 
@@ -75,7 +74,7 @@ export interface NexusGenObjects {
     app_id?: number | null; // Int
     creatorId?: number | null; // Int
     description?: string | null; // String
-    languages?: Array<NexusGenEnums['LanguageTypeEnum'] | null> | null; // [LanguageTypeEnum]
+    languages?: Array<string | null> | null; // [String]
     name?: string | null; // String
     pictures?: Array<string | null> | null; // [String]
     push?: boolean | null; // Boolean
@@ -105,7 +104,7 @@ export interface NexusGenObjects {
     entry_id?: number | null; // Int
     key?: string | null; // String
     langs?: NexusGenScalars['JSONObject'] | null; // JSONObject
-    mainLang?: NexusGenEnums['LanguageTypeEnum'] | null; // LanguageTypeEnum
+    mainLang?: string | null; // String
     mainLangText?: string | null; // String
     public?: boolean | null; // Boolean
     updatedAt?: NexusGenScalars['DateTime'] | null; // DateTime
@@ -127,10 +126,6 @@ export interface NexusGenObjects {
     pageSize: number; // Int!
     records?: Array<NexusGenRootTypes['FeedbackItem'] | null> | null; // [FeedbackItem]
     total: number; // Int!
-  }
-  LangageTypeOption: { // root type
-    label: string; // String!
-    value?: NexusGenEnums['LanguageTypeEnum'] | null; // LanguageTypeEnum
   }
   Mutation: {};
   Query: {};
@@ -184,7 +179,7 @@ export interface NexusGenFieldTypes {
     creatorId: number | null; // Int
     description: string | null; // String
     entryCount: number | null; // Int
-    languages: Array<NexusGenEnums['LanguageTypeEnum'] | null> | null; // [LanguageTypeEnum]
+    languages: Array<string | null> | null; // [String]
     name: string | null; // String
     pictures: Array<string | null> | null; // [String]
     push: boolean | null; // Boolean
@@ -214,7 +209,7 @@ export interface NexusGenFieldTypes {
     entry_id: number | null; // Int
     key: string | null; // String
     langs: NexusGenScalars['JSONObject'] | null; // JSONObject
-    mainLang: NexusGenEnums['LanguageTypeEnum'] | null; // LanguageTypeEnum
+    mainLang: string | null; // String
     mainLangText: string | null; // String
     modifyRecords: Array<NexusGenRootTypes['RecordItem'] | null> | null; // [RecordItem]
     public: boolean | null; // Boolean
@@ -238,12 +233,7 @@ export interface NexusGenFieldTypes {
     records: Array<NexusGenRootTypes['FeedbackItem'] | null> | null; // [FeedbackItem]
     total: number; // Int!
   }
-  LangageTypeOption: { // field return type
-    label: string; // String!
-    value: NexusGenEnums['LanguageTypeEnum'] | null; // LanguageTypeEnum
-  }
   Mutation: { // field return type
-    addLangage: number | null; // Int
     archivedApp: boolean | null; // Boolean
     changeAccessStatus: boolean | null; // Boolean
     changeEntryAccessStatus: boolean | null; // Boolean
@@ -278,7 +268,6 @@ export interface NexusGenFieldTypes {
     getAppInfoById: NexusGenRootTypes['AppItem'] | null; // AppItem
     getCurrentApps: NexusGenRootTypes['AppPaging'] | null; // AppPaging
     getCurrentUser: NexusGenRootTypes['UserInfo'] | null; // UserInfo
-    listSupportLanguage: Array<NexusGenRootTypes['LangageTypeOption'] | null> | null; // [LangageTypeOption]
     listUserFuzzyByUserName: Array<NexusGenRootTypes['UserInfo'] | null> | null; // [UserInfo]
     pageAllPublicEntries: NexusGenRootTypes['EntryPaging'] | null; // EntryPaging
     pageAppEntries: NexusGenRootTypes['EntryPaging'] | null; // EntryPaging
@@ -326,7 +315,7 @@ export interface NexusGenFieldTypeNames {
     creatorId: 'Int'
     description: 'String'
     entryCount: 'Int'
-    languages: 'LanguageTypeEnum'
+    languages: 'String'
     name: 'String'
     pictures: 'String'
     push: 'Boolean'
@@ -356,7 +345,7 @@ export interface NexusGenFieldTypeNames {
     entry_id: 'Int'
     key: 'String'
     langs: 'JSONObject'
-    mainLang: 'LanguageTypeEnum'
+    mainLang: 'String'
     mainLangText: 'String'
     modifyRecords: 'RecordItem'
     public: 'Boolean'
@@ -380,12 +369,7 @@ export interface NexusGenFieldTypeNames {
     records: 'FeedbackItem'
     total: 'Int'
   }
-  LangageTypeOption: { // field return type name
-    label: 'String'
-    value: 'LanguageTypeEnum'
-  }
   Mutation: { // field return type name
-    addLangage: 'Int'
     archivedApp: 'Boolean'
     changeAccessStatus: 'Boolean'
     changeEntryAccessStatus: 'Boolean'
@@ -420,7 +404,6 @@ export interface NexusGenFieldTypeNames {
     getAppInfoById: 'AppItem'
     getCurrentApps: 'AppPaging'
     getCurrentUser: 'UserInfo'
-    listSupportLanguage: 'LangageTypeOption'
     listUserFuzzyByUserName: 'UserInfo'
     pageAllPublicEntries: 'EntryPaging'
     pageAppEntries: 'EntryPaging'
@@ -452,10 +435,6 @@ export interface NexusGenFieldTypeNames {
 
 export interface NexusGenArgTypes {
   Mutation: {
-    addLangage: { // args
-      label: string; // String!
-      value: NexusGenEnums['LanguageTypeEnum']; // LanguageTypeEnum!
-    }
     archivedApp: { // args
       id: number; // Int!
     }
@@ -475,7 +454,7 @@ export interface NexusGenArgTypes {
     }
     createApp: { // args
       description?: string | null; // String
-      languages: NexusGenEnums['LanguageTypeEnum'][]; // [LanguageTypeEnum!]!
+      languages: string[]; // [String!]!
       name: string; // String!
       pictures: string[]; // [String!]!
       type: NexusGenEnums['AppTypeEnum']; // AppTypeEnum!
@@ -571,7 +550,7 @@ export interface NexusGenArgTypes {
     }
     getCurrentApps: { // args
       access?: boolean | null; // Boolean
-      languages?: NexusGenEnums['LanguageTypeEnum'][] | null; // [LanguageTypeEnum!]
+      languages?: string[] | null; // [String!]
       name?: string | null; // String
       push?: boolean | null; // Boolean
       type?: NexusGenEnums['AppTypeEnum'] | null; // AppTypeEnum

@@ -25,21 +25,21 @@ model Record {
 
 // 词条
 model Entry {
-  entry_id      Int          @id @default(autoincrement())
+  entry_id      Int      @id @default(autoincrement())
   key           String?
   createBy      Int?
-  createdAt     DateTime     @default(now())
-  updatedAt     DateTime     @updatedAt
-  public        Boolean      @default(false)
-  archive       Boolean      @default(false)
-  deleted       Boolean      @default(false)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  public        Boolean  @default(false)
+  archive       Boolean  @default(false)
+  deleted       Boolean  @default(false)
   modifyRecords Record[]
-  mainLang      LanguageType @default(CHINESE)
+  mainLang      String   @default("zh")
   mainLangText  String?
   langs         Json?
-  app           App?         @relation(fields: [appApp_id], references: [app_id])
+  app           App?     @relation(fields: [appApp_id], references: [app_id])
   appApp_id     Int?
-  uploaded      Boolean      @default(false)
+  uploaded      Boolean  @default(false)
 }
 
 // 应用
@@ -48,7 +48,7 @@ model App {
   name                String
   description         String?
   type                AppType
-  languages           LanguageType[]
+  languages           String[]
   pictures            String[]
   createdAt           DateTime              @default(now())
   entries             Entry[]
@@ -91,13 +91,6 @@ model User {
   verifyType          String?
 }
 
-model Langs {
-  lang_id  Int          @id @default(autoincrement())
-  label    String       @unique
-  value    LanguageType
-  disabled Boolean      @default(false)
-}
-
 model Feedback {
   feedback_id Int     @id @default(autoincrement())
   user        User?   @relation(fields: [userUser_id], references: [user_id])
@@ -115,13 +108,6 @@ enum AppType {
   CONTACT
   OTHER
   EDUCATION
-}
-
-enum LanguageType {
-  CHINESE
-  ENGLISH
-  THAI
-  VIETNAMESE
 }
 
 enum UserRole {
