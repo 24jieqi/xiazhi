@@ -1,4 +1,3 @@
-import { LanguageType } from "@prisma/client";
 import {
   booleanArg,
   extendType,
@@ -70,10 +69,7 @@ export const EntryItem = objectType({
     t.boolean("archive");
     t.boolean("deleted");
     t.string("mainLangText");
-    t.field("mainLang", {
-      type: "LanguageTypeEnum",
-      description: "支持的语言",
-    });
+    t.string("mainLang");
     t.field("modifyRecords", {
       type: list(RecordItem),
       async resolve(root, _, ctx) {
@@ -102,7 +98,7 @@ export const EntryMutation = extendType({
       async resolve(_, args, ctx) {
         const info = decodedToken(ctx.req);
         // 主要语言校验
-        const mainLangText = args.langs[LanguageType.CHINESE];
+        const mainLangText = args.langs["zh"];
         if (!mainLangText) {
           throw new Error("必须填写词条中文！");
         }
@@ -127,7 +123,7 @@ export const EntryMutation = extendType({
           data: {
             key: args.key,
             langs: args.langs,
-            mainLangText: args.langs[LanguageType.CHINESE], // 设置主语言文本
+            mainLangText: args.langs["zh"], // 设置主语言文本
             public: !args.appId,
             createBy: info?.userId,
           },
@@ -193,7 +189,7 @@ export const EntryMutation = extendType({
           data: {
             key: args.key,
             langs: args.langs,
-            mainLangText: args.langs[LanguageType.CHINESE], // 设置主语言文本
+            mainLangText: args.langs["zh"], // 设置主语言文本
             modifyRecords: {
               create: !args.isRollback
                 ? [

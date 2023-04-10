@@ -1,4 +1,4 @@
-import { AppType, LanguageType } from "@prisma/client";
+import { AppType } from "@prisma/client";
 import {
   objectType,
   queryType,
@@ -20,12 +20,6 @@ export const AppTypeEnum = enumType({
   members: AppType,
 });
 
-export const LanguageTypeEnum = enumType({
-  description: "应用支持的语言枚举",
-  name: "LanguageTypeEnum",
-  members: LanguageType,
-});
-
 export const AppItem = objectType({
   name: "AppItem",
   description: "应用基本信息",
@@ -35,7 +29,7 @@ export const AppItem = objectType({
     t.string("description");
     t.field("type", { type: AppTypeEnum });
     t.field("languages", {
-      type: list("LanguageTypeEnum"),
+      type: list("String"),
       description: "支持的语言",
     });
     t.list.string("pictures", { description: "应用截图" });
@@ -109,7 +103,7 @@ export const AppQuery = queryType({
       args: {
         name: stringArg(),
         type: "AppTypeEnum",
-        languages: list(nonNull(LanguageTypeEnum)),
+        languages: list(nonNull("String")),
         access: booleanArg(),
         push: booleanArg(),
       },
@@ -160,7 +154,7 @@ export const AppMutation = mutationType({
         name: nonNull(stringArg()),
         description: stringArg(),
         type: nonNull(AppTypeEnum),
-        languages: nonNull(list(nonNull("LanguageTypeEnum"))),
+        languages: nonNull(list(nonNull("String"))),
         pictures: nonNull(list(nonNull("String"))),
       },
       async resolve(_, args, ctx) {

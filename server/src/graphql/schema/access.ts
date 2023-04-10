@@ -1,4 +1,3 @@
-import { LanguageType } from "@prisma/client";
 import { extendType, list, nonNull, stringArg, inputObjectType } from "nexus";
 
 export const AccessQuery = extendType({
@@ -68,7 +67,7 @@ export const AccessMutation = extendType({
         // 创建多个词条数据(但会进行一层筛选)
         const entries = args.entries
           .filter((item) => {
-            const mainLangText = item?.langs[LanguageType.CHINESE];
+            const mainLangText = item?.langs["zh"];
             return !app.entries.find(
               (e) => e.entry.mainLangText === mainLangText
             );
@@ -76,7 +75,7 @@ export const AccessMutation = extendType({
           .map((entry) => ({
             key: entry?.key,
             langs: entry?.langs,
-            mainLangText: entry?.langs[LanguageType.CHINESE], // 设置主语言文本
+            mainLangText: entry?.langs["zh"], // 设置主语言文本
             public: false,
             uploaded: true,
           }));
