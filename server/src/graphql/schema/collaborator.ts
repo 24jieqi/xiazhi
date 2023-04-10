@@ -70,7 +70,7 @@ export const CollaboratorQuery = extendType({
             ctx.prisma.entry.count({
               where: {
                 app: {
-                  none: {
+                  every: {
                     appId: args.appId,
                   },
                 },
@@ -85,7 +85,7 @@ export const CollaboratorQuery = extendType({
             ctx.prisma.entry.count({
               where: {
                 app: {
-                  none: {
+                  every: {
                     appId: args.appId,
                   },
                 },
@@ -106,7 +106,7 @@ export const CollaboratorQuery = extendType({
                 creator: collaborator.collaboratorId,
                 Entry: {
                   app: {
-                    none: {
+                    every: {
                       appId: args.appId,
                     },
                   },
