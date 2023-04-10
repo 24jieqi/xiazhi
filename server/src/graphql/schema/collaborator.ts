@@ -69,7 +69,11 @@ export const CollaboratorQuery = extendType({
           collaborators.map((collaborator) =>
             ctx.prisma.entry.count({
               where: {
-                appApp_id: args.appId,
+                app: {
+                  none: {
+                    appId: args.appId,
+                  },
+                },
                 createBy: collaborator.collaboratorId,
               },
             })
@@ -80,7 +84,11 @@ export const CollaboratorQuery = extendType({
           collaborators.map((collaborator) =>
             ctx.prisma.entry.count({
               where: {
-                appApp_id: args.appId,
+                app: {
+                  none: {
+                    appId: args.appId,
+                  },
+                },
                 createBy: collaborator.collaboratorId,
                 createdAt: {
                   lte: formatISO(dayjs().endOf("day").toDate()),
@@ -97,7 +105,11 @@ export const CollaboratorQuery = extendType({
               where: {
                 creator: collaborator.collaboratorId,
                 Entry: {
-                  appApp_id: args.appId,
+                  app: {
+                    none: {
+                      appId: args.appId,
+                    },
+                  },
                 },
               },
             })
