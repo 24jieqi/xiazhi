@@ -1,7 +1,7 @@
 query GetCurrentApps(
   $name: String
   $type: AppTypeEnum
-  $languages: [LanguageTypeEnum!]
+  $languages: [String!]
   $access: Boolean
   $push: Boolean
 ) {
@@ -43,7 +43,7 @@ query GetCurrentApps(
 mutation CreateApp(
   $name: String!
   $type: AppTypeEnum!
-  $languages: [LanguageTypeEnum!]!
+  $languages: [String!]!
   $pictures: [String!]!
   $description: String
 ) {

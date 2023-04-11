@@ -1,15 +1,6 @@
 import type { ActionType, ProColumns } from '@ant-design/pro-components'
 import { ProCard, ProTable } from '@ant-design/pro-components'
-import {
-  Tag,
-  Button,
-  Empty,
-  message,
-  Space,
-  Table,
-  Tooltip,
-  Upload,
-} from 'antd'
+import { Tag, Button, Empty, message, Space, Table } from 'antd'
 import React, { useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import dayjs from 'dayjs'
@@ -33,6 +24,7 @@ import styles from './split.module.less'
 
 type EntryListProps = {
   selectedEntry: EntryItem
+  languageArray: string[]
   onChange: (entry: EntryItem) => void
   actionRef: React.MutableRefObject<ActionType>
 }
@@ -40,7 +32,7 @@ type EntryListProps = {
 const EntryList: React.FC<EntryListProps> = props => {
   const routeParams = useParams()
   const transformEntryRef = useRef<TransformEntryModalRefProps>(null)
-  const { onChange, selectedEntry, actionRef } = props
+  const { onChange, selectedEntry, languageArray, actionRef } = props
   const [pageAllPublicEntries] = usePageAppEntriesLazyQuery()
   const [changeEntryAccess] = useChangeEntryAccessStatusMutation()
   const [deleteEntries] = useDeleteEntriesMutation()
@@ -80,7 +72,7 @@ const EntryList: React.FC<EntryListProps> = props => {
     message.success('导入词条成功！')
     callback()
   }
-  async function handleRollbackSucess() {
+  async function handleRollbackSuccess() {
     await actionRef.current?.reload()
     selectedEntry && onChange?.(null)
   }
@@ -155,7 +147,7 @@ const EntryList: React.FC<EntryListProps> = props => {
         const { entry_id, langs, key, modifyRecords } = record
         return (
           <ModifyRecordsModal
-            onRollbackSucess={handleRollbackSucess}
+            onRollbackSuccess={handleRollbackSuccess}
             records={{ entry_id, appId, langs, key }}
             modifyRecords={modifyRecords || []}
           />
@@ -255,6 +247,7 @@ const EntryList: React.FC<EntryListProps> = props => {
               initialFormData={{
                 appId: Number(appId),
               }}
+              supportLanguageArray={languageArray || []}
               key="add"
               onActionSuccess={() => {
                 actionRef.current.reload()
@@ -352,6 +345,7 @@ const AppEntryEditPage: React.FC = () => {
           onChange={currentItem => {
             setCurrent(currentItem)
           }}
+          languageArray={data?.getAppInfoById?.languages}
           selectedEntry={current}
         />
       </ProCard>
@@ -365,6 +359,7 @@ const AppEntryEditPage: React.FC = () => {
               entryId: current.entry_id,
               appId: Number(params.id),
             }}
+            supportLanguageArray={data?.getAppInfoById?.languages || []}
           />
         ) : (
           <Empty
@@ -375,7 +370,9 @@ const AppEntryEditPage: React.FC = () => {
             description={
               <span>
                 请在左侧表格选择词条编辑或是{' '}
-                <EntryModal initialFormData={{ appId: Number(params.id) }}>
+                <EntryModal
+                  initialFormData={{ appId: Number(params.id) }}
+                  supportLanguageArray={data?.getAppInfoById?.languages || []}>
                   <a>新增词条</a>
                 </EntryModal>
               </span>

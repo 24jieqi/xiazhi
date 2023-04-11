@@ -6,31 +6,23 @@ import {
   ProFormText,
 } from '@ant-design/pro-components'
 import { Button, message } from 'antd'
-import React, { useEffect, useRef } from 'react'
-import { LangageTypeOption, LanguageTypeEnum } from '@/graphql/generated/types'
-import { useListSupportLanguageQuery } from '@/graphql/operations/__generated__/basic.generated'
+import React, { useEffect, useState } from 'react'
 import {
   useCreateEntryMutation,
   useUpdateEntryMutation,
 } from '@/graphql/operations/__generated__/entry.generated'
+import {
+  LanguageTypeEnum,
+  appSupportLangsTableEnum,
+} from '@/pages/application/constant'
 import { entryKeyValidator } from '../validator'
 import { generateEntryKey } from '../utils'
 
 interface EntryModalProps {
   children?: JSX.Element
   initialFormData?: any
+  supportLanguageArray: string[]
   onActionSuccess?: () => void
-}
-
-function groupLangs(langs: LangageTypeOption[]) {
-  if (!langs || !langs.length) {
-    return []
-  }
-  const result: LangageTypeOption[][] = []
-  for (let i = 0; i < langs.length; i += 2) {
-    result[i] = [langs[i], langs[i + 1]]
-  }
-  return result
 }
 
 function omit(obj: any, keys: string[]) {
@@ -44,18 +36,18 @@ function omit(obj: any, keys: string[]) {
 const EntryModal: React.FC<EntryModalProps> = ({
   children,
   initialFormData,
+  supportLanguageArray,
   onActionSuccess,
 }) => {
-  const { data } = useListSupportLanguageQuery()
+  const [isShow, setIsShow] = useState<boolean>(false)
   const [createEntry] = useCreateEntryMutation()
   const [updateEntry] = useUpdateEntryMutation()
-  const langs = groupLangs(data?.listSupportLanguage)
   const [form] = ProForm.useForm()
   function handleValuesChange(changedValues: Record<string, any>, values) {
     const keys = Object.keys(changedValues)
-    if (keys.includes(LanguageTypeEnum.English) && values.autoGenerate) {
+    if (keys.includes(LanguageTypeEnum.en) && values.autoGenerate) {
       form.setFieldsValue({
-        key: generateEntryKey(changedValues[LanguageTypeEnum.English]),
+        key: generateEntryKey(changedValues[LanguageTypeEnum.en]),
       })
     }
   }
@@ -63,20 +55,28 @@ const EntryModal: React.FC<EntryModalProps> = ({
     if (!visible) {
       form.resetFields()
     }
+    setIsShow(visible)
   }
   // 设置默认值
   useEffect(() => {
-    if (typeof initialFormData !== 'undefined') {
+    if (typeof initialFormData !== 'undefined' && !isShow) {
       form.setFieldsValue({ ...initialFormData })
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [initialFormData])
+  }, [initialFormData, isShow])
   return (
     <ModalForm
       form={form}
       onValuesChange={handleValuesChange}
       onVisibleChange={handleVisibleChange}
+      visible={isShow}
       initialValues={{ autoGenerate: true }}
+      modalProps={{
+        bodyStyle: {
+          maxHeight: 500,
+          overflowY: 'scroll',
+        },
+      }}
       trigger={
         children || (
           <Button type="primary">
@@ -144,29 +144,25 @@ const EntryModal: React.FC<EntryModalProps> = ({
           )
         }}
       </ProForm.Item>
-      {langs.map((lang, index) => {
-        return (
-          <ProForm.Group key={index}>
-            {lang.map(item => {
-              const isRequired = item.value === LanguageTypeEnum.Chinese
-              return (
-                <ProFormText
-                  rules={
-                    isRequired
-                      ? [{ required: true, message: '请输入中文词条' }]
-                      : []
-                  }
-                  key={item.value}
-                  width="md"
-                  name={item.value}
-                  label={item.label}
-                  placeholder="请输入多语言词条"
-                />
-              )
-            })}
-          </ProForm.Group>
-        )
-      })}
+      <ProForm.Group>
+        {supportLanguageArray.map((lang, index) => {
+          const isRequired = lang === 'zh'
+          return (
+            <ProFormText
+              rules={
+                isRequired
+                  ? [{ required: true, message: '请输入中文词条' }]
+                  : []
+              }
+              key={index}
+              name={lang}
+              width="md"
+              label={appSupportLangsTableEnum[lang]?.text}
+              placeholder="请输入多语言词条"
+            />
+          )
+        })}
+      </ProForm.Group>
     </ModalForm>
   )
 }

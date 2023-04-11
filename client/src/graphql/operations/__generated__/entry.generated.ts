@@ -24,7 +24,7 @@ export type PageAllPublicEntriesQuery = {
       archive?: boolean
       deleted?: boolean
       mainLangText?: string
-      mainLang?: SchemaTypes.LanguageTypeEnum
+      mainLang?: string
       langs?: any
       modifyRecords?: Array<{
         __typename?: 'RecordItem'
@@ -95,7 +95,7 @@ export type PageAppEntriesQuery = {
       archive?: boolean
       deleted?: boolean
       mainLangText?: string
-      mainLang?: SchemaTypes.LanguageTypeEnum
+      mainLang?: string
       langs?: any
       modifyRecords?: Array<{
         __typename?: 'RecordItem'

@@ -60,7 +60,7 @@ type AppItem {
   """
   支持的语言
   """
-  languages: [LanguageTypeEnum]
+  languages: [String]
   name: String
 
   """
@@ -133,11 +133,7 @@ type EntryItem {
   entry_id: Int
   key: String
   langs: JSONObject
-
-  """
-  支持的语言
-  """
-  mainLang: LanguageTypeEnum
+  mainLang: String
   mainLangText: String
   modifyRecords: [RecordItem]
   public: Boolean
@@ -179,27 +175,7 @@ The `JSONObject` scalar type represents JSON objects as specified by [ECMA-404](
 """
 scalar JSONObject
 
-"""
-平台支持的多语言词条选项
-"""
-type LangageTypeOption {
-  label: String!
-  value: LanguageTypeEnum
-}
-
-"""
-应用支持的语言枚举
-"""
-enum LanguageTypeEnum {
-  CHINESE
-  ENGLISH
-  THAI
-  VIETNAMESE
-}
-
 type Mutation {
-  addLangage(label: String!, value: LanguageTypeEnum!): Int
-
   """
   归档一个应用（归档后不能再编辑）
   """
@@ -230,7 +206,7 @@ type Mutation {
   """
   createApp(
     description: String
-    languages: [LanguageTypeEnum!]!
+    languages: [String!]!
     name: String!
     pictures: [String!]!
     type: AppTypeEnum!
@@ -378,7 +354,7 @@ type Query {
   """
   getCurrentApps(
     access: Boolean
-    languages: [LanguageTypeEnum!]
+    languages: [String!]
     name: String
     push: Boolean
     type: AppTypeEnum
@@ -393,7 +369,6 @@ type Query {
   根据应用id获取要共享的应用词库
   """
   getTransformAppInfoById(entryId: Int!): [TransformAppEntryInfo]
-  listSupportLanguage: [LangageTypeOption]
 
   """
   用户姓名的模糊查询

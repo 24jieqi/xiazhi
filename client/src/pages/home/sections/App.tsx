@@ -1,5 +1,5 @@
 import React from 'react'
-import { Button, Empty, Space, Spin } from 'antd'
+import { Empty, Space, Spin } from 'antd'
 import { Link } from 'react-router-dom'
 import { useGetCurrentAppsQuery } from '@/graphql/operations/__generated__/app.generated'
 import { NEW_APP } from '@/router/config/main-routes/application/path'

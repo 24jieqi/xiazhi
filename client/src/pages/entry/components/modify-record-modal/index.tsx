@@ -2,15 +2,11 @@ import React, { cloneElement, useMemo, useState } from 'react'
 import { Button, message, Modal, Space, Tag } from 'antd'
 import dayjs from 'dayjs'
 import { ProList } from '@ant-design/pro-components'
-import {
-  EntryItem,
-  LanguageTypeEnum,
-  RecordItem,
-} from '@/graphql/generated/types'
+import { EntryItem, RecordItem } from '@/graphql/generated/types'
 import { useUpdateEntryMutation } from '@/graphql/operations/__generated__/entry.generated'
 import {
   appSupportLangsTableEnum,
-  LANGUAGE_ARRAY,
+  langKeys,
 } from '@/pages/application/constant'
 
 interface ModifyRecordsProps {
@@ -21,7 +17,7 @@ interface ModifyRecordsProps {
     langs: EntryItem['langs']
     key: string
   }
-  onRollbackSucess: () => void
+  onRollbackSuccess: () => void
   children?: React.ReactElement
 }
 
@@ -35,8 +31,8 @@ interface ProListType {
 }
 
 function langDiff(
-  prevLang: Record<LanguageTypeEnum, any>,
-  currLang: Record<LanguageTypeEnum, any>,
+  prevLang: Record<string, any>,
+  currLang: Record<string, any>,
 ) {
   const langs = currLang ? Object.keys(currLang) : []
   const prevCopy = prevLang ? { ...prevLang } : {}
@@ -77,7 +73,7 @@ const ModifyRecordsModal: React.FC<ModifyRecordsProps> = ({
   modifyRecords,
   records,
   children,
-  onRollbackSucess,
+  onRollbackSuccess,
 }) => {
   const [visible, setVisible] = useState(false)
   const [updateEntry] = useUpdateEntryMutation()
@@ -91,7 +87,7 @@ const ModifyRecordsModal: React.FC<ModifyRecordsProps> = ({
     return langs
       .map(result => {
         let str = ''
-        LANGUAGE_ARRAY.forEach(lang => {
+        langKeys.forEach(lang => {
           const curr = result[type][lang]
           if (curr !== undefined) {
             str = `${appSupportLangsTableEnum[lang].text}:${curr}`
@@ -141,7 +137,7 @@ const ModifyRecordsModal: React.FC<ModifyRecordsProps> = ({
             isRollback: true,
           },
         })
-        onRollbackSucess()
+        onRollbackSuccess()
         setVisible(false)
         message.success('回滚成功')
       },

@@ -15,6 +15,7 @@ import {
 import { message } from 'antd'
 import React, { useRef } from 'react'
 import { UploadFile } from 'antd/lib/upload/interface'
+import { useNavigate } from 'react-router-dom'
 import { useCreateAppMutation } from '@/graphql/operations/__generated__/app.generated'
 import { appSupportLangsOptions, appTypeOptions } from '../constant'
 
@@ -40,6 +41,7 @@ export function getPictureUrlList(fileList: UploadFile<Partial<FileVO>>[]) {
 
 export default () => {
   const formRef = useRef<ProFormInstance>()
+  const navigate = useNavigate()
   const [createApp] = useCreateAppMutation()
   return (
     <ProCard>
@@ -56,6 +58,7 @@ export default () => {
             },
           })
           message.success('应用创建成功！')
+          navigate(-1)
           return true
         }}
         formProps={{

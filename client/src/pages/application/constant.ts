@@ -1,4 +1,13 @@
-import { AppTypeEnum, LanguageTypeEnum } from '@/graphql/generated/types'
+import langMap from '@/config/langMap'
+import { AppTypeEnum } from '@/graphql/generated/types'
+
+type LangMapType = typeof langMap
+
+type LangMapKeyType = keyof LangMapType
+
+type LanguageType = {
+  [key in LangMapKeyType]?: string
+}
 
 /**
  * APP类型选项列表
@@ -65,46 +74,29 @@ export const appTypeTableEnum = {
   },
 }
 
+export const langKeys = Object.keys(langMap)
+
 /**
- * 支持的语言选项列表
+ * 语言下拉选项
  */
-export const appSupportLangsOptions = [
-  {
-    value: LanguageTypeEnum.Chinese,
-    label: '中文',
-  },
-  {
-    value: LanguageTypeEnum.English,
-    label: '英文',
-  },
-  {
-    value: LanguageTypeEnum.Thai,
-    label: '泰语',
-  },
-  {
-    value: LanguageTypeEnum.Vietnamese,
-    label: '越南语',
-  },
-]
+export const appSupportLangsOptions = langKeys.map(lang => ({
+  value: lang,
+  label: langMap[lang].zhName,
+}))
 
-export const appSupportLangsTableEnum = {
-  [LanguageTypeEnum.Chinese]: {
-    text: '中文',
-  },
-  [LanguageTypeEnum.English]: {
-    text: '英文',
-  },
-  [LanguageTypeEnum.Thai]: {
-    text: '泰语',
-  },
-  [LanguageTypeEnum.Vietnamese]: {
-    text: '越南语',
-  },
-}
+export const appSupportLangsTableEnum = langKeys.reduce((pre, curr) => {
+  return {
+    ...pre,
+    [curr]: {
+      text: langMap[curr].zhName,
+    },
+  }
+}, {})
 
-export const LANGUAGE_ARRAY = [
-  LanguageTypeEnum.Chinese,
-  LanguageTypeEnum.English,
-  LanguageTypeEnum.Thai,
-  LanguageTypeEnum.Vietnamese,
-]
+export const LanguageTypeEnum: LanguageType = langKeys.reduce(
+  (pre, curr) => ({
+    ...pre,
+    [curr]: curr,
+  }),
+  {},
+)

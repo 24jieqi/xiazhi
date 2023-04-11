@@ -5,33 +5,25 @@ import {
 } from '@ant-design/pro-components'
 import { message } from 'antd'
 import React, { useEffect } from 'react'
-import { LangageTypeOption, LanguageTypeEnum } from '@/graphql/generated/types'
-import { useListSupportLanguageQuery } from '@/graphql/operations/__generated__/basic.generated'
 import {
   useCreateEntryMutation,
   useUpdateEntryMutation,
 } from '@/graphql/operations/__generated__/entry.generated'
+import {
+  LanguageTypeEnum,
+  appSupportLangsTableEnum,
+} from '@/pages/application/constant'
 import { entryKeyValidator } from '../validator'
 import { generateEntryKey } from '../utils'
 
 interface EntryFormProps {
   children?: JSX.Element
   initialFormData?: any
+  supportLanguageArray: string[]
   /**
    * 当编辑/新增词条成功时触发
    */
   onActionSuccess?: () => void
-}
-
-function groupLangs(langs: LangageTypeOption[]) {
-  if (!langs || !langs.length) {
-    return []
-  }
-  const result: LangageTypeOption[][] = []
-  for (let i = 0; i < langs.length; i += 2) {
-    result[i] = [langs[i], langs[i + 1]]
-  }
-  return result
 }
 
 function omit(obj: any, keys: string[]) {
@@ -44,18 +36,17 @@ function omit(obj: any, keys: string[]) {
 
 const EntryForm: React.FC<EntryFormProps> = ({
   initialFormData,
+  supportLanguageArray,
   onActionSuccess,
 }) => {
-  const { data } = useListSupportLanguageQuery()
-  const [createEntry, { loading }] = useCreateEntryMutation()
+  const [createEntry] = useCreateEntryMutation()
   const [updateEntry] = useUpdateEntryMutation()
-  const langs = groupLangs(data?.listSupportLanguage)
   const [form] = ProForm.useForm()
   function handleValuesChange(changedValues: Record<string, any>, values) {
     const keys = Object.keys(changedValues)
-    if (keys.includes(LanguageTypeEnum.English) && values.autoGenerate) {
+    if (keys.includes(LanguageTypeEnum.en) && values.autoGenerate) {
       form.setFieldsValue({
-        key: generateEntryKey(changedValues[LanguageTypeEnum.English]),
+        key: generateEntryKey(changedValues[LanguageTypeEnum.en]),
       })
     }
   }
@@ -137,28 +128,24 @@ const EntryForm: React.FC<EntryFormProps> = ({
           )
         }}
       </ProForm.Item>
-      {langs.map((lang, index) => {
-        return (
-          <ProForm.Group key={index}>
-            {lang.map(item => {
-              const isRequired = item.value === LanguageTypeEnum.Chinese
-              return (
-                <ProFormText
-                  rules={
-                    isRequired
-                      ? [{ required: true, message: '请输入中文词条' }]
-                      : []
-                  }
-                  key={item.value}
-                  name={item.value}
-                  label={item.label}
-                  placeholder="请输入多语言词条"
-                />
-              )
-            })}
-          </ProForm.Group>
-        )
-      })}
+      <ProForm.Group>
+        {supportLanguageArray.map((lang, index) => {
+          const isRequired = lang === 'zh'
+          return (
+            <ProFormText
+              rules={
+                isRequired
+                  ? [{ required: true, message: '请输入中文词条' }]
+                  : []
+              }
+              key={index}
+              name={lang}
+              label={appSupportLangsTableEnum[lang]?.text}
+              placeholder="请输入多语言词条"
+            />
+          )
+        })}
+      </ProForm.Group>
     </ProForm>
   )
 }

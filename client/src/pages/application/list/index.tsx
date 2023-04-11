@@ -1,6 +1,6 @@
 import { ProCard, ProColumns, ProTable } from '@ant-design/pro-components'
 import React from 'react'
-import { Avatar, Button, Popover, Space, Switch, Tag } from 'antd'
+import { Avatar, Button, Popover, Space, Tag } from 'antd'
 import { useNavigate } from 'react-router-dom'
 import { PlusOutlined } from '@ant-design/icons'
 import { AppItem } from '@/graphql/generated/types'
@@ -11,6 +11,7 @@ import {
   NEW_APP,
 } from '@/router/config/main-routes/application/path'
 import useCollaboratorPermissions from '@/pages/auth/useCollaboratorPermission'
+import { selectFilterOption } from '@/utils'
 import { appSupportLangsTableEnum, appTypeTableEnum } from '../constant'
 import AccessSwitch from '../components/access-switch'
 
@@ -72,7 +73,12 @@ const AppListPage: React.FC = () => {
       title: '语言支持',
       dataIndex: 'languages',
       ellipsis: true,
-      valueType: 'checkbox',
+      valueType: 'select',
+      fieldProps: {
+        mode: 'multiple',
+        showSearch: true,
+        filterOption: selectFilterOption,
+      },
       valueEnum: appSupportLangsTableEnum,
     },
     {

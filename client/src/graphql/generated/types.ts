@@ -52,7 +52,7 @@ export type AppItem = {
   /** 当前应用包含的词条数量 */
   entryCount?: Maybe<Scalars['Int']>
   /** 支持的语言 */
-  languages?: Maybe<Array<Maybe<LanguageTypeEnum>>>
+  languages?: Maybe<Array<Maybe<Scalars['String']>>>
   name?: Maybe<Scalars['String']>
   /** 应用截图 */
   pictures?: Maybe<Array<Maybe<Scalars['String']>>>
@@ -108,8 +108,7 @@ export type EntryItem = {
   entry_id?: Maybe<Scalars['Int']>
   key?: Maybe<Scalars['String']>
   langs?: Maybe<Scalars['JSONObject']>
-  /** 支持的语言 */
-  mainLang?: Maybe<LanguageTypeEnum>
+  mainLang?: Maybe<Scalars['String']>
   mainLangText?: Maybe<Scalars['String']>
   modifyRecords?: Maybe<Array<Maybe<RecordItem>>>
   public?: Maybe<Scalars['Boolean']>
@@ -143,24 +142,8 @@ export type FeedbackPaging = {
   total: Scalars['Int']
 }
 
-/** 平台支持的多语言词条选项 */
-export type LangageTypeOption = {
-  __typename?: 'LangageTypeOption'
-  label: Scalars['String']
-  value?: Maybe<LanguageTypeEnum>
-}
-
-/** 应用支持的语言枚举 */
-export enum LanguageTypeEnum {
-  Chinese = 'CHINESE',
-  English = 'ENGLISH',
-  Thai = 'THAI',
-  Vietnamese = 'VIETNAMESE',
-}
-
 export type Mutation = {
   __typename?: 'Mutation'
-  addLangage?: Maybe<Scalars['Int']>
   /** 归档一个应用（归档后不能再编辑） */
   archivedApp?: Maybe<Scalars['Boolean']>
   /** 更改应用在可访问和推送上的状态 */
@@ -210,11 +193,6 @@ export type Mutation = {
   verifyEmail?: Maybe<Scalars['String']>
 }
 
-export type MutationAddLangageArgs = {
-  label: Scalars['String']
-  value: LanguageTypeEnum
-}
-
 export type MutationArchivedAppArgs = {
   id: Scalars['Int']
 }
@@ -238,7 +216,7 @@ export type MutationCheckEmailValidationArgs = {
 
 export type MutationCreateAppArgs = {
   description?: InputMaybe<Scalars['String']>
-  languages: Array<LanguageTypeEnum>
+  languages: Array<Scalars['String']>
   name: Scalars['String']
   pictures: Array<Scalars['String']>
   type: AppTypeEnum
@@ -360,7 +338,6 @@ export type Query = {
   getCurrentUser?: Maybe<UserInfo>
   /** 根据应用id获取要共享的应用词库 */
   getTransformAppInfoById?: Maybe<Array<Maybe<TransformAppEntryInfo>>>
-  listSupportLanguage?: Maybe<Array<Maybe<LangageTypeOption>>>
   /** 用户姓名的模糊查询 */
   listUserFuzzyByUserName?: Maybe<Array<Maybe<UserInfo>>>
   /** 获取所有公共词条（分页） */
@@ -395,7 +372,7 @@ export type QueryGetAppInfoByIdArgs = {
 
 export type QueryGetCurrentAppsArgs = {
   access?: InputMaybe<Scalars['Boolean']>
-  languages?: InputMaybe<Array<LanguageTypeEnum>>
+  languages?: InputMaybe<Array<Scalars['String']>>
   name?: InputMaybe<Scalars['String']>
   push?: InputMaybe<Scalars['Boolean']>
   type?: InputMaybe<AppTypeEnum>

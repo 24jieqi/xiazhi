@@ -5,13 +5,14 @@ import type { ActionType, ProColumns } from '@ant-design/pro-components'
 import { ProTable } from '@ant-design/pro-components'
 import { Button } from 'antd'
 import React, { useRef, useState } from 'react'
-import { EntryItem, LanguageTypeEnum } from '@/graphql/generated/types'
+import { EntryItem } from '@/graphql/generated/types'
 import { usePageAllPublicEntriesLazyQuery } from '@/graphql/operations/__generated__/entry.generated'
 import EntryModal from '@/pages/entry/components/entry-modal'
 import ModifyRecordsModal from '@/pages/entry/components/modify-record-modal'
 import TransformEntryModal, {
   TransformEntryModalRefProps,
 } from '@/pages/entry/components/transform-entry-modal'
+import { LanguageTypeEnum, langKeys } from '@/pages/application/constant'
 
 export default () => {
   const [pageAllPublicEntries] = usePageAllPublicEntriesLazyQuery()
@@ -40,20 +41,20 @@ export default () => {
       children: [
         {
           title: '中文',
-          dataIndex: ['langs', LanguageTypeEnum.Chinese],
+          dataIndex: ['langs', LanguageTypeEnum.zh],
           readonly: true,
         },
         {
           title: '英文',
-          dataIndex: ['langs', LanguageTypeEnum.English],
+          dataIndex: ['langs', LanguageTypeEnum.en],
         },
         {
           title: '泰语',
-          dataIndex: ['langs', LanguageTypeEnum.Thai],
+          dataIndex: ['langs', LanguageTypeEnum.th],
         },
         {
           title: '越南语',
-          dataIndex: ['langs', LanguageTypeEnum.Vietnamese],
+          dataIndex: ['langs', LanguageTypeEnum.vie],
         },
       ],
     },
@@ -90,7 +91,7 @@ export default () => {
         const { entry_id, langs, key, modifyRecords } = record
         return (
           <ModifyRecordsModal
-            onRollbackSucess={actionRef.current?.reload}
+            onRollbackSuccess={actionRef.current?.reload}
             records={{ entry_id, langs, key }}
             modifyRecords={modifyRecords || []}
           />
@@ -109,6 +110,7 @@ export default () => {
             key: record.key,
             ...record.langs,
           }}
+          supportLanguageArray={Object.keys(record?.langs || {})}
           onActionSuccess={actionRef.current?.reload}>
           <Button key="button" type="link">
             <EditOutlined />
@@ -164,7 +166,10 @@ export default () => {
         dateFormatter="string"
         headerTitle="公共词条库"
         toolBarRender={() => [
-          <EntryModal key="new" onActionSuccess={actionRef.current?.reload}>
+          <EntryModal
+            key="new"
+            onActionSuccess={actionRef.current?.reload}
+            supportLanguageArray={langKeys}>
             <Button key="button" type="primary">
               <PlusOutlined />
               新建
@@ -174,9 +179,7 @@ export default () => {
         editable={{
           type: 'multiple',
           editableKeys,
-          onSave: async (rowKey, data, row) => {
-            console.log(rowKey, data, row)
-          },
+          onSave: async (rowKey, data, row) => {},
           onChange: setEditableRowKeys,
         }}
       />

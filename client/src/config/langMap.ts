@@ -9,15 +9,20 @@ const langMap = {
     enName: 'English',
     pinyin: 'yingyu',
   },
-  jp: {
-    zhName: '日语',
-    enName: 'Japanese',
-    pinyin: 'riyu',
+  vie: {
+    zhName: '越南语',
+    enName: 'Vietnamese',
+    pinyin: 'yuenanyu',
   },
   th: {
     zhName: '泰语',
     enName: 'Thai',
     pinyin: 'taiyu',
+  },
+  jp: {
+    zhName: '日语',
+    enName: 'Japanese',
+    pinyin: 'riyu',
   },
   spa: {
     zhName: '西班牙语',
@@ -118,11 +123,6 @@ const langMap = {
     zhName: '瑞典语',
     enName: 'Swedish',
     pinyin: 'ruidianyu',
-  },
-  vie: {
-    zhName: '越南语',
-    enName: 'Vietnamese',
-    pinyin: 'yuenanyu',
   },
   yue: {
     zhName: '中文(粤语)',

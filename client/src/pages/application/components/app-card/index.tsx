@@ -1,4 +1,4 @@
-import { EditTwoTone, SettingOutlined, SettingTwoTone } from '@ant-design/icons'
+import { EditTwoTone, SettingTwoTone } from '@ant-design/icons'
 import { Avatar, Card, Col, Popover, Row, Statistic, Tag } from 'antd'
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
