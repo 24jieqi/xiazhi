@@ -14,6 +14,7 @@ import {
 import {
   LanguageTypeEnum,
   appSupportLangsTableEnum,
+  langKeys,
 } from '@/pages/application/constant'
 import { entryKeyValidator } from '../validator'
 import { generateEntryKey } from '../utils'
@@ -145,23 +146,25 @@ const EntryModal: React.FC<EntryModalProps> = ({
         }}
       </ProForm.Item>
       <ProForm.Group>
-        {supportLanguageArray.map((lang, index) => {
-          const isRequired = lang === 'zh'
-          return (
-            <ProFormText
-              rules={
-                isRequired
-                  ? [{ required: true, message: '请输入中文词条' }]
-                  : []
-              }
-              key={index}
-              name={lang}
-              width="md"
-              label={appSupportLangsTableEnum[lang]?.text}
-              placeholder="请输入多语言词条"
-            />
-          )
-        })}
+        {supportLanguageArray
+          .filter(lang => langKeys.includes(lang))
+          .map((lang, index) => {
+            const isRequired = lang === 'zh'
+            return (
+              <ProFormText
+                rules={
+                  isRequired
+                    ? [{ required: true, message: '请输入中文词条' }]
+                    : []
+                }
+                key={index}
+                name={lang}
+                width="md"
+                label={appSupportLangsTableEnum[lang]?.text}
+                placeholder="请输入多语言词条"
+              />
+            )
+          })}
       </ProForm.Group>
     </ModalForm>
   )

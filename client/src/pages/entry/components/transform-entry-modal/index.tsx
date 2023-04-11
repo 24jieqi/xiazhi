@@ -24,13 +24,14 @@ export interface TransformEntryModalRefProps {
 }
 
 interface TransformEntryModalProps {
+  onResetCurrent?: () => void
   onActionSuccess?: () => void
 }
 
 const TransformEntryModal: React.ForwardRefRenderFunction<
   TransformEntryModalRefProps,
   TransformEntryModalProps
-> = ({ onActionSuccess }, ref) => {
+> = ({ onResetCurrent, onActionSuccess }, ref) => {
   const [visible, setVisible] = useState<boolean>(false)
   const [data, setData] = useState<ParamsType>(null)
   const [getTransformAppInfo, { data: transformAppInfo }] =
@@ -73,6 +74,8 @@ const TransformEntryModal: React.ForwardRefRenderFunction<
     }
   }
   const handleCancel = () => {
+    onResetCurrent?.()
+    form.resetFields()
     setVisible(false)
   }
 

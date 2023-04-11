@@ -25,6 +25,7 @@ import styles from './split.module.less'
 type EntryListProps = {
   selectedEntry: EntryItem
   languageArray: string[]
+  onResetCurrent: () => void
   onChange: (entry: EntryItem) => void
   actionRef: React.MutableRefObject<ActionType>
 }
@@ -32,7 +33,8 @@ type EntryListProps = {
 const EntryList: React.FC<EntryListProps> = props => {
   const routeParams = useParams()
   const transformEntryRef = useRef<TransformEntryModalRefProps>(null)
-  const { onChange, selectedEntry, languageArray, actionRef } = props
+  const { onChange, onResetCurrent, selectedEntry, languageArray, actionRef } =
+    props
   const [pageAllPublicEntries] = usePageAppEntriesLazyQuery()
   const [changeEntryAccess] = useChangeEntryAccessStatusMutation()
   const [deleteEntries] = useDeleteEntriesMutation()
@@ -309,6 +311,7 @@ const EntryList: React.FC<EntryListProps> = props => {
       />
       <TransformEntryModal
         ref={transformEntryRef}
+        onResetCurrent={onResetCurrent}
         onActionSuccess={() => actionRef.current.reload()}
       />
     </>
@@ -344,6 +347,9 @@ const AppEntryEditPage: React.FC = () => {
           actionRef={actionRef}
           onChange={currentItem => {
             setCurrent(currentItem)
+          }}
+          onResetCurrent={() => {
+            setCurrent(null)
           }}
           languageArray={data?.getAppInfoById?.languages}
           selectedEntry={current}
