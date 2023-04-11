@@ -188,7 +188,10 @@ export const EntryMutation = extendType({
           },
           data: {
             key: args.key,
-            langs: args.langs,
+            langs: {
+              ...(currentEntry?.langs as Object),
+              ...args.langs,
+            },
             mainLangText: args.langs["zh"], // 设置主语言文本
             modifyRecords: {
               create: !args.isRollback

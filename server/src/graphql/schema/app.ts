@@ -109,6 +109,14 @@ export const AppQuery = queryType({
       },
       async resolve(_root, args, ctx) {
         const decoded = decodedToken(ctx.req);
+        const languagesParams = args.languages
+          ? {
+              languages: {
+                hasSome: args.languages || [],
+              },
+            }
+          : {};
+
         const records = await ctx.prisma.app.findMany({
           where: {
             OR: [
@@ -127,9 +135,7 @@ export const AppQuery = queryType({
               contains: args.name!,
             },
             type: args.type!,
-            languages: {
-              hasEvery: args.languages || [],
-            },
+            ...languagesParams,
             access: args.access!,
             push: args.push!,
           },
