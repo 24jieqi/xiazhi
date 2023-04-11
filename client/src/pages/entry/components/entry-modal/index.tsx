@@ -6,7 +6,7 @@ import {
   ProFormText,
 } from '@ant-design/pro-components'
 import { Button, message } from 'antd'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import {
   useCreateEntryMutation,
   useUpdateEntryMutation,
@@ -40,6 +40,7 @@ const EntryModal: React.FC<EntryModalProps> = ({
   supportLanguageArray,
   onActionSuccess,
 }) => {
+  const formRef = useRef(null)
   const [isShow, setIsShow] = useState<boolean>(false)
   const [createEntry] = useCreateEntryMutation()
   const [updateEntry] = useUpdateEntryMutation()
@@ -60,14 +61,14 @@ const EntryModal: React.FC<EntryModalProps> = ({
   }
   // 设置默认值
   useEffect(() => {
-    if (typeof initialFormData !== 'undefined' && !isShow) {
+    if (typeof initialFormData !== 'undefined' && isShow && formRef.current) {
       form.setFieldsValue({ ...initialFormData })
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [initialFormData, isShow])
+  }, [initialFormData, isShow, form])
   return (
     <ModalForm
       form={form}
+      formRef={formRef}
       onValuesChange={handleValuesChange}
       onVisibleChange={handleVisibleChange}
       visible={isShow}
