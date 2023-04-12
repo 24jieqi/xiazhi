@@ -14,9 +14,11 @@ interface LoadingData {
 }
 
 const Login: React.FC = () => {
-  const [login] = useLoginMutation()
-  const { setToken } = usePermissions()
   const navigate = useNavigate()
+  const { setToken } = usePermissions()
+
+  const [login] = useLoginMutation()
+
   async function handleLogin(formData: LoadingData) {
     const res = await login({
       variables: {
@@ -29,6 +31,7 @@ const Login: React.FC = () => {
     navigate(REDIRECT)
     return true
   }
+
   return (
     <div
       style={{

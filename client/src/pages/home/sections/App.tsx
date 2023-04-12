@@ -7,7 +7,9 @@ import AppCard from '@/pages/application/components/app-card'
 
 const AppHomeEntry: React.FC = () => {
   const { data, loading } = useGetCurrentAppsQuery()
+
   const appList = data?.getCurrentApps?.records || []
+
   return (
     <Spin spinning={loading}>
       {appList && appList.length > 0 ? (

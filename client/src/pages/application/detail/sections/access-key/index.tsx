@@ -20,6 +20,7 @@ interface AccessKeyManagementProps extends AppSection {}
 const AccessKeyManagement: React.FC<AccessKeyManagementProps> = () => {
   const params = useParams()
   const appId = Number(params.id)
+
   const {
     data,
     loading: getAccessInfoLoading,
@@ -33,6 +34,7 @@ const AccessKeyManagement: React.FC<AccessKeyManagementProps> = () => {
   const [changeAppAccessStatus] = useChangeAccessStatusMutation()
   const [archiveApp] = useArchivedAppMutation()
   const [deleteApp] = useDeleteAppMutation()
+
   async function handleRefreshAccessKey() {
     await refreshAccessKey({
       variables: {
@@ -41,6 +43,7 @@ const AccessKeyManagement: React.FC<AccessKeyManagementProps> = () => {
     })
     refetch()
   }
+
   async function handleChangeAppAccessStatus(
     type: 'access' | 'push',
     checked: boolean,
@@ -57,6 +60,7 @@ const AccessKeyManagement: React.FC<AccessKeyManagementProps> = () => {
       return checked
     }
   }
+
   async function handleArchivedApp() {
     Modal.confirm({
       title: '请确认是否归档此应用？',
@@ -73,6 +77,7 @@ const AccessKeyManagement: React.FC<AccessKeyManagementProps> = () => {
       },
     })
   }
+
   async function handleDeleteApp() {
     Modal.confirm({
       title: '请确认是否删除此应用？',
@@ -89,6 +94,7 @@ const AccessKeyManagement: React.FC<AccessKeyManagementProps> = () => {
       },
     })
   }
+
   const dataSource = [
     {
       title: '可访问',
@@ -157,6 +163,7 @@ const AccessKeyManagement: React.FC<AccessKeyManagementProps> = () => {
       ],
     },
   ]
+
   return (
     <ProList<any>
       loading={getAccessInfoLoading}

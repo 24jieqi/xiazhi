@@ -16,6 +16,7 @@ const useCollaboratorPermissions = (
 ) => {
   const { info } = useUser()
   const navigate = useNavigate()
+
   useEffect(() => {
     if (
       typeof creatorId === 'undefined' ||
@@ -35,9 +36,11 @@ const useCollaboratorPermissions = (
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [creatorId, showAlert, info?.user_id])
+
   function checkIsCollaborator(creatorId: number) {
     return info.user_id !== creatorId
   }
+
   return {
     isCollaborator: info.user_id !== creatorId,
     checkIsCollaborator,

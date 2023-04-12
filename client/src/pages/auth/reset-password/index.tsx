@@ -1,8 +1,4 @@
 import {
-  useResetPasswordMutation,
-  useSendResetPasswordEmailMutation,
-} from '@/graphql/operations/__generated__/auth.generated'
-import {
   ProCard,
   ProForm,
   ProFormText,
@@ -11,6 +7,10 @@ import {
 import { Button, message } from 'antd'
 import React, { useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
+import {
+  useResetPasswordMutation,
+  useSendResetPasswordEmailMutation,
+} from '@/graphql/operations/__generated__/auth.generated'
 
 interface EmailStepFormFields {
   email: string
@@ -26,9 +26,11 @@ const ResetPasswordPage: React.FC = () => {
   const [searchParams] = useSearchParams()
   const token = searchParams.get('t')
   const [current, setCurrent] = useState(token ? 1 : 0)
+
   const [sendResetPasswordEmail, { loading }] =
     useSendResetPasswordEmailMutation()
   const [resetPassword] = useResetPasswordMutation()
+
   async function handleSendResetPasswordEmail(formData: EmailStepFormFields) {
     await sendResetPasswordEmail({
       variables: {
@@ -38,6 +40,7 @@ const ResetPasswordPage: React.FC = () => {
     message.success('邮件发送成功！')
     return true
   }
+
   async function handleResetPassword(formData: PasswordStepFormFields) {
     await resetPassword({
       variables: {
@@ -53,6 +56,7 @@ const ResetPasswordPage: React.FC = () => {
     navigate('/login')
     return true
   }
+
   return (
     <ProCard title="重设密码">
       <StepsForm

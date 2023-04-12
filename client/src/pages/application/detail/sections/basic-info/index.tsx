@@ -39,7 +39,9 @@ export function generateUploadFileList(files: string[]) {
 
 const AppBasicInfo: React.FC<AppBasicInfoProps> = ({ app }) => {
   const params = useParams()
+
   const [updateAppBasicInfo] = useUpdateAppBasicInfoMutation()
+
   async function handleUpdateAppInfo(formData: Record<string, any>) {
     await updateAppBasicInfo({
       variables: {
@@ -51,6 +53,7 @@ const AppBasicInfo: React.FC<AppBasicInfoProps> = ({ app }) => {
     })
     message.success('编辑应用成功！')
   }
+
   return (
     <ProForm
       onFinish={handleUpdateAppInfo}

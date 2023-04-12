@@ -9,6 +9,8 @@ import {
 } from '@/router/config/main-routes/application/path'
 import useUser from '@/stores/user'
 
+import styles from './index.module.less'
+
 const { Meta } = Card
 
 interface AppCardProps {
@@ -26,24 +28,24 @@ function getCoverUrl(pictures: string[]) {
 }
 
 const AppCard: React.FC<AppCardProps> = ({ data }) => {
-  const { info } = useUser()
   const navigate = useNavigate()
+
+  const { info } = useUser()
+
   function handleRedirectAppSetting() {
     navigate(`${APP_DETAIL}/${data.app_id}`)
   }
+
   function handleRedirectAppEdit() {
     navigate(`${EDIT_APP}/${data.app_id}`)
   }
+
   const isCollaborator = info.user_id !== data.creatorId
+
   return (
     <Card
       title={
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-          }}>
+        <div className={styles.titleWrap}>
           <p>{data.name}</p>
           {isCollaborator ? <Tag color="#2db7f5">协作</Tag> : null}
         </div>
@@ -53,7 +55,7 @@ const AppCard: React.FC<AppCardProps> = ({ data }) => {
         <img
           alt="cover"
           src={getCoverUrl(data.pictures)}
-          style={{ height: 200, objectFit: 'contain' }}
+          className={styles.coverImg}
         />
       }
       actions={[
@@ -79,7 +81,7 @@ const AppCard: React.FC<AppCardProps> = ({ data }) => {
         }
         description={data.description}
       />
-      <Row style={{ marginTop: 12, marginLeft: 48 }}>
+      <Row className={styles.cardInfoWrap}>
         <Col span={12}>
           <Statistic title="词条数" value={data.entryCount} />
         </Col>

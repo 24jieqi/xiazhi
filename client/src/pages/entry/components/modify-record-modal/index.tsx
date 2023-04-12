@@ -2,12 +2,15 @@ import React, { cloneElement, useMemo, useState } from 'react'
 import { Button, message, Modal, Space, Tag } from 'antd'
 import dayjs from 'dayjs'
 import { ProList } from '@ant-design/pro-components'
+import { omit } from 'lodash'
 import { EntryItem, RecordItem } from '@/graphql/generated/types'
 import { useUpdateEntryMutation } from '@/graphql/operations/__generated__/entry.generated'
 import {
   appSupportLangsTableEnum,
   langKeys,
 } from '@/pages/application/constant'
+
+import styles from './index.module.less'
 
 interface ModifyRecordsProps {
   modifyRecords: RecordItem[]
@@ -17,8 +20,8 @@ interface ModifyRecordsProps {
     langs: EntryItem['langs']
     key: string
   }
-  onRollbackSuccess: () => void
   children?: React.ReactElement
+  onRollbackSuccess: () => void
 }
 
 interface ProListType {
@@ -76,13 +79,17 @@ const ModifyRecordsModal: React.FC<ModifyRecordsProps> = ({
   onRollbackSuccess,
 }) => {
   const [visible, setVisible] = useState(false)
+
   const [updateEntry] = useUpdateEntryMutation()
+
   function handleShowModal() {
     setVisible(true)
   }
+
   function handleCloseModal() {
     setVisible(false)
   }
+
   function formateRollbackMessage(langs: Array<any>, type: string) {
     return langs
       .map(result => {
@@ -97,6 +104,7 @@ const ModifyRecordsModal: React.FC<ModifyRecordsProps> = ({
       })
       .filter(result => result)
   }
+
   function rollbackDiffLang(currLang, prevLang) {
     const result = []
     Object.keys(currLang).forEach(lang => {
@@ -113,6 +121,7 @@ const ModifyRecordsModal: React.FC<ModifyRecordsProps> = ({
     })
     return result
   }
+
   function handleRollback(record: ProListType) {
     const {
       data: { langs, prevLangs, key, entry_id },
@@ -124,25 +133,31 @@ const ModifyRecordsModal: React.FC<ModifyRecordsProps> = ({
     }
     const curr = formateRollbackMessage(diffResult, 'curr')
     const prev = formateRollbackMessage(diffResult, 'prev')
+
     Modal.confirm({
       title: '确认回滚?',
       content: `确认将词条【${curr.join('，')}】回滚为【${prev.join('，')}】?`,
       onOk: async () => {
-        await updateEntry({
-          variables: {
-            appId: records.appId,
-            entryId: entry_id,
-            key,
-            langs: prevLangs,
-            isRollback: true,
-          },
-        })
-        onRollbackSuccess()
-        setVisible(false)
-        message.success('回滚成功')
+        confirmRollback(entry_id, key, prevLangs)
       },
     })
   }
+
+  async function confirmRollback(entryId: number, key: string, prevLangs: any) {
+    await updateEntry({
+      variables: {
+        appId: records.appId,
+        entryId,
+        key,
+        langs: prevLangs,
+        isRollback: true,
+      },
+    })
+    onRollbackSuccess()
+    setVisible(false)
+    message.success('回滚成功')
+  }
+
   const ActionComp = children ? (
     cloneElement(children, { onClick: handleShowModal })
   ) : (
@@ -152,7 +167,10 @@ const ModifyRecordsModal: React.FC<ModifyRecordsProps> = ({
   )
   const dataSource = useMemo(() => {
     return modifyRecords.map(record => {
-      const diffResult = langDiff(record.prevLangs, record.currLangs)
+      const diffResult = langDiff(
+        omit(record.prevLangs, ['autoGenerate']),
+        omit(record.currLangs, ['autoGenerate']),
+      )
       return {
         data: {
           prevLangs: { ...record.prevLangs },
@@ -170,7 +188,7 @@ const ModifyRecordsModal: React.FC<ModifyRecordsProps> = ({
                   新增
                 </Tag>
                 {diffResult.add.map((text, idx) => (
-                  <span key={idx} style={{ fontWeight: 'bold' }}>
+                  <span key={idx} className={styles.textBold}>
                     {text}
                   </span>
                 ))}
@@ -181,7 +199,7 @@ const ModifyRecordsModal: React.FC<ModifyRecordsProps> = ({
                 <Tag key="delete" color="#f50">
                   删除
                 </Tag>
-                <p style={{ textDecoration: 'line-through' }}>
+                <p className={styles.textDecoration}>
                   {diffResult.delete.join('、')}
                 </p>
               </Space>
@@ -194,14 +212,7 @@ const ModifyRecordsModal: React.FC<ModifyRecordsProps> = ({
                 {diffResult.modify.map((item, idx) => (
                   <span key={idx} style={{ fontWeight: 'bold' }}>
                     {item.curr}(
-                    <span
-                      style={{
-                        textDecoration: 'line-through',
-                        fontWeight: 'normal',
-                      }}>
-                      {item.prev}
-                    </span>
-                    )
+                    <span className={styles.editText}>{item.prev}</span>)
                   </span>
                 ))}
               </Space>
@@ -212,6 +223,7 @@ const ModifyRecordsModal: React.FC<ModifyRecordsProps> = ({
       }
     })
   }, [modifyRecords, records])
+
   return (
     <>
       {ActionComp}
@@ -221,6 +233,7 @@ const ModifyRecordsModal: React.FC<ModifyRecordsProps> = ({
         destroyOnClose
         title="编辑记录"
         visible={visible}
+        maskClosable={false}
         onOk={handleCloseModal}
         onCancel={handleCloseModal}>
         <ProList<ProListType>

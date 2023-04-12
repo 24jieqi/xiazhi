@@ -1,7 +1,11 @@
 /* eslint-disable max-params */
 /* eslint-disable react/no-unstable-nested-components */
 import { EditOutlined, PlusOutlined, SwapOutlined } from '@ant-design/icons'
-import type { ActionType, ProColumns } from '@ant-design/pro-components'
+import type {
+  ActionType,
+  ParamsType,
+  ProColumns,
+} from '@ant-design/pro-components'
 import { ProTable } from '@ant-design/pro-components'
 import { Button } from 'antd'
 import React, { useRef, useState } from 'react'
@@ -14,11 +18,42 @@ import TransformEntryModal, {
 } from '@/pages/entry/components/transform-entry-modal'
 import { LanguageTypeEnum, langKeys } from '@/pages/application/constant'
 
-export default () => {
-  const [pageAllPublicEntries] = usePageAllPublicEntriesLazyQuery()
+const Entry: React.FC = () => {
   const actionRef = useRef<ActionType>()
   const transformEntryRef = useRef<TransformEntryModalRefProps>(null)
   const [editableKeys, setEditableRowKeys] = useState<React.Key[]>([])
+
+  const [pageAllPublicEntries] = usePageAllPublicEntriesLazyQuery()
+
+  async function handleRequest(
+    params: ParamsType & {
+      pageSize?: number
+      current?: number
+      keyword?: string
+    } = {},
+  ) {
+    const res = await pageAllPublicEntries({
+      variables: {
+        pageNo: params.current,
+        pageSize: params.pageSize,
+      },
+    })
+    const data = res?.data?.pageAllPublicEntries
+    return {
+      data: data.records,
+      success: true,
+      total: data.total,
+    }
+  }
+
+  function openTransformModal(record: EntryItem) {
+    transformEntryRef.current?.open({
+      entryId: record.entry_id,
+      langObj: record.langs,
+      key: record.key,
+    })
+  }
+
   const columns: ProColumns<EntryItem>[] = [
     {
       title: '词条Key',
@@ -102,35 +137,42 @@ export default () => {
       title: '操作',
       valueType: 'option',
       key: 'option',
-      render: (text, record, _, action) => [
-        <EntryModal
-          key="new"
-          initialFormData={{
-            entryId: record.entry_id,
-            key: record.key,
-            ...record.langs,
-          }}
-          supportLanguageArray={Object.keys(record?.langs || {})}
-          onActionSuccess={actionRef.current?.reload}>
-          <Button key="button" type="link">
-            <EditOutlined />
-            编辑
-          </Button>
-        </EntryModal>,
-        <Button
-          type="link"
-          key="transform"
-          icon={<SwapOutlined />}
-          onClick={() => {
-            transformEntryRef.current?.open({
+      render: (text, record, _, action) => {
+        const langArray = Object.keys(record.langs)
+        const supportLanguageArray = [].concat(langArray)
+
+        langKeys.forEach(lang => {
+          if (!supportLanguageArray.includes(lang)) {
+            supportLanguageArray.push(lang)
+          }
+        })
+
+        return [
+          <EntryModal
+            key="new"
+            initialFormData={{
               entryId: record.entry_id,
-              langObj: record.langs,
               key: record.key,
-            })
-          }}>
-          转换
-        </Button>,
-      ],
+              ...record.langs,
+            }}
+            supportLanguageArray={supportLanguageArray}
+            onActionSuccess={actionRef.current?.reload}>
+            <Button key="button" type="link">
+              <EditOutlined />
+              编辑
+            </Button>
+          </EntryModal>,
+          <Button
+            type="link"
+            key="transform"
+            icon={<SwapOutlined />}
+            onClick={() => {
+              openTransformModal(record)
+            }}>
+            转换
+          </Button>,
+        ]
+      },
     },
   ]
 
@@ -142,20 +184,7 @@ export default () => {
         cardBordered
         bordered
         scroll={{ x: 960 }}
-        request={async (params = {}, sort, filter) => {
-          const res = await pageAllPublicEntries({
-            variables: {
-              pageNo: params.current,
-              pageSize: params.pageSize,
-            },
-          })
-          const data = res?.data?.pageAllPublicEntries
-          return {
-            data: data.records,
-            success: true,
-            total: data.total,
-          }
-        }}
+        request={handleRequest}
         rowKey="entry_id"
         search={{
           labelWidth: 'auto',
@@ -190,3 +219,5 @@ export default () => {
     </>
   )
 }
+
+export default Entry

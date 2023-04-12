@@ -1,4 +1,8 @@
-import type { ActionType, ProColumns } from '@ant-design/pro-components'
+import type {
+  ActionType,
+  ParamsType,
+  ProColumns,
+} from '@ant-design/pro-components'
 import { ProCard, ProTable } from '@ant-design/pro-components'
 import { Tag, Button, Empty, message, Space, Table } from 'antd'
 import React, { useRef, useState } from 'react'
@@ -20,7 +24,7 @@ import TransformEntryModal, {
 import ModifyRecordsModal from '@/pages/entry/components/modify-record-modal'
 import { appTypeOptions } from '../constant'
 import UploadXlsx from '../components/upload-xlsx'
-import styles from './split.module.less'
+import styles from './index.module.less'
 
 type EntryListProps = {
   selectedEntry: EntryItem
@@ -30,16 +34,23 @@ type EntryListProps = {
   actionRef: React.MutableRefObject<ActionType>
 }
 
-const EntryList: React.FC<EntryListProps> = props => {
+const EntryList: React.FC<EntryListProps> = ({
+  onChange,
+  onResetCurrent,
+  selectedEntry,
+  languageArray,
+  actionRef,
+}) => {
   const routeParams = useParams()
+  const appId = Number(routeParams.id)
+
   const transformEntryRef = useRef<TransformEntryModalRefProps>(null)
-  const { onChange, onResetCurrent, selectedEntry, languageArray, actionRef } =
-    props
+
   const [pageAllPublicEntries] = usePageAppEntriesLazyQuery()
   const [changeEntryAccess] = useChangeEntryAccessStatusMutation()
   const [deleteEntries] = useDeleteEntriesMutation()
   const [uploadXlxs] = useUploadEntriesXlsxMutation()
-  const appId = Number(routeParams.id)
+
   async function handleMultiDelete(entryIds: number[], onSuccess?: () => void) {
     await deleteEntries({
       variables: {
@@ -49,6 +60,7 @@ const EntryList: React.FC<EntryListProps> = props => {
     })
     onSuccess?.()
   }
+
   async function handleChangeEntryAccess(
     type: 'archive' | 'deleted',
     row: EntryItem,
@@ -61,8 +73,9 @@ const EntryList: React.FC<EntryListProps> = props => {
       },
     })
     message.success('操作成功！')
-    actionRef.current.reload()
+    actionRef.current?.reload()
   }
+
   async function handleUploadEntries(url: string, callback: () => void) {
     await uploadXlxs({
       variables: {
@@ -74,10 +87,40 @@ const EntryList: React.FC<EntryListProps> = props => {
     message.success('导入词条成功！')
     callback()
   }
+
   async function handleRollbackSuccess() {
     await actionRef.current?.reload()
     selectedEntry && onChange?.(null)
   }
+
+  async function handleRequest(
+    params: ParamsType & {
+      pageSize?: number
+      current?: number
+      keyword?: string
+    } = {},
+  ) {
+    const res = await pageAllPublicEntries({
+      variables: {
+        pageNo: params.current,
+        pageSize: params.pageSize,
+        appId,
+        startTime: params.startTime,
+        endTime: params.endTime,
+        key: params.key,
+        mainLangText: params.mainLangText,
+        latest: (params.state as any[])?.includes('latest'),
+        archive: (params.state as any[])?.includes('archived'),
+      },
+    })
+    const data = res?.data?.pageAppEntries
+    return {
+      data: data.records,
+      success: true,
+      total: data.total,
+    }
+  }
+
   const columns: ProColumns<EntryItem>[] = [
     {
       title: '词条Key',
@@ -195,32 +238,13 @@ const EntryList: React.FC<EntryListProps> = props => {
       ],
     },
   ]
+
   return (
     <>
       <ProTable<EntryItem>
         actionRef={actionRef}
         columns={columns}
-        request={async (params = {}) => {
-          const res = await pageAllPublicEntries({
-            variables: {
-              pageNo: params.current,
-              pageSize: params.pageSize,
-              appId: Number(routeParams.id),
-              startTime: params.startTime,
-              endTime: params.endTime,
-              key: params.key,
-              mainLangText: params.mainLangText,
-              latest: (params.state as any[])?.includes('latest'),
-              archive: (params.state as any[])?.includes('archived'),
-            },
-          })
-          const data = res?.data?.pageAppEntries
-          return {
-            data: data.records,
-            success: true,
-            total: data.total,
-          }
-        }}
+        request={handleRequest}
         rowKey="entry_id"
         search={{
           labelWidth: 'auto',
@@ -320,19 +344,24 @@ const EntryList: React.FC<EntryListProps> = props => {
 
 const AppEntryEditPage: React.FC = () => {
   const params = useParams()
+
+  const [current, setCurrent] = useState<EntryItem>()
   const actionRef = useRef<ActionType>()
+
   const { data } = useGetAppInfoByIdQuery({
     variables: {
       getAppInfoByIdId: Number(params.id),
     },
   })
-  const [current, setCurrent] = useState<EntryItem>()
+
+  function reloadTableList() {
+    actionRef.current?.reload()
+  }
+
   const currentType = appTypeOptions.find(
     item => item.value === data?.getAppInfoById?.type,
   )
-  function handleAddOrUpdateSuccess() {
-    actionRef.current?.reload()
-  }
+
   return (
     <ProCard
       split="vertical"
@@ -358,7 +387,7 @@ const AppEntryEditPage: React.FC = () => {
       <ProCard colSpan={8} title={current?.mainLangText}>
         {current ? (
           <EntryForm
-            onActionSuccess={handleAddOrUpdateSuccess}
+            onActionSuccess={reloadTableList}
             initialFormData={{
               ...current,
               ...current.langs,
@@ -378,7 +407,8 @@ const AppEntryEditPage: React.FC = () => {
                 请在左侧表格选择词条编辑或是{' '}
                 <EntryModal
                   initialFormData={{ appId: Number(params.id) }}
-                  supportLanguageArray={data?.getAppInfoById?.languages || []}>
+                  supportLanguageArray={data?.getAppInfoById?.languages || []}
+                  onActionSuccess={reloadTableList}>
                   <a>新增词条</a>
                 </EntryModal>
               </span>

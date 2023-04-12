@@ -6,12 +6,14 @@ import { useVerifyEmailMutation } from '@/graphql/operations/__generated__/auth.
 import usePermissions from '@/stores/permissions'
 
 const EmailVerifyPage: React.FC = () => {
-  const [verifyEmail, { data }] = useVerifyEmailMutation()
   const [success, setSuccess] = useState(false)
   const { setToken } = usePermissions()
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const token = searchParams.get('t')
+
+  const [verifyEmail, { data }] = useVerifyEmailMutation()
+
   useEffect(() => {
     if (!token) {
       return
@@ -27,10 +29,12 @@ const EmailVerifyPage: React.FC = () => {
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token])
+
   function handleQuickLogin() {
     setToken(data.verifyEmail)
     navigate('/home')
   }
+
   return (
     <ProCard title="邮箱验证">
       <ProCard bordered>

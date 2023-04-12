@@ -39,17 +39,11 @@ const EntryForm: React.FC<EntryFormProps> = ({
   supportLanguageArray,
   onActionSuccess,
 }) => {
+  const [form] = ProForm.useForm()
+
   const [createEntry] = useCreateEntryMutation()
   const [updateEntry] = useUpdateEntryMutation()
-  const [form] = ProForm.useForm()
-  function handleValuesChange(changedValues: Record<string, any>, values) {
-    const keys = Object.keys(changedValues)
-    if (keys.includes(LanguageTypeEnum.en) && values.autoGenerate) {
-      form.setFieldsValue({
-        key: generateEntryKey(changedValues[LanguageTypeEnum.en]),
-      })
-    }
-  }
+
   // 设置默认值
   useEffect(() => {
     if (typeof initialFormData !== 'undefined') {
@@ -59,6 +53,47 @@ const EntryForm: React.FC<EntryFormProps> = ({
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialFormData])
+
+  function handleValuesChange(changedValues: Record<string, any>, values) {
+    const keys = Object.keys(changedValues)
+    if (keys.includes(LanguageTypeEnum.en) && values.autoGenerate) {
+      form.setFieldsValue({
+        key: generateEntryKey(changedValues[LanguageTypeEnum.en]),
+      })
+    }
+  }
+
+  async function handleFinish(formData) {
+    // 此时代表编辑
+    if (initialFormData?.entryId) {
+      await updateEntry({
+        variables: {
+          appId: initialFormData.appId,
+          entryId: initialFormData.entryId,
+          key: formData.key,
+          isRollback: false,
+          langs: {
+            ...omit(formData, ['key', 'autoGenerate']),
+          },
+        },
+      })
+    } else {
+      const allData = form.getFieldsValue(true)
+      await createEntry({
+        variables: {
+          key: formData.key,
+          appId: allData.appId,
+          langs: {
+            ...omit(formData, ['key', 'autoGenerate']),
+          },
+        },
+      })
+    }
+    onActionSuccess?.()
+    message.success(`${initialFormData?.entryId ? '修改' : '新增'}词条成功！`)
+    return true
+  }
+
   return (
     <ProForm
       initialValues={{
@@ -66,38 +101,7 @@ const EntryForm: React.FC<EntryFormProps> = ({
       }}
       form={form}
       onValuesChange={handleValuesChange}
-      onFinish={async formData => {
-        // 此时代表编辑
-        if (initialFormData?.entryId) {
-          await updateEntry({
-            variables: {
-              appId: initialFormData.appId,
-              entryId: initialFormData.entryId,
-              key: formData.key,
-              isRollback: false,
-              langs: {
-                ...omit(formData, ['key', 'autoGenerate']),
-              },
-            },
-          })
-          onActionSuccess?.()
-          message.success('修改词条成功！')
-        } else {
-          const allData = form.getFieldsValue(true)
-          await createEntry({
-            variables: {
-              key: formData.key,
-              appId: allData.appId,
-              langs: {
-                ...omit(formData, ['key', 'autoGenerate']),
-              },
-            },
-          })
-          onActionSuccess?.()
-          message.success('新增词条成功！')
-        }
-        return true
-      }}
+      onFinish={handleFinish}
       submitter={{
         searchConfig: { submitText: '编辑' },
       }}>

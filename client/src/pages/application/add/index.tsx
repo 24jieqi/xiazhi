@@ -30,6 +30,32 @@ interface FileVO {
   size: number
 }
 
+const whetherOptions = [
+  {
+    label: '是',
+    value: true,
+  },
+  {
+    label: '否',
+    value: false,
+  },
+]
+
+const permissionOptions = [
+  {
+    label: '管理',
+    value: 'admin',
+  },
+  {
+    label: '编辑',
+    value: 'edit',
+  },
+  {
+    label: '只读',
+    value: 'readonly',
+  },
+]
+
 export function getPictureUrlList(fileList: UploadFile<Partial<FileVO>>[]) {
   if (!fileList || !fileList.length) {
     return []
@@ -39,28 +65,32 @@ export function getPictureUrlList(fileList: UploadFile<Partial<FileVO>>[]) {
     .map(f => f?.response?.fileUrl || f?.url)
 }
 
-export default () => {
+const Add: React.FC = () => {
   const formRef = useRef<ProFormInstance>()
   const navigate = useNavigate()
+
   const [createApp] = useCreateAppMutation()
+
+  async function handleFinish(values) {
+    await createApp({
+      variables: {
+        name: values.name,
+        description: values.description,
+        languages: values.languages,
+        type: values.type,
+        pictures: getPictureUrlList(values.pictures),
+      },
+    })
+    message.success('应用创建成功！')
+    navigate(-1)
+    return true
+  }
+
   return (
     <ProCard>
       <StepsForm
         formRef={formRef}
-        onFinish={async values => {
-          await createApp({
-            variables: {
-              name: values.name,
-              description: values.description,
-              languages: values.languages,
-              type: values.type,
-              pictures: getPictureUrlList(values.pictures),
-            },
-          })
-          message.success('应用创建成功！')
-          navigate(-1)
-          return true
-        }}
+        onFinish={handleFinish}
         formProps={{
           validateMessages: {
             required: '此项为必填项',
@@ -138,44 +168,17 @@ export default () => {
             <ProFormRadio.Group
               name="access"
               label="可访问"
-              options={[
-                {
-                  label: '是',
-                  value: true,
-                },
-                {
-                  label: '否',
-                  value: false,
-                },
-              ]}
+              options={whetherOptions}
             />
             <ProFormRadio.Group
               name="push"
               label="可推送"
-              options={[
-                {
-                  label: '是',
-                  value: true,
-                },
-                {
-                  label: '否',
-                  value: false,
-                },
-              ]}
+              options={whetherOptions}
             />
             <ProFormRadio.Group
               name="auto_translate"
               label="辅助翻译"
-              options={[
-                {
-                  label: '是',
-                  value: true,
-                },
-                {
-                  label: '否',
-                  value: false,
-                },
-              ]}
+              options={whetherOptions}
             />
           </ProForm.Group>
           <ProFormList
@@ -197,20 +200,7 @@ export default () => {
                 label="权限"
                 name="permission"
                 mode="multiple"
-                options={[
-                  {
-                    label: '管理',
-                    value: 'admin',
-                  },
-                  {
-                    label: '编辑',
-                    value: 'edit',
-                  },
-                  {
-                    label: '只读',
-                    value: 'readonly',
-                  },
-                ]}
+                options={permissionOptions}
               />
             </ProForm.Group>
           </ProFormList>
@@ -219,3 +209,5 @@ export default () => {
     </ProCard>
   )
 }
+
+export default Add

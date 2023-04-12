@@ -11,13 +11,26 @@ import {
 import AppHomeEntry from './sections/App'
 import EntryHomeSearch from './sections/Entry'
 
+const TabList = [
+  {
+    tab: '应用',
+    key: 'app',
+  },
+  {
+    tab: '词条',
+    key: 'entry',
+  },
+]
+
 const Home: React.FC = () => {
   const navigate = useNavigate()
+
   const [current, setCurrent] = useState('app')
+  const [like, setLike] = useState(false)
+
   const { data, refetch } = useFeedbackStatisticsQuery()
   const [feedback] = useFeedbackMutation()
-  const [like, setLike] = useState(false)
-  const LikeIcon = like ? LikeFilled : LikeOutlined
+
   async function handleChangeLike() {
     setLike(true)
     await feedback({
@@ -27,9 +40,13 @@ const Home: React.FC = () => {
     })
     await refetch()
   }
+
   function handleRedirectCreateApp() {
     navigate(NEW_APP)
   }
+
+  const LikeIcon = like ? LikeFilled : LikeOutlined
+
   return (
     <PageContainer
       content="欢迎使用多语言词库平台"
@@ -37,16 +54,7 @@ const Home: React.FC = () => {
         title: '欢迎',
       }}
       tabActiveKey={current}
-      tabList={[
-        {
-          tab: '应用',
-          key: 'app',
-        },
-        {
-          tab: '词条',
-          key: 'entry',
-        },
-      ]}
+      tabList={TabList}
       tabBarExtraContent={
         current === 'app' ? (
           <Button

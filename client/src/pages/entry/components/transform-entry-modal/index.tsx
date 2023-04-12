@@ -32,13 +32,15 @@ const TransformEntryModal: React.ForwardRefRenderFunction<
   TransformEntryModalRefProps,
   TransformEntryModalProps
 > = ({ onResetCurrent, onActionSuccess }, ref) => {
+  const [form] = Form.useForm()
   const [visible, setVisible] = useState<boolean>(false)
   const [data, setData] = useState<ParamsType>(null)
+
   const [getTransformAppInfo, { data: transformAppInfo }] =
     useGetTransformAppInfoByIdLazyQuery()
   const [validEntryKey] = useValidEntryKeyLazyQuery()
   const [transformEntry, { loading }] = useTransformEntryMutation()
-  const [form] = Form.useForm()
+
   useImperativeHandle(ref, () => ({
     open: params => {
       getTransformAppInfo({
@@ -50,7 +52,8 @@ const TransformEntryModal: React.ForwardRefRenderFunction<
       setVisible(true)
     },
   }))
-  const handleOk = async () => {
+
+  async function handleOk() {
     const formData = await form.validateFields()
     const res = await validEntryKey({
       variables: {
@@ -73,7 +76,8 @@ const TransformEntryModal: React.ForwardRefRenderFunction<
       message.error(`当前词条key：${data.key}在目标词库重复,请修改后重试`)
     }
   }
-  const handleCancel = () => {
+
+  function handleCancel() {
     onResetCurrent?.()
     form.resetFields()
     setVisible(false)
@@ -92,7 +96,7 @@ const TransformEntryModal: React.ForwardRefRenderFunction<
         }
       })
     }
-    return langArray
+    return langArray.filter(lang => lang.value)
   }, [data])
 
   const options = useMemo(() => {

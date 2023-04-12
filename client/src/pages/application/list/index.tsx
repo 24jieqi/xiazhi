@@ -17,16 +17,36 @@ import AccessSwitch from '../components/access-switch'
 
 const AppListPage: React.FC = () => {
   const navigate = useNavigate()
+
   const { checkIsCollaborator } = useCollaboratorPermissions()
+  const [getCurrentApps] = useGetCurrentAppsLazyQuery()
+
   function handleRedirectAppSetting(app: AppItem) {
     navigate(`${APP_DETAIL}/${app.app_id}`)
   }
+
   function handleRedirectAppEdit(app: AppItem) {
     navigate(`${EDIT_APP}/${app.app_id}`)
   }
+
   function handleRedirectAppAdd() {
     navigate(NEW_APP)
   }
+
+  async function handleRequest(params) {
+    const res = await getCurrentApps({
+      variables: {
+        ...params,
+      },
+    })
+    const data = res?.data?.getCurrentApps
+    return {
+      data: data.records,
+      success: true,
+      total: data.total,
+    }
+  }
+
   const columns: ProColumns<AppItem>[] = [
     {
       title: '应用名称',
@@ -151,25 +171,13 @@ const AppListPage: React.FC = () => {
     //   ],
     // },
   ]
-  const [getCurrentApps] = useGetCurrentAppsLazyQuery()
+
   return (
     <ProCard title="我的应用">
       <ProTable<AppItem>
         columns={columns}
         scroll={{ x: 1200 }}
-        request={async (params: any = {}, sort, filter) => {
-          const res = await getCurrentApps({
-            variables: {
-              ...params,
-            },
-          })
-          const data = res?.data?.getCurrentApps
-          return {
-            data: data.records,
-            success: true,
-            total: data.total,
-          }
-        }}
+        request={handleRequest}
         rowKey="app_id"
         search={{
           labelWidth: 'auto',
