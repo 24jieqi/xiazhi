@@ -378,7 +378,14 @@ type Query {
   """
   获取所有公共词条（分页）
   """
-  pageAllPublicEntries(pageNo: Int!, pageSize: Int!): EntryPaging
+  pageAllPublicEntries(
+    endTime: Float
+    key: String
+    mainLangText: String
+    pageNo: Int!
+    pageSize: Int!
+    startTime: Float
+  ): EntryPaging
 
   """
   获取应用所有词条（分页）

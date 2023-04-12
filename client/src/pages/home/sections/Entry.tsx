@@ -9,6 +9,7 @@ import type {
 import { ProTable } from '@ant-design/pro-components'
 import { Button } from 'antd'
 import React, { useRef, useState } from 'react'
+import dayjs from 'dayjs'
 import { EntryItem } from '@/graphql/generated/types'
 import { usePageAllPublicEntriesLazyQuery } from '@/graphql/operations/__generated__/entry.generated'
 import EntryModal from '@/pages/entry/components/entry-modal'
@@ -29,13 +30,20 @@ const Entry: React.FC = () => {
     params: ParamsType & {
       pageSize?: number
       current?: number
-      keyword?: string
+      startTime?: number
+      endTime?: number
+      key?: string
+      mainLangText?: string
     } = {},
   ) {
     const res = await pageAllPublicEntries({
       variables: {
         pageNo: params.current,
         pageSize: params.pageSize,
+        startTime: params.startTime,
+        endTime: params.endTime,
+        key: params.key,
+        mainLangText: params.mainLangText,
       },
     })
     const data = res?.data?.pageAllPublicEntries
@@ -92,6 +100,12 @@ const Entry: React.FC = () => {
           dataIndex: ['langs', LanguageTypeEnum.vie],
         },
       ],
+      hideInSearch: true,
+    },
+    {
+      title: '主语言',
+      dataIndex: 'mainLangText',
+      hideInTable: true,
     },
     {
       title: '创建时间',
@@ -101,8 +115,8 @@ const Entry: React.FC = () => {
       search: {
         transform: value => {
           return {
-            startTime: value[0],
-            endTime: value[1],
+            startTime: dayjs(value[0]).valueOf(),
+            endTime: dayjs(value[1]).valueOf(),
           }
         },
       },

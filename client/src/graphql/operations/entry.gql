@@ -1,5 +1,19 @@
-query PageAllPublicEntries($pageSize: Int!, $pageNo: Int!) {
-  pageAllPublicEntries(pageSize: $pageSize, pageNo: $pageNo) {
+query PageAllPublicEntries(
+  $pageSize: Int!
+  $pageNo: Int!
+  $key: String
+  $mainLangText: String
+  $startTime: Float
+  $endTime: Float
+) {
+  pageAllPublicEntries(
+    pageSize: $pageSize
+    pageNo: $pageNo
+    key: $key
+    mainLangText: $mainLangText
+    startTime: $startTime
+    endTime: $endTime
+  ) {
     total
     pageSize
     current

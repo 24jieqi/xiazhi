@@ -387,8 +387,12 @@ export type QueryListUserFuzzyByUserNameArgs = {
 }
 
 export type QueryPageAllPublicEntriesArgs = {
+  endTime?: InputMaybe<Scalars['Float']>
+  key?: InputMaybe<Scalars['String']>
+  mainLangText?: InputMaybe<Scalars['String']>
   pageNo: Scalars['Int']
   pageSize: Scalars['Int']
+  startTime?: InputMaybe<Scalars['Float']>
 }
 
 export type QueryPageAppEntriesArgs = {

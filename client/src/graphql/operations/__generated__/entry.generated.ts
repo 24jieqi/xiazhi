@@ -6,6 +6,10 @@ const defaultOptions = {} as const
 export type PageAllPublicEntriesQueryVariables = SchemaTypes.Exact<{
   pageSize: SchemaTypes.Scalars['Int']
   pageNo: SchemaTypes.Scalars['Int']
+  key?: SchemaTypes.InputMaybe<SchemaTypes.Scalars['String']>
+  mainLangText?: SchemaTypes.InputMaybe<SchemaTypes.Scalars['String']>
+  startTime?: SchemaTypes.InputMaybe<SchemaTypes.Scalars['Float']>
+  endTime?: SchemaTypes.InputMaybe<SchemaTypes.Scalars['Float']>
 }>
 
 export type PageAllPublicEntriesQuery = {
@@ -163,8 +167,22 @@ export type TransformEntryMutationVariables = SchemaTypes.Exact<{
 export type TransformEntryMutation = { transformEntry?: boolean }
 
 export const PageAllPublicEntriesDocument = gql`
-  query PageAllPublicEntries($pageSize: Int!, $pageNo: Int!) {
-    pageAllPublicEntries(pageSize: $pageSize, pageNo: $pageNo) {
+  query PageAllPublicEntries(
+    $pageSize: Int!
+    $pageNo: Int!
+    $key: String
+    $mainLangText: String
+    $startTime: Float
+    $endTime: Float
+  ) {
+    pageAllPublicEntries(
+      pageSize: $pageSize
+      pageNo: $pageNo
+      key: $key
+      mainLangText: $mainLangText
+      startTime: $startTime
+      endTime: $endTime
+    ) {
       total
       pageSize
       current
@@ -215,6 +233,10 @@ export const PageAllPublicEntriesDocument = gql`
  *   variables: {
  *      pageSize: // value for 'pageSize'
  *      pageNo: // value for 'pageNo'
+ *      key: // value for 'key'
+ *      mainLangText: // value for 'mainLangText'
+ *      startTime: // value for 'startTime'
+ *      endTime: // value for 'endTime'
  *   },
  * });
  */
