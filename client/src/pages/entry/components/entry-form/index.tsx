@@ -5,6 +5,8 @@ import {
 } from '@ant-design/pro-components'
 import { message } from 'antd'
 import React, { useEffect } from 'react'
+import pinyin from 'pinyin'
+import { flatten } from 'lodash'
 import {
   useCreateEntryMutation,
   useUpdateEntryMutation,
@@ -56,9 +58,13 @@ const EntryForm: React.FC<EntryFormProps> = ({
 
   function handleValuesChange(changedValues: Record<string, any>, values) {
     const keys = Object.keys(changedValues)
-    if (keys.includes(LanguageTypeEnum.en) && values.autoGenerate) {
+    if (keys.includes(LanguageTypeEnum.zh) && values.autoGenerate) {
+      const pinYinArr = pinyin(changedValues[LanguageTypeEnum.zh], {
+        style: 'tone2',
+      })
+      const pinYinStr = flatten(pinYinArr).join(',')
       form.setFieldsValue({
-        key: generateEntryKey(changedValues[LanguageTypeEnum.en]),
+        key: generateEntryKey(pinYinStr),
       })
     }
   }
