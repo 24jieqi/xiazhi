@@ -458,12 +458,30 @@ export const EntryQuery = extendType({
       args: {
         pageSize: nonNull(intArg()),
         pageNo: nonNull(intArg()),
+        key: stringArg(),
+        mainLangText: stringArg(),
+        startTime: floatArg(),
+        endTime: floatArg(),
       },
       async resolve(_, args, ctx) {
         decodedToken(ctx.req);
         const records = await ctx.prisma.entry.findMany({
           where: {
             public: true,
+            key: {
+              contains: args.key || "",
+            },
+            mainLangText: {
+              contains: args.mainLangText || "",
+            },
+            createdAt: {
+              lte: args.endTime
+                ? formatISO(new Date(args.endTime!))
+                : undefined,
+              gte: args.startTime
+                ? formatISO(new Date(args.startTime!))
+                : undefined,
+            },
           },
           skip: (args.pageNo - 1) * args.pageSize,
           take: args.pageSize,

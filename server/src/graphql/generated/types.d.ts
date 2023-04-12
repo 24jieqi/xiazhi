@@ -584,8 +584,12 @@ export interface NexusGenArgTypes {
       keywords: string; // String!
     }
     pageAllPublicEntries: { // args
+      endTime?: number | null; // Float
+      key?: string | null; // String
+      mainLangText?: string | null; // String
       pageNo: number; // Int!
       pageSize: number; // Int!
+      startTime?: number | null; // Float
     }
     pageAppEntries: { // args
       appId: number; // Int!
