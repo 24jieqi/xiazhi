@@ -1,10 +1,11 @@
 import { extendType, list, nonNull, stringArg, inputObjectType } from "nexus";
+import { EntryItem } from "./entry";
 
 export const AccessQuery = extendType({
   type: "Query",
   definition(t) {
     t.field("getAllEntries", {
-      type: list("EntryItem"),
+      type: list(EntryItem),
       args: {
         accessKey: nonNull(stringArg()),
       },
@@ -23,7 +24,7 @@ export const AccessQuery = extendType({
             },
           },
         });
-        return [{ ...app?.entries[0].entry }];
+        return app?.entries?.map((item) => item.entry) || [];
       },
     });
   },
