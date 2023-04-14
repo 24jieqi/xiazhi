@@ -62,7 +62,7 @@ const EntryForm: React.FC<EntryFormProps> = ({
       const pinYinArr = pinyin(changedValues[LanguageTypeEnum.zh], {
         style: 'tone2',
       })
-      const pinYinStr = flatten(pinYinArr).join(',')
+      const pinYinStr = flatten(pinYinArr).join('_')
       form.setFieldsValue({
         key: generateEntryKey(pinYinStr),
       })
