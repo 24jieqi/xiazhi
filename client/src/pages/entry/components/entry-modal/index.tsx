@@ -50,7 +50,11 @@ const EntryModal: React.FC<EntryModalProps> = ({
 
   function handleValuesChange(changedValues: Record<string, any>, values) {
     const keys = Object.keys(changedValues)
-    if (keys.includes(LanguageTypeEnum.zh) && values.autoGenerate) {
+    if (
+      keys.includes(LanguageTypeEnum.zh) &&
+      values.autoGenerate &&
+      !initialFormData?.entryId
+    ) {
       const pinYinArr = pinyin(changedValues[LanguageTypeEnum.zh], {
         style: 'tone2',
       })
