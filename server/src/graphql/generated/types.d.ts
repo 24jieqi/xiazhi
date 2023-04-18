@@ -41,6 +41,12 @@ export interface NexusGenInputs {
     key?: string | null; // String
     langs?: NexusGenScalars['JSONObject'] | null; // JSONObject
   }
+  UploadLocalEntryItem: { // input type
+    key?: string | null; // String
+    langs?: NexusGenScalars['JSONObject'] | null; // JSONObject
+    mainLang: string; // String!
+    mainLangText?: string | null; // String
+  }
 }
 
 export interface NexusGenEnums {
@@ -262,6 +268,7 @@ export interface NexusGenFieldTypes {
     updateUserInfo: boolean | null; // Boolean
     uploadEntries: boolean | null; // Boolean
     uploadEntriesXlsx: boolean | null; // Boolean
+    uploadLocalEntries: boolean | null; // Boolean
     verifyEmail: string | null; // String
   }
   Query: { // field return type
@@ -404,6 +411,7 @@ export interface NexusGenFieldTypeNames {
     updateUserInfo: 'Boolean'
     uploadEntries: 'Boolean'
     uploadEntriesXlsx: 'Boolean'
+    uploadLocalEntries: 'Boolean'
     verifyEmail: 'String'
   }
   Query: { // field return type name
@@ -552,6 +560,11 @@ export interface NexusGenArgTypes {
     uploadEntriesXlsx: { // args
       appId: number; // Int!
       fileUrl: string; // String!
+    }
+    uploadLocalEntries: { // args
+      appId: number; // Int!
+      entries: Array<NexusGenInputs['UploadLocalEntryItem'] | null>; // [UploadLocalEntryItem]!
+      isCover?: boolean | null; // Boolean
     }
   }
   Query: {

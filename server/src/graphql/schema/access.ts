@@ -1,4 +1,12 @@
-import { extendType, list, nonNull, stringArg, inputObjectType } from "nexus";
+import {
+  extendType,
+  list,
+  nonNull,
+  stringArg,
+  inputObjectType,
+  booleanArg,
+  intArg,
+} from "nexus";
 import { EntryItem } from "./entry";
 
 export const AccessQuery = extendType({
@@ -35,6 +43,17 @@ export const UploadEntryItem = inputObjectType({
   description: "新增词条上传信息",
   definition(t) {
     t.string("key");
+    t.json("langs");
+  },
+});
+
+export const UploadLocalEntryItem = inputObjectType({
+  name: "UploadLocalEntryItem",
+  description: "上传本地词条信息",
+  definition(t) {
+    t.string("key");
+    t.nonNull.string("mainLang");
+    t.string("mainLangText");
     t.json("langs");
   },
 });
@@ -93,6 +112,102 @@ export const AccessMutation = extendType({
                   },
                 },
               },
+            },
+          },
+        });
+        return true;
+      },
+    });
+    t.field("uploadLocalEntries", {
+      deprecation: "上传本地词条信息",
+      type: "Boolean",
+      args: {
+        appId: nonNull(intArg()),
+        entries: nonNull(list("UploadLocalEntryItem")),
+        isCover: booleanArg(),
+      },
+      async resolve(_, args, ctx) {
+        const app = await ctx.prisma.app.findFirst({
+          where: {
+            app_id: args.appId,
+          },
+          include: {
+            entries: {
+              include: {
+                entry: true,
+              },
+            },
+          },
+        });
+        if (!app) {
+          throw new Error("没有找到app");
+        }
+        const currentEntry = args.entries.map((entry) => ({
+          ...entry,
+          public: false,
+          uploaded: true,
+        }));
+        const oldEntry = app.entries?.map((item) => item.entry);
+        const addEntryArr = currentEntry.filter(
+          (item) =>
+            oldEntry.findIndex(
+              (oldEntryItem) => oldEntryItem.key === item.key
+            ) === -1
+        );
+        const addEditEntryArr = currentEntry.filter(
+          (item) =>
+            oldEntry.findIndex(
+              (oldEntryItem) => oldEntryItem.key === item.key
+            ) > -1
+        );
+        // 是否要覆盖当前已经存在的词条
+        if (args.isCover) {
+          let editEntryArr = ([] as Array<any>).concat(oldEntry);
+          editEntryArr = editEntryArr.map((entry) => {
+            const tempArr = addEditEntryArr.find(
+              (addEditItem) => addEditItem.key === entry.key
+            );
+            const returnValue = tempArr
+              ? { ...entry, ...tempArr }
+              : { ...entry };
+            return {
+              ...returnValue,
+            };
+          });
+          await ctx.prisma.$transaction(
+            editEntryArr.map((entry) => {
+              return ctx.prisma.entry.update({
+                where: {
+                  entry_id: entry.entry_id,
+                },
+                data: {
+                  ...entry,
+                },
+              });
+            })
+          );
+        }
+
+        const createdEntries = await ctx.prisma.$transaction(
+          addEntryArr.map((entry) => {
+            return ctx.prisma.entry.create({
+              data: {
+                ...entry,
+              },
+            });
+          })
+        );
+        const entryIdArr = createdEntries.map((entry) => entry.entry_id);
+
+        await ctx.prisma.app.update({
+          where: {
+            app_id: args.appId,
+          },
+          data: {
+            entries: {
+              create: entryIdArr.map((item) => ({
+                entryId: item,
+              })),
             },
           },
         });

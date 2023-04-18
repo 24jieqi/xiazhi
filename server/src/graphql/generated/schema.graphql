@@ -201,6 +201,7 @@ type Mutation {
 
   """通过excel上传词条"""
   uploadEntriesXlsx(appId: Int!, fileUrl: String!): Boolean
+  uploadLocalEntries(appId: Int!, entries: [UploadLocalEntryItem]!, isCover: Boolean): Boolean @deprecated(reason: "上传本地词条信息")
 
   """邮箱验证"""
   verifyEmail: String
@@ -273,6 +274,14 @@ type TransformAppEntryInfo {
 input UploadEntryItem {
   key: String
   langs: JSONObject
+}
+
+"""上传本地词条信息"""
+input UploadLocalEntryItem {
+  key: String
+  langs: JSONObject
+  mainLang: String!
+  mainLangText: String
 }
 
 """用户基本信息"""
