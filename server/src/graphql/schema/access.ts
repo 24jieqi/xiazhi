@@ -151,13 +151,17 @@ export const AccessMutation = extendType({
         const addEntryArr = currentEntry.filter(
           (item) =>
             oldEntry.findIndex(
-              (oldEntryItem) => oldEntryItem.key === item.key
+              (oldEntryItem) =>
+                oldEntryItem.key === item.key ||
+                oldEntryItem.mainLangText === item.mainLangText
             ) === -1
         );
         const addEditEntryArr = currentEntry.filter(
           (item) =>
             oldEntry.findIndex(
-              (oldEntryItem) => oldEntryItem.key === item.key
+              (oldEntryItem) =>
+                oldEntryItem.key === item.key ||
+                oldEntryItem.mainLangText === item.mainLangText
             ) > -1
         );
         // 是否要覆盖当前已经存在的词条
