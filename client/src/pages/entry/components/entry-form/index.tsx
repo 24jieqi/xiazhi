@@ -134,7 +134,10 @@ const EntryForm: React.FC<EntryFormProps> = ({
                 },
               ]}
               addonAfter={
-                <ProFormCheckbox noStyle name="autoGenerate">
+                <ProFormCheckbox
+                  disabled={initialFormData.key}
+                  noStyle
+                  name="autoGenerate">
                   自动生成
                 </ProFormCheckbox>
               }

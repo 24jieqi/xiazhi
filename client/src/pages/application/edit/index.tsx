@@ -126,10 +126,11 @@ const EntryList: React.FC<EntryListProps> = ({
       title: '词条Key',
       dataIndex: 'key',
       copyable: true,
+      width: 200,
       render(dom, entity) {
         return (
           <Space>
-            {dom}
+            <div style={{ width: 200 }}> {dom}</div>
             {entity.archive ? <Tag color="#f50">已归档</Tag> : null}
           </Space>
         )
@@ -138,16 +139,19 @@ const EntryList: React.FC<EntryListProps> = ({
     {
       title: '主语言',
       dataIndex: 'mainLangText',
+      width: 120,
     },
     {
       title: '创建时间',
       dataIndex: 'createdAt',
       valueType: 'dateTime',
+      width: 200,
       sorter: true,
       hideInSearch: true,
     },
     {
       title: '创建时间',
+      width: 200,
       dataIndex: 'createdAt',
       valueType: 'dateRange',
       hideInTable: true,
@@ -180,12 +184,14 @@ const EntryList: React.FC<EntryListProps> = ({
       key: 'updateTime',
       dataIndex: 'updatedAt',
       valueType: 'dateTime',
+      width: 200,
       sorter: true,
       hideInSearch: true,
     },
     {
       title: '词条修改记录',
       key: 'updateTime',
+      width: 120,
       dataIndex: 'modifyRecords',
       hideInSearch: true,
       render(_, record) {
@@ -203,6 +209,7 @@ const EntryList: React.FC<EntryListProps> = ({
       title: '操作',
       key: 'operation',
       valueType: 'option',
+      width: 180,
       tooltip: '归档和删除都属于不可逆操作，请谨慎使用',
       render: (_, row) => [
         row.archive ? null : (
