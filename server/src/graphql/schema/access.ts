@@ -5,7 +5,6 @@ import {
   stringArg,
   inputObjectType,
   booleanArg,
-  intArg,
 } from "nexus";
 import { EntryItem } from "./entry";
 
@@ -47,9 +46,9 @@ export const UploadEntryItem = inputObjectType({
   },
 });
 
-export const UploadLocalEntryItem = inputObjectType({
-  name: "UploadLocalEntryItem",
-  description: "上传本地词条信息",
+export const ExtractLocalEntryItem = inputObjectType({
+  name: "ExtractLocalEntryItem",
+  description: "提取本地词条信息",
   definition(t) {
     t.string("key");
     t.nonNull.string("mainLang");
@@ -118,18 +117,19 @@ export const AccessMutation = extendType({
         return true;
       },
     });
-    t.field("uploadLocalEntries", {
-      deprecation: "上传本地词条信息",
+    t.field("extractLocalEntries", {
+      deprecation: "提取本地词条信息",
       type: "Boolean",
       args: {
-        appId: nonNull(intArg()),
-        entries: nonNull(list("UploadLocalEntryItem")),
+        accessKey: nonNull(stringArg()),
+        entries: nonNull(list("ExtractLocalEntryItem")),
         isCover: booleanArg(),
       },
       async resolve(_, args, ctx) {
         const app = await ctx.prisma.app.findFirst({
           where: {
-            app_id: args.appId,
+            accessKey: args.accessKey,
+            push: true,
           },
           include: {
             entries: {
@@ -140,7 +140,7 @@ export const AccessMutation = extendType({
           },
         });
         if (!app) {
-          throw new Error("没有找到app");
+          throw new Error("accessKey不正确或无权访问此应用");
         }
         const currentEntry = args.entries.map((entry) => ({
           ...entry,
@@ -191,30 +191,32 @@ export const AccessMutation = extendType({
             })
           );
         }
-
-        const createdEntries = await ctx.prisma.$transaction(
-          addEntryArr.map((entry) => {
-            return ctx.prisma.entry.create({
-              data: {
-                ...entry,
-              },
-            });
-          })
-        );
-        const entryIdArr = createdEntries.map((entry) => entry.entry_id);
-
-        await ctx.prisma.app.update({
-          where: {
-            app_id: args.appId,
-          },
-          data: {
-            entries: {
-              create: entryIdArr.map((item) => ({
-                entryId: item,
-              })),
+        // 新增词条
+        if (addEntryArr.length > 0) {
+          const createdEntries = await ctx.prisma.$transaction(
+            addEntryArr.map((entry) => {
+              return ctx.prisma.entry.create({
+                data: {
+                  ...entry,
+                },
+              });
+            })
+          );
+          const entryIdArr = createdEntries.map((entry) => entry.entry_id);
+          await ctx.prisma.app.update({
+            where: {
+              app_id: app.app_id,
             },
-          },
-        });
+            data: {
+              entries: {
+                create: entryIdArr.map((item) => ({
+                  entryId: item,
+                })),
+              },
+            },
+          });
+        }
+
         return true;
       },
     });

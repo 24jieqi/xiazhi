@@ -37,15 +37,15 @@ declare global {
 }
 
 export interface NexusGenInputs {
-  UploadEntryItem: { // input type
-    key?: string | null; // String
-    langs?: NexusGenScalars['JSONObject'] | null; // JSONObject
-  }
-  UploadLocalEntryItem: { // input type
+  ExtractLocalEntryItem: { // input type
     key?: string | null; // String
     langs?: NexusGenScalars['JSONObject'] | null; // JSONObject
     mainLang: string; // String!
     mainLangText?: string | null; // String
+  }
+  UploadEntryItem: { // input type
+    key?: string | null; // String
+    langs?: NexusGenScalars['JSONObject'] | null; // JSONObject
   }
 }
 
@@ -253,6 +253,7 @@ export interface NexusGenFieldTypes {
     deleteApp: boolean | null; // Boolean
     deleteEntries: boolean | null; // Boolean
     existCollaboration: boolean | null; // Boolean
+    extractLocalEntries: boolean | null; // Boolean
     feedback: number | null; // Int
     inviteCollaborators: boolean | null; // Boolean
     login: string | null; // String
@@ -268,7 +269,6 @@ export interface NexusGenFieldTypes {
     updateUserInfo: boolean | null; // Boolean
     uploadEntries: boolean | null; // Boolean
     uploadEntriesXlsx: boolean | null; // Boolean
-    uploadLocalEntries: boolean | null; // Boolean
     verifyEmail: string | null; // String
   }
   Query: { // field return type
@@ -396,6 +396,7 @@ export interface NexusGenFieldTypeNames {
     deleteApp: 'Boolean'
     deleteEntries: 'Boolean'
     existCollaboration: 'Boolean'
+    extractLocalEntries: 'Boolean'
     feedback: 'Int'
     inviteCollaborators: 'Boolean'
     login: 'String'
@@ -411,7 +412,6 @@ export interface NexusGenFieldTypeNames {
     updateUserInfo: 'Boolean'
     uploadEntries: 'Boolean'
     uploadEntriesXlsx: 'Boolean'
-    uploadLocalEntries: 'Boolean'
     verifyEmail: 'String'
   }
   Query: { // field return type name
@@ -498,6 +498,11 @@ export interface NexusGenArgTypes {
     existCollaboration: { // args
       appId: number; // Int!
     }
+    extractLocalEntries: { // args
+      accessKey: string; // String!
+      entries: Array<NexusGenInputs['ExtractLocalEntryItem'] | null>; // [ExtractLocalEntryItem]!
+      isCover?: boolean | null; // Boolean
+    }
     feedback: { // args
       feedbackId?: number | null; // Int
       message?: string | null; // String
@@ -560,11 +565,6 @@ export interface NexusGenArgTypes {
     uploadEntriesXlsx: { // args
       appId: number; // Int!
       fileUrl: string; // String!
-    }
-    uploadLocalEntries: { // args
-      appId: number; // Int!
-      entries: Array<NexusGenInputs['UploadLocalEntryItem'] | null>; // [UploadLocalEntryItem]!
-      isCover?: boolean | null; // Boolean
     }
   }
   Query: {
