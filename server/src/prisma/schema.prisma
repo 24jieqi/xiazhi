@@ -37,9 +37,8 @@ model Entry {
   mainLang      String   @default("zh")
   mainLangText  String?
   langs         Json?
-  app           App?     @relation(fields: [appApp_id], references: [app_id])
-  appApp_id     Int?
-  uploaded      Boolean  @default(false)
+  app           EntryiesOnApps[]
+  uploaded      Boolean      @default(false)
 }
 
 // 应用
@@ -51,7 +50,7 @@ model App {
   languages           String[]
   pictures            String[]
   createdAt           DateTime              @default(now())
-  entries             Entry[]
+  entries             EntryiesOnApps[]
   accessKey           String?
   deleted             Boolean               @default(false)
   archived            Boolean               @default(false)
@@ -60,6 +59,18 @@ model App {
   creator             User?                 @relation(fields: [creatorId], references: [user_id])
   creatorId           Int?
   CollaboratorsOnApps CollaboratorsOnApps[]
+}
+
+// 词条应用关联表
+model EntryiesOnApps {
+  app       App     @relation(fields: [appId], references: [app_id])
+  appId     Int 
+  entry     Entry   @relation(fields: [entryId], references: [entry_id])
+  entryId Int 
+  assignedAt DateTime @default(now())
+  assignedBy String?
+ 
+  @@id([appId, entryId])
 }
 
 // 应用协作者关联表

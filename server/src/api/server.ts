@@ -5,7 +5,7 @@ import Koa from "koa";
 import serve from "koa-static";
 import http from "http";
 import path from "path";
-import historyApiFallback from "koa2-connect-history-api-fallback"
+import historyApiFallback from "koa2-connect-history-api-fallback";
 import schema from "../graphql";
 import { createContext } from "../graphql/context";
 import { historyApiFallbackWhiteList, PORT, serverAddress } from "./constants";
@@ -33,9 +33,10 @@ const apolloServer = new ApolloServer({
 
 const app = new Koa();
 
-app.use(cors())
+app
+  .use(cors())
   .use(historyApiFallback({ whiteList: historyApiFallbackWhiteList }))
-  .use(serve(path.resolve(__dirname, '../../views')))
+  .use(serve(path.resolve(__dirname, "../../views")));
 
 export default async function startApolloServer() {
   await apolloServer.start();
@@ -44,8 +45,6 @@ export default async function startApolloServer() {
   await new Promise<void>((resolve) =>
     httpServer.listen({ port: PORT }, resolve)
   );
-  console.log(
-    `🚀 Server ready at ${serverAddress}${apolloServer.graphqlPath}`
-  );
+  console.log(`🚀 Server ready at ${serverAddress}${apolloServer.graphqlPath}`);
   return { apolloServer, app };
 }

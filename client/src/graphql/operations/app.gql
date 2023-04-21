@@ -1,7 +1,7 @@
 query GetCurrentApps(
   $name: String
   $type: AppTypeEnum
-  $languages: [LanguageTypeEnum!]
+  $languages: [String!]
   $access: Boolean
   $push: Boolean
 ) {
@@ -43,7 +43,7 @@ query GetCurrentApps(
 mutation CreateApp(
   $name: String!
   $type: AppTypeEnum!
-  $languages: [LanguageTypeEnum!]!
+  $languages: [String!]!
   $pictures: [String!]!
   $description: String
 ) {
@@ -77,6 +77,13 @@ query GetAppInfoById($getAppInfoByIdId: Int!) {
       avatar
     }
     entryCount
+  }
+}
+
+query GetTransformAppInfoById($entryId: Int!) {
+  getTransformAppInfoById(entryId: $entryId) {
+    label
+    value
   }
 }
 

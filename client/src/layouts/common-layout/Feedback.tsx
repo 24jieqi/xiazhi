@@ -13,6 +13,7 @@ const FeedbackModal: React.FC = () => {
       width={480}
       modalProps={{
         centered: true,
+        maskClosable: false,
       }}
       onFinish={async (formData: { message: any }) => {
         await feedback({

@@ -29,13 +29,13 @@ export const AppItem = objectType({
     t.string("description");
     t.field("type", { type: AppTypeEnum });
     t.field("languages", {
-      type: list('String'),
+      type: list("String"),
       description: "支持的语言",
     });
     t.list.string("pictures", { description: "应用截图" });
     t.boolean("access", { description: "是否可访问" });
     t.boolean("push", { description: "是否支持词条推送" });
-    t.string('accessKey', { description: '可访问key' })
+    t.string("accessKey", { description: "可访问key" });
     t.int("creatorId");
     t.field("creator", {
       type: "UserInfo",
@@ -99,47 +99,53 @@ export const AppQuery = queryType({
     });
     t.field("getCurrentApps", {
       description: "获取当前用户创建的应用列表",
-      type: 'AppPaging',
+      type: "AppPaging",
       args: {
         name: stringArg(),
-        type: 'AppTypeEnum',
-        languages: list(nonNull('String')),
+        type: "AppTypeEnum",
+        languages: list(nonNull("String")),
         access: booleanArg(),
-        push: booleanArg()
+        push: booleanArg(),
       },
       async resolve(_root, args, ctx) {
         const decoded = decodedToken(ctx.req);
+        const languagesParams = args.languages
+          ? {
+              languages: {
+                hasSome: args.languages || [],
+              },
+            }
+          : {};
+
         const records = await ctx.prisma.app.findMany({
           where: {
             OR: [
               {
-                creatorId: decoded?.userId
+                creatorId: decoded?.userId,
               },
               {
                 CollaboratorsOnApps: {
                   some: {
-                    collaboratorId: decoded?.userId
-                  }
-                }
-              }
+                    collaboratorId: decoded?.userId,
+                  },
+                },
+              },
             ],
             name: {
-              contains: args.name!
+              contains: args.name!,
             },
             type: args.type!,
-            languages: {
-              hasEvery: args.languages || []
-            },
+            ...languagesParams,
             access: args.access!,
-            push: args.push!
+            push: args.push!,
           },
         });
         return {
           total: records.length,
           records: records,
           current: 1,
-          pageSize: records.length
-        }
+          pageSize: records.length,
+        };
       },
     });
   },
@@ -154,7 +160,7 @@ export const AppMutation = mutationType({
         name: nonNull(stringArg()),
         description: stringArg(),
         type: nonNull(AppTypeEnum),
-        languages: nonNull(list(nonNull('String'))),
+        languages: nonNull(list(nonNull("String"))),
         pictures: nonNull(list(nonNull("String"))),
       },
       async resolve(_, args, ctx) {
@@ -197,19 +203,19 @@ export const AppMutation = mutationType({
         pictures: nonNull(list(nonNull("String"))),
       },
       async resolve(_, args, ctx) {
-        decodedToken(ctx.req)
+        decodedToken(ctx.req);
         await ctx.prisma.app.update({
           where: {
-            app_id: args.appId
+            app_id: args.appId,
           },
           data: {
             type: args.type,
             description: args.description,
-            pictures: args.pictures
-          }
-        })
-        return 1
-      }
+            pictures: args.pictures,
+          },
+        });
+        return 1;
+      },
     });
   },
 });
@@ -227,6 +233,15 @@ export const AppAccessInfo = objectType({
     t.boolean("push", { description: "是否支持进行词条推送" });
     t.boolean("access", { description: "应用是否可以访问" });
     t.string("accessKey", { description: "应用访问key，重置后失效" });
+  },
+});
+
+export const TransformAppEntryInfo = objectType({
+  name: "TransformAppEntryInfo",
+  description: "词条要转换的应用词库信息",
+  definition(t) {
+    t.string("label");
+    t.int("value");
   },
 });
 
@@ -250,6 +265,54 @@ export const AppAccessQuery = extendType({
   },
 });
 
+export const TransformAppEntry = extendType({
+  type: "Query",
+  definition(t) {
+    t.list.field("getTransformAppInfoById", {
+      type: "TransformAppEntryInfo",
+      description: "根据应用id获取要共享的应用词库",
+      args: {
+        entryId: nonNull(intArg()),
+      },
+      async resolve(_, args, ctx) {
+        const entryData = await ctx.prisma.entry.findUnique({
+          where: {
+            entry_id: args.entryId,
+          },
+          include: {
+            app: true,
+          },
+        });
+        const appData = await ctx.prisma.app.findMany({
+          select: {
+            app_id: true,
+            name: true,
+          },
+        });
+        // 大于0代表该词条有关联的应用
+        if (entryData!.app?.length > 0) {
+          return appData
+            .filter((appItem) => {
+              return (
+                entryData?.app.findIndex(
+                  (entryItem) => entryItem.appId === appItem.app_id
+                ) === -1
+              );
+            })
+            .map((appItem) => ({
+              label: appItem?.name,
+              value: appItem?.app_id,
+            }));
+        }
+        return appData.map((appItem) => ({
+          label: appItem?.name,
+          value: appItem?.app_id,
+        }));
+      },
+    });
+  },
+});
+
 export const AppAccessMutation = extendType({
   type: "Mutation",
   definition(t) {
@@ -260,7 +323,7 @@ export const AppAccessMutation = extendType({
         id: nonNull(intArg()),
       },
       async resolve(_, args, ctx) {
-        decodedToken(ctx.req)
+        decodedToken(ctx.req);
         const accessKey = await bcrypt.hash(String(Date.now()), 10);
         await ctx.prisma.app.update({
           where: {
@@ -314,8 +377,8 @@ export const AppAccessMutation = extendType({
               disconnect: true,
             },
             entries: {
-              set: []
-            }
+              set: [],
+            },
           },
           include: {
             creator: true,
@@ -325,26 +388,26 @@ export const AppAccessMutation = extendType({
       },
     });
     t.field("changeAccessStatus", {
-      type: 'Boolean',
-      description: '更改应用在可访问和推送上的状态',
+      type: "Boolean",
+      description: "更改应用在可访问和推送上的状态",
       args: {
         appId: nonNull(intArg()),
         access: booleanArg(),
-        push: booleanArg()
+        push: booleanArg(),
       },
       async resolve(_, args, ctx) {
-        decodedToken(ctx.req)
+        decodedToken(ctx.req);
         await ctx.prisma.app.update({
           where: {
             app_id: args.appId,
           },
           data: {
             access: args.access!,
-            push: args.push!
-          }
-        })
-        return true
-      }
-    })
+            push: args.push!,
+          },
+        });
+        return true;
+      },
+    });
   },
 });

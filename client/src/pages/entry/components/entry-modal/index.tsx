@@ -6,71 +6,129 @@ import {
   ProFormText,
 } from '@ant-design/pro-components'
 import { Button, message } from 'antd'
-import React, { useEffect, useRef } from 'react'
-import { LangageTypeOption, LanguageTypeEnum } from '@/graphql/generated/types'
-import { useListSupportLanguageQuery } from '@/graphql/operations/__generated__/basic.generated'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
+import { flatten, omit } from 'lodash'
+import pinyin from 'pinyin'
 import {
   useCreateEntryMutation,
   useUpdateEntryMutation,
 } from '@/graphql/operations/__generated__/entry.generated'
+import {
+  LanguageTypeEnum,
+  appSupportLangsTableEnum,
+  langKeys,
+} from '@/pages/application/constant'
 import { entryKeyValidator } from '../validator'
 import { generateEntryKey } from '../utils'
 
 interface EntryModalProps {
   children?: JSX.Element
   initialFormData?: any
+  supportLanguageArray: string[]
   onActionSuccess?: () => void
-}
-
-function groupLangs(langs: LangageTypeOption[]) {
-  if (!langs || !langs.length) {
-    return []
-  }
-  const result: LangageTypeOption[][] = []
-  for (let i = 0; i < langs.length; i += 2) {
-    result[i] = [langs[i], langs[i + 1]]
-  }
-  return result
-}
-
-function omit(obj: any, keys: string[]) {
-  const returned = { ...obj }
-  for (const key of keys) {
-    delete returned[key]
-  }
-  return returned
 }
 
 const EntryModal: React.FC<EntryModalProps> = ({
   children,
   initialFormData,
+  supportLanguageArray,
   onActionSuccess,
 }) => {
-  const { data } = useListSupportLanguageQuery()
+  const formRef = useRef(null)
+  const [form] = ProForm.useForm()
+  const [isShow, setIsShow] = useState<boolean>(false)
+
   const [createEntry] = useCreateEntryMutation()
   const [updateEntry] = useUpdateEntryMutation()
-  const langs = groupLangs(data?.listSupportLanguage)
-  const [form] = ProForm.useForm()
+
+  // 设置默认值
+  useEffect(() => {
+    if (typeof initialFormData !== 'undefined' && isShow && formRef.current) {
+      form.setFieldsValue({ ...initialFormData })
+    }
+  }, [initialFormData, isShow, form])
+
   function handleValuesChange(changedValues: Record<string, any>, values) {
     const keys = Object.keys(changedValues)
-    if (keys.includes(LanguageTypeEnum.English) && values.autoGenerate) {
+    if (
+      keys.includes(LanguageTypeEnum.zh) &&
+      values.autoGenerate &&
+      !initialFormData?.entryId
+    ) {
+      const pinYinArr = pinyin(changedValues[LanguageTypeEnum.zh], {
+        style: 'tone2',
+      })
+      const pinYinStr = flatten(pinYinArr).join('_')
       form.setFieldsValue({
-        key: generateEntryKey(changedValues[LanguageTypeEnum.English]),
+        key: generateEntryKey(pinYinStr),
       })
     }
   }
-  // 设置默认值
-  useEffect(() => {
-    if (typeof initialFormData !== 'undefined') {
-      form.setFieldsValue({ ...initialFormData })
+
+  async function handleFinish(formData) {
+    // 此时代表编辑
+    if (initialFormData?.entryId) {
+      await updateEntry({
+        variables: {
+          appId: initialFormData.appId,
+          entryId: initialFormData.entryId,
+          key: formData.key,
+          langs: {
+            ...omit(formData, ['key']),
+          },
+          isRollback: false,
+        },
+      })
+      message.success('修改词条成功！')
+    } else {
+      const allData = form.getFieldsValue(true)
+      await createEntry({
+        variables: {
+          key: formData.key,
+          appId: allData.appId,
+          langs: {
+            ...omit(formData, ['key']),
+          },
+        },
+      })
+      message.success('新增词条成功！')
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [initialFormData])
+    onActionSuccess?.()
+    return true
+  }
+
+  function handleVisibleChange(visible: boolean) {
+    if (!visible) {
+      form.resetFields()
+    }
+    setIsShow(visible)
+  }
+
+  const formateSupportLanguageArray = useMemo(() => {
+    const tempArr = [...supportLanguageArray].filter(item =>
+      langKeys.includes(item),
+    )
+    const index = tempArr.findIndex(item => item === LanguageTypeEnum.zh)
+    tempArr.splice(index, 1)
+    tempArr.unshift(LanguageTypeEnum.zh)
+    return tempArr
+  }, [supportLanguageArray])
+
   return (
     <ModalForm
       form={form}
+      formRef={formRef}
       onValuesChange={handleValuesChange}
+      onVisibleChange={handleVisibleChange}
+      visible={isShow}
       initialValues={{ autoGenerate: true }}
+      modalProps={{
+        maskClosable: false,
+        bodyStyle: {
+          maxHeight: 500,
+          overflowY: 'scroll',
+        },
+      }}
       trigger={
         children || (
           <Button type="primary">
@@ -79,35 +137,7 @@ const EntryModal: React.FC<EntryModalProps> = ({
           </Button>
         )
       }
-      onFinish={async formData => {
-        // 此时代表编辑
-        if (initialFormData?.entryId) {
-          await updateEntry({
-            variables: {
-              entryId: initialFormData.entryId,
-              key: formData.key,
-              langs: {
-                ...omit(formData, ['key']),
-              },
-            },
-          })
-          message.success('修改词条成功！')
-        } else {
-          const allData = form.getFieldsValue(true)
-          await createEntry({
-            variables: {
-              key: formData.key,
-              appId: allData.appId,
-              langs: {
-                ...omit(formData, ['key']),
-              },
-            },
-          })
-          message.success('新增词条成功！')
-        }
-        onActionSuccess?.()
-        return true
-      }}>
+      onFinish={handleFinish}>
       <ProForm.Item shouldUpdate>
         {({ getFieldValue }) => {
           const appId = getFieldValue('appId')
@@ -136,29 +166,25 @@ const EntryModal: React.FC<EntryModalProps> = ({
           )
         }}
       </ProForm.Item>
-      {langs.map((lang, index) => {
-        return (
-          <ProForm.Group key={index}>
-            {lang.map(item => {
-              const isRequired = item.value === LanguageTypeEnum.Chinese
-              return (
-                <ProFormText
-                  rules={
-                    isRequired
-                      ? [{ required: true, message: '请输入中文词条' }]
-                      : []
-                  }
-                  key={item.value}
-                  width="md"
-                  name={item.value}
-                  label={item.label}
-                  placeholder="请输入多语言词条"
-                />
-              )
-            })}
-          </ProForm.Group>
-        )
-      })}
+      <ProForm.Group>
+        {formateSupportLanguageArray.map((lang, index) => {
+          const isRequired = lang === 'zh'
+          return (
+            <ProFormText
+              rules={
+                isRequired
+                  ? [{ required: true, message: '请输入中文词条' }]
+                  : []
+              }
+              key={index}
+              name={lang}
+              width="md"
+              label={appSupportLangsTableEnum[lang]?.text}
+              placeholder="请输入多语言词条"
+            />
+          )
+        })}
+      </ProForm.Group>
     </ModalForm>
   )
 }

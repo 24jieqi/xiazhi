@@ -1,5 +1,19 @@
-query PageAllPublicEntries($pageSize: Int!, $pageNo: Int!) {
-  pageAllPublicEntries(pageSize: $pageSize, pageNo: $pageNo) {
+query PageAllPublicEntries(
+  $pageSize: Int!
+  $pageNo: Int!
+  $key: String
+  $mainLangText: String
+  $startTime: Float
+  $endTime: Float
+) {
+  pageAllPublicEntries(
+    pageSize: $pageSize
+    pageNo: $pageNo
+    key: $key
+    mainLangText: $mainLangText
+    startTime: $startTime
+    endTime: $endTime
+  ) {
     total
     pageSize
     current
@@ -39,8 +53,20 @@ mutation CreateEntry($appId: Int, $langs: JSONObject, $key: String) {
   createEntry(appId: $appId, langs: $langs, key: $key)
 }
 
-mutation UpdateEntry($entryId: Int!, $langs: JSONObject, $key: String) {
-  updateEntry(entryId: $entryId, langs: $langs, key: $key)
+mutation UpdateEntry(
+  $entryId: Int!
+  $appId: Int
+  $isRollback: Boolean!
+  $langs: JSONObject
+  $key: String
+) {
+  updateEntry(
+    entryId: $entryId
+    appId: $appId
+    isRollback: $isRollback
+    langs: $langs
+    key: $key
+  )
 }
 
 query PageAppEntries(
@@ -120,10 +146,14 @@ mutation DeleteEntries($appId: Int!, $entryIds: [Int!]!) {
   deleteEntries(appId: $appId, entryIds: $entryIds)
 }
 
-query ValidEntryKey($appId: Int!, $entryId: Int, $key: String) {
+query ValidEntryKey($appId: Int, $entryId: Int, $key: String) {
   validEntryKey(appId: $appId, entryId: $entryId, key: $key)
 }
 
 mutation UploadEntriesXlsx($appId: Int!, $fileUrl: String!) {
   uploadEntriesXlsx(appId: $appId, fileUrl: $fileUrl)
+}
+
+mutation TransformEntry($entryId: Int!, $targetAppId: Int!) {
+  transformEntry(entryId: $entryId, targetAppId: $targetAppId)
 }

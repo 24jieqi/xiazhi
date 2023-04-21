@@ -6,7 +6,7 @@ const defaultOptions = {} as const
 export type GetCurrentAppsQueryVariables = SchemaTypes.Exact<{
   name?: SchemaTypes.InputMaybe<SchemaTypes.Scalars['String']>
   type?: SchemaTypes.InputMaybe<SchemaTypes.AppTypeEnum>
-  languages?: SchemaTypes.InputMaybe<Array<SchemaTypes.LanguageTypeEnum>>
+  languages?: SchemaTypes.InputMaybe<Array<SchemaTypes.Scalars['String']>>
   access?: SchemaTypes.InputMaybe<SchemaTypes.Scalars['Boolean']>
   push?: SchemaTypes.InputMaybe<SchemaTypes.Scalars['Boolean']>
 }>
@@ -23,7 +23,7 @@ export type GetCurrentAppsQuery = {
       name?: string
       description?: string
       type?: SchemaTypes.AppTypeEnum
-      languages?: Array<SchemaTypes.LanguageTypeEnum>
+      languages?: Array<string>
       pictures?: Array<string>
       access?: boolean
       push?: boolean
@@ -47,7 +47,7 @@ export type GetCurrentAppsQuery = {
 export type CreateAppMutationVariables = SchemaTypes.Exact<{
   name: SchemaTypes.Scalars['String']
   type: SchemaTypes.AppTypeEnum
-  languages: Array<SchemaTypes.LanguageTypeEnum>
+  languages: Array<SchemaTypes.Scalars['String']>
   pictures: Array<SchemaTypes.Scalars['String']>
   description?: SchemaTypes.InputMaybe<SchemaTypes.Scalars['String']>
 }>
@@ -65,7 +65,7 @@ export type GetAppInfoByIdQuery = {
     name?: string
     description?: string
     type?: SchemaTypes.AppTypeEnum
-    languages?: Array<SchemaTypes.LanguageTypeEnum>
+    languages?: Array<string>
     pictures?: Array<string>
     access?: boolean
     push?: boolean
@@ -82,6 +82,18 @@ export type GetAppInfoByIdQuery = {
       avatar?: string
     }
   }
+}
+
+export type GetTransformAppInfoByIdQueryVariables = SchemaTypes.Exact<{
+  entryId: SchemaTypes.Scalars['Int']
+}>
+
+export type GetTransformAppInfoByIdQuery = {
+  getTransformAppInfoById?: Array<{
+    __typename?: 'TransformAppEntryInfo'
+    label?: string
+    value?: number
+  }>
 }
 
 export type UpdateAppBasicInfoMutationVariables = SchemaTypes.Exact<{
@@ -160,7 +172,7 @@ export type GetAppCollaboratorsQuery = {
       name?: string
       description?: string
       type?: SchemaTypes.AppTypeEnum
-      languages?: Array<SchemaTypes.LanguageTypeEnum>
+      languages?: Array<string>
       pictures?: Array<string>
       access?: boolean
       push?: boolean
@@ -213,7 +225,7 @@ export const GetCurrentAppsDocument = gql`
   query GetCurrentApps(
     $name: String
     $type: AppTypeEnum
-    $languages: [LanguageTypeEnum!]
+    $languages: [String!]
     $access: Boolean
     $push: Boolean
   ) {
@@ -311,7 +323,7 @@ export const CreateAppDocument = gql`
   mutation CreateApp(
     $name: String!
     $type: AppTypeEnum!
-    $languages: [LanguageTypeEnum!]!
+    $languages: [String!]!
     $pictures: [String!]!
     $description: String
   ) {
@@ -445,6 +457,65 @@ export type GetAppInfoByIdLazyQueryHookResult = ReturnType<
 export type GetAppInfoByIdQueryResult = Apollo.QueryResult<
   GetAppInfoByIdQuery,
   GetAppInfoByIdQueryVariables
+>
+export const GetTransformAppInfoByIdDocument = gql`
+  query GetTransformAppInfoById($entryId: Int!) {
+    getTransformAppInfoById(entryId: $entryId) {
+      label
+      value
+    }
+  }
+`
+
+/**
+ * __useGetTransformAppInfoByIdQuery__
+ *
+ * To run a query within a React component, call `useGetTransformAppInfoByIdQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetTransformAppInfoByIdQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetTransformAppInfoByIdQuery({
+ *   variables: {
+ *      entryId: // value for 'entryId'
+ *   },
+ * });
+ */
+export function useGetTransformAppInfoByIdQuery(
+  baseOptions: Apollo.QueryHookOptions<
+    GetTransformAppInfoByIdQuery,
+    GetTransformAppInfoByIdQueryVariables
+  >,
+) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useQuery<
+    GetTransformAppInfoByIdQuery,
+    GetTransformAppInfoByIdQueryVariables
+  >(GetTransformAppInfoByIdDocument, options)
+}
+export function useGetTransformAppInfoByIdLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<
+    GetTransformAppInfoByIdQuery,
+    GetTransformAppInfoByIdQueryVariables
+  >,
+) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useLazyQuery<
+    GetTransformAppInfoByIdQuery,
+    GetTransformAppInfoByIdQueryVariables
+  >(GetTransformAppInfoByIdDocument, options)
+}
+export type GetTransformAppInfoByIdQueryHookResult = ReturnType<
+  typeof useGetTransformAppInfoByIdQuery
+>
+export type GetTransformAppInfoByIdLazyQueryHookResult = ReturnType<
+  typeof useGetTransformAppInfoByIdLazyQuery
+>
+export type GetTransformAppInfoByIdQueryResult = Apollo.QueryResult<
+  GetTransformAppInfoByIdQuery,
+  GetTransformAppInfoByIdQueryVariables
 >
 export const UpdateAppBasicInfoDocument = gql`
   mutation UpdateAppBasicInfo(

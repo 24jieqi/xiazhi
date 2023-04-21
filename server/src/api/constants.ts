@@ -1,10 +1,12 @@
-import { getIpAddress, getServerAddress } from "../utils"
+import { getIpAddress, getServerAddress } from "../utils";
 
-export const historyApiFallbackWhiteList = ['/graphql', '/assets/template.xlsx']
+export const historyApiFallbackWhiteList = [
+  "/graphql",
+  "/assets/template.xlsx",
+];
 
-export const PORT = 3000
+export const PORT = 3000;
 
-export const ipAddress = getIpAddress()
+export const ipAddress = getIpAddress();
 
-export const serverAddress = getServerAddress(false, ipAddress!, PORT)
-
+export const serverAddress = getServerAddress(false, ipAddress!, PORT);

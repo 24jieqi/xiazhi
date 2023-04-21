@@ -1,17 +1,41 @@
 import React, { cloneElement, useMemo, useState } from 'react'
-import { Button, Modal, Space, Tag } from 'antd'
+import { Button, message, Modal, Space, Tag } from 'antd'
 import dayjs from 'dayjs'
 import { ProList } from '@ant-design/pro-components'
-import { LanguageTypeEnum, RecordItem } from '@/graphql/generated/types'
+import { omit } from 'lodash'
+import { EntryItem, RecordItem } from '@/graphql/generated/types'
+import { useUpdateEntryMutation } from '@/graphql/operations/__generated__/entry.generated'
+import {
+  appSupportLangsTableEnum,
+  langKeys,
+} from '@/pages/application/constant'
+
+import styles from './index.module.less'
 
 interface ModifyRecordsProps {
   modifyRecords: RecordItem[]
+  records: {
+    entry_id: number
+    appId?: number
+    langs: EntryItem['langs']
+    key: string
+  }
   children?: React.ReactElement
+  onRollbackSuccess: () => void
+}
+
+interface ProListType {
+  data: {
+    prevLangs: RecordItem['prevLangs']
+    langs: EntryItem['langs']
+    entry_id: number
+    key: string
+  }
 }
 
 function langDiff(
-  prevLang: Record<LanguageTypeEnum, any>,
-  currLang: Record<LanguageTypeEnum, any>,
+  prevLang: Record<string, any>,
+  currLang: Record<string, any>,
 ) {
   const langs = currLang ? Object.keys(currLang) : []
   const prevCopy = prevLang ? { ...prevLang } : {}
@@ -50,15 +74,90 @@ function langDiff(
 
 const ModifyRecordsModal: React.FC<ModifyRecordsProps> = ({
   modifyRecords,
+  records,
   children,
+  onRollbackSuccess,
 }) => {
   const [visible, setVisible] = useState(false)
+
+  const [updateEntry] = useUpdateEntryMutation()
+
   function handleShowModal() {
     setVisible(true)
   }
+
   function handleCloseModal() {
     setVisible(false)
   }
+
+  function formateRollbackMessage(langs: Array<any>, type: string) {
+    return langs
+      .map(result => {
+        let str = ''
+        langKeys.forEach(lang => {
+          const curr = result[type][lang]
+          if (curr !== undefined) {
+            str = `${appSupportLangsTableEnum[lang].text}:${curr}`
+          }
+        })
+        return str
+      })
+      .filter(result => result)
+  }
+
+  function rollbackDiffLang(currLang, prevLang) {
+    const result = []
+    Object.keys(currLang).forEach(lang => {
+      if (currLang[lang] !== prevLang[lang]) {
+        result.push({
+          curr: {
+            [lang]: currLang[lang],
+          },
+          prev: {
+            [lang]: prevLang[lang],
+          },
+        })
+      }
+    })
+    return result
+  }
+
+  function handleRollback(record: ProListType) {
+    const {
+      data: { langs, prevLangs, key, entry_id },
+    } = record
+    const diffResult = rollbackDiffLang(langs, prevLangs)
+    if (!diffResult.length) {
+      message.warning('回滚词条与当前一致，不支持回滚')
+      return
+    }
+    const curr = formateRollbackMessage(diffResult, 'curr')
+    const prev = formateRollbackMessage(diffResult, 'prev')
+
+    Modal.confirm({
+      title: '确认回滚?',
+      content: `确认将词条【${curr.join('，')}】回滚为【${prev.join('，')}】?`,
+      onOk: async () => {
+        confirmRollback(entry_id, key, prevLangs)
+      },
+    })
+  }
+
+  async function confirmRollback(entryId: number, key: string, prevLangs: any) {
+    await updateEntry({
+      variables: {
+        appId: records.appId,
+        entryId,
+        key,
+        langs: prevLangs,
+        isRollback: true,
+      },
+    })
+    onRollbackSuccess()
+    setVisible(false)
+    message.success('回滚成功')
+  }
+
   const ActionComp = children ? (
     cloneElement(children, { onClick: handleShowModal })
   ) : (
@@ -68,8 +167,17 @@ const ModifyRecordsModal: React.FC<ModifyRecordsProps> = ({
   )
   const dataSource = useMemo(() => {
     return modifyRecords.map(record => {
-      const diffResult = langDiff(record.prevLangs, record.currLangs)
+      const diffResult = langDiff(
+        omit(record.prevLangs, ['autoGenerate']),
+        omit(record.currLangs, ['autoGenerate']),
+      )
       return {
+        data: {
+          prevLangs: { ...record.prevLangs },
+          entry_id: records.entry_id,
+          langs: records.langs,
+          key: record.prevKey,
+        },
         title: dayjs(record.createdAt).format('YY-MM-DD HH:mm'),
         subTitle: record.creatorInfo?.name,
         content: (
@@ -80,7 +188,7 @@ const ModifyRecordsModal: React.FC<ModifyRecordsProps> = ({
                   新增
                 </Tag>
                 {diffResult.add.map((text, idx) => (
-                  <span key={idx} style={{ fontWeight: 'bold' }}>
+                  <span key={idx} className={styles.textBold}>
                     {text}
                   </span>
                 ))}
@@ -91,7 +199,7 @@ const ModifyRecordsModal: React.FC<ModifyRecordsProps> = ({
                 <Tag key="delete" color="#f50">
                   删除
                 </Tag>
-                <p style={{ textDecoration: 'line-through' }}>
+                <p className={styles.textDecoration}>
                   {diffResult.delete.join('、')}
                 </p>
               </Space>
@@ -104,14 +212,7 @@ const ModifyRecordsModal: React.FC<ModifyRecordsProps> = ({
                 {diffResult.modify.map((item, idx) => (
                   <span key={idx} style={{ fontWeight: 'bold' }}>
                     {item.curr}(
-                    <span
-                      style={{
-                        textDecoration: 'line-through',
-                        fontWeight: 'normal',
-                      }}>
-                      {item.prev}
-                    </span>
-                    )
+                    <span className={styles.editText}>{item.prev}</span>)
                   </span>
                 ))}
               </Space>
@@ -121,7 +222,8 @@ const ModifyRecordsModal: React.FC<ModifyRecordsProps> = ({
         avatar: record.creatorInfo?.avatar,
       }
     })
-  }, [modifyRecords])
+  }, [modifyRecords, records])
+
   return (
     <>
       {ActionComp}
@@ -131,9 +233,10 @@ const ModifyRecordsModal: React.FC<ModifyRecordsProps> = ({
         destroyOnClose
         title="编辑记录"
         visible={visible}
+        maskClosable={false}
         onOk={handleCloseModal}
         onCancel={handleCloseModal}>
-        <ProList<any>
+        <ProList<ProListType>
           grid={{ gutter: 16, column: 2 }}
           showActions="always"
           onItem={(record: any) => {
@@ -143,7 +246,16 @@ const ModifyRecordsModal: React.FC<ModifyRecordsProps> = ({
             title: {},
             subTitle: {},
             content: {},
-            actions: {},
+            actions: {
+              render: (_, row) => [
+                <Button
+                  key={row.data.entry_id}
+                  type="link"
+                  onClick={() => handleRollback(row)}>
+                  回滚
+                </Button>,
+              ],
+            },
             avatar: {
               // render(_, entity) {
               //   return (

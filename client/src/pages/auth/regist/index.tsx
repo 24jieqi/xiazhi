@@ -1,7 +1,6 @@
 import {
   ProCard,
   ProForm,
-  ProFormCaptcha,
   ProFormSelect,
   ProFormText,
   ProFormUploadButton,
@@ -24,27 +23,29 @@ export const roleValueEnums = {
   [UserRoleEnum.Other]: '其他',
 }
 
-interface RegistStepFormFields {
+interface RegisterStepFormFields {
   email: string
   password: string
   password_again: string
 }
 
-interface RegistStepFormUserInfoFields {
+interface RegisterStepFormUserInfoFields {
   name: string
   nickName: string
   role: UserRoleEnum
   avatar: any
 }
 
-const RegistPage: React.FC = () => {
-  const [registUser] = useRegisterMutation()
-  const [token, setToken] = useState('')
-  const [updateUserInfo] = useUpdateUserInfoMutation()
+const RegisterPage: React.FC = () => {
   const navigate = useNavigate()
-  async function handleRegist({ email, password }: RegistStepFormFields) {
+  const [token, setToken] = useState('')
+
+  const [registerUser] = useRegisterMutation()
+  const [updateUserInfo] = useUpdateUserInfoMutation()
+
+  async function handleRegister({ email, password }: RegisterStepFormFields) {
     try {
-      const res = await registUser({
+      const res = await registerUser({
         variables: {
           email,
           password,
@@ -57,12 +58,13 @@ const RegistPage: React.FC = () => {
       return false
     }
   }
+
   async function handleUpdateUserInfo({
     name,
     nickName,
     role,
     avatar,
-  }: RegistStepFormUserInfoFields) {
+  }: RegisterStepFormUserInfoFields) {
     try {
       await updateUserInfo({
         variables: {
@@ -83,6 +85,7 @@ const RegistPage: React.FC = () => {
       return false
     }
   }
+
   return (
     <ProCard title="新用户注册">
       <StepsForm
@@ -102,10 +105,10 @@ const RegistPage: React.FC = () => {
             return dom
           },
         }}>
-        <StepsForm.StepForm<RegistStepFormFields>
+        <StepsForm.StepForm<RegisterStepFormFields>
           name="register"
           title="登录信息"
-          onFinish={handleRegist}>
+          onFinish={handleRegister}>
           <ProCard bordered style={{ marginBottom: 16 }}>
             <ProFormText
               name="email"
@@ -158,7 +161,7 @@ const RegistPage: React.FC = () => {
             </ProForm.Item>
           </ProCard>
         </StepsForm.StepForm>
-        <StepsForm.StepForm<RegistStepFormUserInfoFields>
+        <StepsForm.StepForm<RegisterStepFormUserInfoFields>
           name="info"
           onFinish={handleUpdateUserInfo}
           title="用户信息">
@@ -220,4 +223,4 @@ const RegistPage: React.FC = () => {
   )
 }
 
-export default RegistPage
+export default RegisterPage

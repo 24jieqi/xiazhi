@@ -19,7 +19,22 @@ const SectionCompMap = {
   [SectionKeyEnum.COLLABORATOR]: CollaboratorManagement,
 }
 
-export default () => {
+const tabListOptions = [
+  {
+    tab: '基础信息',
+    key: SectionKeyEnum.BASIC,
+  },
+  {
+    tab: '应用设置',
+    key: SectionKeyEnum.SETTING,
+  },
+  {
+    tab: '协作者',
+    key: SectionKeyEnum.COLLABORATOR,
+  },
+]
+
+const ApplicationDetail: React.FC = () => {
   const params = useParams()
   const [tabActiveKey, setTabActiveKey] = useState<SectionKeyEnum>(
     SectionKeyEnum.BASIC,
@@ -29,12 +44,15 @@ export default () => {
       getAppInfoByIdId: Number(params.id),
     },
   })
+
   const appInfo = data?.getAppInfoById || {}
   const ActiveComp = SectionCompMap[tabActiveKey]
+
   useCollaboratorPermissions({
     creatorId: appInfo?.creatorId,
     showAlert: true,
   })
+
   return (
     <div
       style={{
@@ -48,20 +66,7 @@ export default () => {
         loading={loading}
         tabActiveKey={tabActiveKey}
         onTabChange={key => setTabActiveKey(key as SectionKeyEnum)}
-        tabList={[
-          {
-            tab: '基础信息',
-            key: SectionKeyEnum.BASIC,
-          },
-          {
-            tab: '应用设置',
-            key: SectionKeyEnum.SETTING,
-          },
-          {
-            tab: '协作者',
-            key: SectionKeyEnum.COLLABORATOR,
-          },
-        ]}>
+        tabList={tabListOptions}>
         <ProCard>
           <ActiveComp app={appInfo} />
         </ProCard>
@@ -69,3 +74,5 @@ export default () => {
     </div>
   )
 }
+
+export default ApplicationDetail

@@ -37,6 +37,12 @@ declare global {
 }
 
 export interface NexusGenInputs {
+  ExtractLocalEntryItem: { // input type
+    key?: string | null; // String
+    langs?: NexusGenScalars['JSONObject'] | null; // JSONObject
+    mainLang: string; // String!
+    mainLangText?: string | null; // String
+  }
   UploadEntryItem: { // input type
     key?: string | null; // String
     langs?: NexusGenScalars['JSONObject'] | null; // JSONObject
@@ -138,6 +144,10 @@ export interface NexusGenObjects {
     prevKey?: string | null; // String
     prevLangs?: NexusGenScalars['JSONObject'] | null; // JSONObject
     record_id: number; // Int!
+  }
+  TransformAppEntryInfo: { // root type
+    label?: string | null; // String
+    value?: number | null; // Int
   }
   UserInfo: { // root type
     avatar?: string | null; // String
@@ -243,6 +253,7 @@ export interface NexusGenFieldTypes {
     deleteApp: boolean | null; // Boolean
     deleteEntries: boolean | null; // Boolean
     existCollaboration: boolean | null; // Boolean
+    extractLocalEntries: boolean | null; // Boolean
     feedback: number | null; // Int
     inviteCollaborators: boolean | null; // Boolean
     login: string | null; // String
@@ -252,6 +263,7 @@ export interface NexusGenFieldTypes {
     resetPassword: boolean | null; // Boolean
     sendResetPasswordEmail: boolean | null; // Boolean
     sendVerifyEmail: boolean | null; // Boolean
+    transformEntry: boolean | null; // Boolean
     updateAppBasicInfo: number | null; // Int
     updateEntry: boolean | null; // Boolean
     updateUserInfo: boolean | null; // Boolean
@@ -268,6 +280,7 @@ export interface NexusGenFieldTypes {
     getAppInfoById: NexusGenRootTypes['AppItem'] | null; // AppItem
     getCurrentApps: NexusGenRootTypes['AppPaging'] | null; // AppPaging
     getCurrentUser: NexusGenRootTypes['UserInfo'] | null; // UserInfo
+    getTransformAppInfoById: Array<NexusGenRootTypes['TransformAppEntryInfo'] | null> | null; // [TransformAppEntryInfo]
     listUserFuzzyByUserName: Array<NexusGenRootTypes['UserInfo'] | null> | null; // [UserInfo]
     pageAllPublicEntries: NexusGenRootTypes['EntryPaging'] | null; // EntryPaging
     pageAppEntries: NexusGenRootTypes['EntryPaging'] | null; // EntryPaging
@@ -284,6 +297,10 @@ export interface NexusGenFieldTypes {
     prevKey: string | null; // String
     prevLangs: NexusGenScalars['JSONObject'] | null; // JSONObject
     record_id: number; // Int!
+  }
+  TransformAppEntryInfo: { // field return type
+    label: string | null; // String
+    value: number | null; // Int
   }
   UserInfo: { // field return type
     avatar: string | null; // String
@@ -379,6 +396,7 @@ export interface NexusGenFieldTypeNames {
     deleteApp: 'Boolean'
     deleteEntries: 'Boolean'
     existCollaboration: 'Boolean'
+    extractLocalEntries: 'Boolean'
     feedback: 'Int'
     inviteCollaborators: 'Boolean'
     login: 'String'
@@ -388,6 +406,7 @@ export interface NexusGenFieldTypeNames {
     resetPassword: 'Boolean'
     sendResetPasswordEmail: 'Boolean'
     sendVerifyEmail: 'Boolean'
+    transformEntry: 'Boolean'
     updateAppBasicInfo: 'Int'
     updateEntry: 'Boolean'
     updateUserInfo: 'Boolean'
@@ -404,6 +423,7 @@ export interface NexusGenFieldTypeNames {
     getAppInfoById: 'AppItem'
     getCurrentApps: 'AppPaging'
     getCurrentUser: 'UserInfo'
+    getTransformAppInfoById: 'TransformAppEntryInfo'
     listUserFuzzyByUserName: 'UserInfo'
     pageAllPublicEntries: 'EntryPaging'
     pageAppEntries: 'EntryPaging'
@@ -420,6 +440,10 @@ export interface NexusGenFieldTypeNames {
     prevKey: 'String'
     prevLangs: 'JSONObject'
     record_id: 'Int'
+  }
+  TransformAppEntryInfo: { // field return type name
+    label: 'String'
+    value: 'Int'
   }
   UserInfo: { // field return type name
     avatar: 'String'
@@ -474,6 +498,11 @@ export interface NexusGenArgTypes {
     existCollaboration: { // args
       appId: number; // Int!
     }
+    extractLocalEntries: { // args
+      accessKey: string; // String!
+      entries: Array<NexusGenInputs['ExtractLocalEntryItem'] | null>; // [ExtractLocalEntryItem]!
+      isCover?: boolean | null; // Boolean
+    }
     feedback: { // args
       feedbackId?: number | null; // Int
       message?: string | null; // String
@@ -505,6 +534,10 @@ export interface NexusGenArgTypes {
     sendResetPasswordEmail: { // args
       email: string; // String!
     }
+    transformEntry: { // args
+      entryId: number; // Int!
+      targetAppId: number; // Int!
+    }
     updateAppBasicInfo: { // args
       appId: number; // Int!
       description?: string | null; // String
@@ -512,7 +545,9 @@ export interface NexusGenArgTypes {
       type: NexusGenEnums['AppTypeEnum']; // AppTypeEnum!
     }
     updateEntry: { // args
+      appId?: number | null; // Int
       entryId: number; // Int!
+      isRollback: boolean; // Boolean!
       key?: string | null; // String
       langs?: NexusGenScalars['JSONObject'] | null; // JSONObject
     }
@@ -555,12 +590,19 @@ export interface NexusGenArgTypes {
       push?: boolean | null; // Boolean
       type?: NexusGenEnums['AppTypeEnum'] | null; // AppTypeEnum
     }
+    getTransformAppInfoById: { // args
+      entryId: number; // Int!
+    }
     listUserFuzzyByUserName: { // args
       keywords: string; // String!
     }
     pageAllPublicEntries: { // args
+      endTime?: number | null; // Float
+      key?: string | null; // String
+      mainLangText?: string | null; // String
       pageNo: number; // Int!
       pageSize: number; // Int!
+      startTime?: number | null; // Float
     }
     pageAppEntries: { // args
       appId: number; // Int!
@@ -578,7 +620,7 @@ export interface NexusGenArgTypes {
       pageSize: number; // Int!
     }
     validEntryKey: { // args
-      appId: number; // Int!
+      appId?: number | null; // Int
       entryId?: number | null; // Int
       key?: string | null; // String
     }

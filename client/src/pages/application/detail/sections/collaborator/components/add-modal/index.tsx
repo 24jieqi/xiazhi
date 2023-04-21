@@ -10,7 +10,7 @@ import { useInviteCollaboratorsMutation } from '@/graphql/operations/__generated
 import { useListUserFuzzyByUserNameLazyQuery } from '@/graphql/operations/__generated__/basic.generated'
 
 interface AddCollaboratorsModalProps {
-  trggier: JSX.Element
+  trigger: JSX.Element
   appId: number
   onInviteSuccess?: () => void
 }
@@ -21,7 +21,7 @@ interface FormData {
 }
 
 const AddCollaboratorsModal: React.FC<AddCollaboratorsModalProps> = ({
-  trggier,
+  trigger,
   appId,
   onInviteSuccess,
 }) => {
@@ -56,10 +56,13 @@ const AddCollaboratorsModal: React.FC<AddCollaboratorsModalProps> = ({
   const userList = userListData?.listUserFuzzyByUserName || []
   return (
     <ModalForm<FormData>
+      modalProps={{
+        maskClosable: false,
+      }}
       onValuesChange={handleValuesChange}
       onFinish={handleAddCollaborators}
       title="添加协作者"
-      trigger={trggier}>
+      trigger={trigger}>
       <ProFormText
         name="keywords"
         label="协作者名称"

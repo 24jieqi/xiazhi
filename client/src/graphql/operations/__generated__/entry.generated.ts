@@ -6,6 +6,10 @@ const defaultOptions = {} as const
 export type PageAllPublicEntriesQueryVariables = SchemaTypes.Exact<{
   pageSize: SchemaTypes.Scalars['Int']
   pageNo: SchemaTypes.Scalars['Int']
+  key?: SchemaTypes.InputMaybe<SchemaTypes.Scalars['String']>
+  mainLangText?: SchemaTypes.InputMaybe<SchemaTypes.Scalars['String']>
+  startTime?: SchemaTypes.InputMaybe<SchemaTypes.Scalars['Float']>
+  endTime?: SchemaTypes.InputMaybe<SchemaTypes.Scalars['Float']>
 }>
 
 export type PageAllPublicEntriesQuery = {
@@ -24,7 +28,7 @@ export type PageAllPublicEntriesQuery = {
       archive?: boolean
       deleted?: boolean
       mainLangText?: string
-      mainLang?: SchemaTypes.LanguageTypeEnum
+      mainLang?: string
       langs?: any
       modifyRecords?: Array<{
         __typename?: 'RecordItem'
@@ -59,6 +63,8 @@ export type CreateEntryMutation = { createEntry?: number }
 
 export type UpdateEntryMutationVariables = SchemaTypes.Exact<{
   entryId: SchemaTypes.Scalars['Int']
+  appId?: SchemaTypes.InputMaybe<SchemaTypes.Scalars['Int']>
+  isRollback: SchemaTypes.Scalars['Boolean']
   langs?: SchemaTypes.InputMaybe<SchemaTypes.Scalars['JSONObject']>
   key?: SchemaTypes.InputMaybe<SchemaTypes.Scalars['String']>
 }>
@@ -93,7 +99,7 @@ export type PageAppEntriesQuery = {
       archive?: boolean
       deleted?: boolean
       mainLangText?: string
-      mainLang?: SchemaTypes.LanguageTypeEnum
+      mainLang?: string
       langs?: any
       modifyRecords?: Array<{
         __typename?: 'RecordItem'
@@ -139,7 +145,7 @@ export type DeleteEntriesMutationVariables = SchemaTypes.Exact<{
 export type DeleteEntriesMutation = { deleteEntries?: boolean }
 
 export type ValidEntryKeyQueryVariables = SchemaTypes.Exact<{
-  appId: SchemaTypes.Scalars['Int']
+  appId?: SchemaTypes.InputMaybe<SchemaTypes.Scalars['Int']>
   entryId?: SchemaTypes.InputMaybe<SchemaTypes.Scalars['Int']>
   key?: SchemaTypes.InputMaybe<SchemaTypes.Scalars['String']>
 }>
@@ -153,9 +159,30 @@ export type UploadEntriesXlsxMutationVariables = SchemaTypes.Exact<{
 
 export type UploadEntriesXlsxMutation = { uploadEntriesXlsx?: boolean }
 
+export type TransformEntryMutationVariables = SchemaTypes.Exact<{
+  entryId: SchemaTypes.Scalars['Int']
+  targetAppId: SchemaTypes.Scalars['Int']
+}>
+
+export type TransformEntryMutation = { transformEntry?: boolean }
+
 export const PageAllPublicEntriesDocument = gql`
-  query PageAllPublicEntries($pageSize: Int!, $pageNo: Int!) {
-    pageAllPublicEntries(pageSize: $pageSize, pageNo: $pageNo) {
+  query PageAllPublicEntries(
+    $pageSize: Int!
+    $pageNo: Int!
+    $key: String
+    $mainLangText: String
+    $startTime: Float
+    $endTime: Float
+  ) {
+    pageAllPublicEntries(
+      pageSize: $pageSize
+      pageNo: $pageNo
+      key: $key
+      mainLangText: $mainLangText
+      startTime: $startTime
+      endTime: $endTime
+    ) {
       total
       pageSize
       current
@@ -206,6 +233,10 @@ export const PageAllPublicEntriesDocument = gql`
  *   variables: {
  *      pageSize: // value for 'pageSize'
  *      pageNo: // value for 'pageNo'
+ *      key: // value for 'key'
+ *      mainLangText: // value for 'mainLangText'
+ *      startTime: // value for 'startTime'
+ *      endTime: // value for 'endTime'
  *   },
  * });
  */
@@ -294,8 +325,20 @@ export type CreateEntryMutationOptions = Apollo.BaseMutationOptions<
   CreateEntryMutationVariables
 >
 export const UpdateEntryDocument = gql`
-  mutation UpdateEntry($entryId: Int!, $langs: JSONObject, $key: String) {
-    updateEntry(entryId: $entryId, langs: $langs, key: $key)
+  mutation UpdateEntry(
+    $entryId: Int!
+    $appId: Int
+    $isRollback: Boolean!
+    $langs: JSONObject
+    $key: String
+  ) {
+    updateEntry(
+      entryId: $entryId
+      appId: $appId
+      isRollback: $isRollback
+      langs: $langs
+      key: $key
+    )
   }
 `
 export type UpdateEntryMutationFn = Apollo.MutationFunction<
@@ -317,6 +360,8 @@ export type UpdateEntryMutationFn = Apollo.MutationFunction<
  * const [updateEntryMutation, { data, loading, error }] = useUpdateEntryMutation({
  *   variables: {
  *      entryId: // value for 'entryId'
+ *      appId: // value for 'appId'
+ *      isRollback: // value for 'isRollback'
  *      langs: // value for 'langs'
  *      key: // value for 'key'
  *   },
@@ -573,7 +618,7 @@ export type DeleteEntriesMutationOptions = Apollo.BaseMutationOptions<
   DeleteEntriesMutationVariables
 >
 export const ValidEntryKeyDocument = gql`
-  query ValidEntryKey($appId: Int!, $entryId: Int, $key: String) {
+  query ValidEntryKey($appId: Int, $entryId: Int, $key: String) {
     validEntryKey(appId: $appId, entryId: $entryId, key: $key)
   }
 `
@@ -597,7 +642,7 @@ export const ValidEntryKeyDocument = gql`
  * });
  */
 export function useValidEntryKeyQuery(
-  baseOptions: Apollo.QueryHookOptions<
+  baseOptions?: Apollo.QueryHookOptions<
     ValidEntryKeyQuery,
     ValidEntryKeyQueryVariables
   >,
@@ -678,4 +723,53 @@ export type UploadEntriesXlsxMutationResult =
 export type UploadEntriesXlsxMutationOptions = Apollo.BaseMutationOptions<
   UploadEntriesXlsxMutation,
   UploadEntriesXlsxMutationVariables
+>
+export const TransformEntryDocument = gql`
+  mutation TransformEntry($entryId: Int!, $targetAppId: Int!) {
+    transformEntry(entryId: $entryId, targetAppId: $targetAppId)
+  }
+`
+export type TransformEntryMutationFn = Apollo.MutationFunction<
+  TransformEntryMutation,
+  TransformEntryMutationVariables
+>
+
+/**
+ * __useTransformEntryMutation__
+ *
+ * To run a mutation, you first call `useTransformEntryMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useTransformEntryMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [transformEntryMutation, { data, loading, error }] = useTransformEntryMutation({
+ *   variables: {
+ *      entryId: // value for 'entryId'
+ *      targetAppId: // value for 'targetAppId'
+ *   },
+ * });
+ */
+export function useTransformEntryMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    TransformEntryMutation,
+    TransformEntryMutationVariables
+  >,
+) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useMutation<
+    TransformEntryMutation,
+    TransformEntryMutationVariables
+  >(TransformEntryDocument, options)
+}
+export type TransformEntryMutationHookResult = ReturnType<
+  typeof useTransformEntryMutation
+>
+export type TransformEntryMutationResult =
+  Apollo.MutationResult<TransformEntryMutation>
+export type TransformEntryMutationOptions = Apollo.BaseMutationOptions<
+  TransformEntryMutation,
+  TransformEntryMutationVariables
 >

@@ -52,7 +52,7 @@ export type AppItem = {
   /** 当前应用包含的词条数量 */
   entryCount?: Maybe<Scalars['Int']>
   /** 支持的语言 */
-  languages?: Maybe<Array<Maybe<LanguageTypeEnum>>>
+  languages?: Maybe<Array<Maybe<Scalars['String']>>>
   name?: Maybe<Scalars['String']>
   /** 应用截图 */
   pictures?: Maybe<Array<Maybe<Scalars['String']>>>
@@ -108,8 +108,7 @@ export type EntryItem = {
   entry_id?: Maybe<Scalars['Int']>
   key?: Maybe<Scalars['String']>
   langs?: Maybe<Scalars['JSONObject']>
-  /** 支持的语言 */
-  mainLang?: Maybe<LanguageTypeEnum>
+  mainLang?: Maybe<Scalars['String']>
   mainLangText?: Maybe<Scalars['String']>
   modifyRecords?: Maybe<Array<Maybe<RecordItem>>>
   public?: Maybe<Scalars['Boolean']>
@@ -143,24 +142,8 @@ export type FeedbackPaging = {
   total: Scalars['Int']
 }
 
-/** 平台支持的多语言词条选项 */
-export type LangageTypeOption = {
-  __typename?: 'LangageTypeOption'
-  label: Scalars['String']
-  value?: Maybe<LanguageTypeEnum>
-}
-
-/** 应用支持的语言枚举 */
-export enum LanguageTypeEnum {
-  Chinese = 'CHINESE',
-  English = 'ENGLISH',
-  Thai = 'THAI',
-  Vietnamese = 'VIETNAMESE',
-}
-
 export type Mutation = {
   __typename?: 'Mutation'
-  addLangage?: Maybe<Scalars['Int']>
   /** 归档一个应用（归档后不能再编辑） */
   archivedApp?: Maybe<Scalars['Boolean']>
   /** 更改应用在可访问和推送上的状态 */
@@ -196,6 +179,8 @@ export type Mutation = {
   sendResetPasswordEmail?: Maybe<Scalars['Boolean']>
   /** 发送验证邮件 */
   sendVerifyEmail?: Maybe<Scalars['Boolean']>
+  /** 公共词条、私有词条相互转换 */
+  transformEntry?: Maybe<Scalars['Boolean']>
   /** 更新应用基本信息 */
   updateAppBasicInfo?: Maybe<Scalars['Int']>
   updateEntry?: Maybe<Scalars['Boolean']>
@@ -206,11 +191,6 @@ export type Mutation = {
   uploadEntriesXlsx?: Maybe<Scalars['Boolean']>
   /** 邮箱验证 */
   verifyEmail?: Maybe<Scalars['String']>
-}
-
-export type MutationAddLangageArgs = {
-  label: Scalars['String']
-  value: LanguageTypeEnum
 }
 
 export type MutationArchivedAppArgs = {
@@ -236,7 +216,7 @@ export type MutationCheckEmailValidationArgs = {
 
 export type MutationCreateAppArgs = {
   description?: InputMaybe<Scalars['String']>
-  languages: Array<LanguageTypeEnum>
+  languages: Array<Scalars['String']>
   name: Scalars['String']
   pictures: Array<Scalars['String']>
   type: AppTypeEnum
@@ -300,6 +280,11 @@ export type MutationSendResetPasswordEmailArgs = {
   email: Scalars['String']
 }
 
+export type MutationTransformEntryArgs = {
+  entryId: Scalars['Int']
+  targetAppId: Scalars['Int']
+}
+
 export type MutationUpdateAppBasicInfoArgs = {
   appId: Scalars['Int']
   description?: InputMaybe<Scalars['String']>
@@ -308,7 +293,9 @@ export type MutationUpdateAppBasicInfoArgs = {
 }
 
 export type MutationUpdateEntryArgs = {
+  appId?: InputMaybe<Scalars['Int']>
   entryId: Scalars['Int']
+  isRollback: Scalars['Boolean']
   key?: InputMaybe<Scalars['String']>
   langs?: InputMaybe<Scalars['JSONObject']>
 }
@@ -349,7 +336,8 @@ export type Query = {
   getCurrentApps?: Maybe<AppPaging>
   /** 获取当前登录用户的基本信息 */
   getCurrentUser?: Maybe<UserInfo>
-  listSupportLanguage?: Maybe<Array<Maybe<LangageTypeOption>>>
+  /** 根据应用id获取要共享的应用词库 */
+  getTransformAppInfoById?: Maybe<Array<Maybe<TransformAppEntryInfo>>>
   /** 用户姓名的模糊查询 */
   listUserFuzzyByUserName?: Maybe<Array<Maybe<UserInfo>>>
   /** 获取所有公共词条（分页） */
@@ -384,10 +372,14 @@ export type QueryGetAppInfoByIdArgs = {
 
 export type QueryGetCurrentAppsArgs = {
   access?: InputMaybe<Scalars['Boolean']>
-  languages?: InputMaybe<Array<LanguageTypeEnum>>
+  languages?: InputMaybe<Array<Scalars['String']>>
   name?: InputMaybe<Scalars['String']>
   push?: InputMaybe<Scalars['Boolean']>
   type?: InputMaybe<AppTypeEnum>
+}
+
+export type QueryGetTransformAppInfoByIdArgs = {
+  entryId: Scalars['Int']
 }
 
 export type QueryListUserFuzzyByUserNameArgs = {
@@ -395,8 +387,12 @@ export type QueryListUserFuzzyByUserNameArgs = {
 }
 
 export type QueryPageAllPublicEntriesArgs = {
+  endTime?: InputMaybe<Scalars['Float']>
+  key?: InputMaybe<Scalars['String']>
+  mainLangText?: InputMaybe<Scalars['String']>
   pageNo: Scalars['Int']
   pageSize: Scalars['Int']
+  startTime?: InputMaybe<Scalars['Float']>
 }
 
 export type QueryPageAppEntriesArgs = {
@@ -417,7 +413,7 @@ export type QueryPageFeedbackNegativeArgs = {
 }
 
 export type QueryValidEntryKeyArgs = {
-  appId: Scalars['Int']
+  appId?: InputMaybe<Scalars['Int']>
   entryId?: InputMaybe<Scalars['Int']>
   key?: InputMaybe<Scalars['String']>
 }
@@ -434,6 +430,13 @@ export type RecordItem = {
   prevKey?: Maybe<Scalars['String']>
   prevLangs?: Maybe<Scalars['JSONObject']>
   record_id: Scalars['Int']
+}
+
+/** 词条要转换的应用词库信息 */
+export type TransformAppEntryInfo = {
+  __typename?: 'TransformAppEntryInfo'
+  label?: Maybe<Scalars['String']>
+  value?: Maybe<Scalars['Int']>
 }
 
 /** 新增词条上传信息 */

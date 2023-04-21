@@ -24,7 +24,7 @@ const CollaboratorManagement: React.FC<CollaboratorManagementProps> = ({
       appId: app.app_id,
     },
   })
-  const { data: statictiscData } = useGetAppCollaboratorsStatisticsQuery({
+  const { data: statisticsData } = useGetAppCollaboratorsStatisticsQuery({
     variables: {
       appId: app.app_id,
     },
@@ -45,7 +45,7 @@ const CollaboratorManagement: React.FC<CollaboratorManagementProps> = ({
     return (
       <Empty description="还未添加协作者">
         <AddCollaboratorsModal
-          trggier={<Button type="primary">现在添加</Button>}
+          trigger={<Button type="primary">现在添加</Button>}
           appId={app?.app_id}
           onInviteSuccess={() => {
             refetch()
@@ -60,7 +60,7 @@ const CollaboratorManagement: React.FC<CollaboratorManagementProps> = ({
       bodyStyle={{ padding: 0, paddingTop: 12 }}
       extra={
         <AddCollaboratorsModal
-          trggier={
+          trigger={
             <Button icon={<PlusOutlined />} type="primary" size="small">
               添加
             </Button>
@@ -73,7 +73,7 @@ const CollaboratorManagement: React.FC<CollaboratorManagementProps> = ({
       }>
       <Space wrap>
         {data.getAppCollaborators.map((collaborator, index) => {
-          const statictics = statictiscData?.getAppCollaboratorsStatistics.find(
+          const statistics = statisticsData?.getAppCollaboratorsStatistics.find(
             item => item.userId === collaborator?.collaborator?.user_id,
           )
           return (
@@ -125,7 +125,7 @@ const CollaboratorManagement: React.FC<CollaboratorManagementProps> = ({
               <ProCard>
                 <Statistic
                   title="总计新增"
-                  value={statictics?.addCount}
+                  value={statistics?.addCount}
                   suffix={`/ ${app.entryCount}`}
                 />
               </ProCard>
@@ -133,15 +133,15 @@ const CollaboratorManagement: React.FC<CollaboratorManagementProps> = ({
               <ProCard>
                 <Statistic
                   title="今日新增"
-                  value={statictics?.addCountToday}
-                  suffix={`/ ${statictics?.addCount}`}
+                  value={statistics?.addCountToday}
+                  suffix={`/ ${statistics?.addCount}`}
                 />
               </ProCard>
               <Divider type="vertical" />
               <ProCard wrap gutter={[12, 12]}>
                 <Statistic
                   title="修改词条"
-                  value={statictics?.modifyCount}
+                  value={statistics?.modifyCount}
                   suffix="次"
                 />
               </ProCard>

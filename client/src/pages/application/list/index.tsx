@@ -1,6 +1,6 @@
 import { ProCard, ProColumns, ProTable } from '@ant-design/pro-components'
 import React from 'react'
-import { Avatar, Button, Popover, Space, Switch, Tag } from 'antd'
+import { Avatar, Button, Popover, Space, Tag } from 'antd'
 import { useNavigate } from 'react-router-dom'
 import { PlusOutlined } from '@ant-design/icons'
 import { AppItem } from '@/graphql/generated/types'
@@ -11,21 +11,42 @@ import {
   NEW_APP,
 } from '@/router/config/main-routes/application/path'
 import useCollaboratorPermissions from '@/pages/auth/useCollaboratorPermission'
+import { selectFilterOption } from '@/utils'
 import { appSupportLangsTableEnum, appTypeTableEnum } from '../constant'
 import AccessSwitch from '../components/access-switch'
 
 const AppListPage: React.FC = () => {
   const navigate = useNavigate()
+
   const { checkIsCollaborator } = useCollaboratorPermissions()
+  const [getCurrentApps] = useGetCurrentAppsLazyQuery()
+
   function handleRedirectAppSetting(app: AppItem) {
     navigate(`${APP_DETAIL}/${app.app_id}`)
   }
+
   function handleRedirectAppEdit(app: AppItem) {
     navigate(`${EDIT_APP}/${app.app_id}`)
   }
+
   function handleRedirectAppAdd() {
     navigate(NEW_APP)
   }
+
+  async function handleRequest(params) {
+    const res = await getCurrentApps({
+      variables: {
+        ...params,
+      },
+    })
+    const data = res?.data?.getCurrentApps
+    return {
+      data: data.records,
+      success: true,
+      total: data.total,
+    }
+  }
+
   const columns: ProColumns<AppItem>[] = [
     {
       title: '应用名称',
@@ -72,7 +93,12 @@ const AppListPage: React.FC = () => {
       title: '语言支持',
       dataIndex: 'languages',
       ellipsis: true,
-      valueType: 'checkbox',
+      valueType: 'select',
+      fieldProps: {
+        mode: 'multiple',
+        showSearch: true,
+        filterOption: selectFilterOption,
+      },
       valueEnum: appSupportLangsTableEnum,
     },
     {
@@ -145,26 +171,14 @@ const AppListPage: React.FC = () => {
     //   ],
     // },
   ]
-  const [getCurrentApps] = useGetCurrentAppsLazyQuery()
+
   return (
     <ProCard title="我的应用">
       <ProTable<AppItem>
         columns={columns}
         scroll={{ x: 1200 }}
-        request={async (params: any = {}, sort, filter) => {
-          const res = await getCurrentApps({
-            variables: {
-              ...params,
-            },
-          })
-          const data = res?.data?.getCurrentApps
-          return {
-            data: data.records,
-            success: true,
-            total: data.total,
-          }
-        }}
-        rowKey="entry_id"
+        request={handleRequest}
+        rowKey="app_id"
         search={{
           labelWidth: 'auto',
         }}
