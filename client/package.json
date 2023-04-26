@@ -16,7 +16,7 @@
     "kiwi-intl": "^1.2.4",
     "lodash": "^4.17.15",
     "moment": "^2.29.1",
-    "pinyin": "^3.0.0-alpha.5",
+    "pinyin-pro": "^3.13.2",
     "qs": "^6.9.1",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",

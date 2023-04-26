@@ -8,7 +8,7 @@ import {
 import { Button, message } from 'antd'
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { flatten, omit } from 'lodash'
-import pinyin from 'pinyin'
+import { pinyin } from 'pinyin-pro'
 import {
   useCreateEntryMutation,
   useUpdateEntryMutation,
@@ -55,9 +55,7 @@ const EntryModal: React.FC<EntryModalProps> = ({
       values.autoGenerate &&
       !initialFormData?.entryId
     ) {
-      const pinYinArr = pinyin(changedValues[LanguageTypeEnum.zh], {
-        style: 'tone2',
-      })
+      const pinYinArr = pinyin(changedValues[LanguageTypeEnum.zh])
       const pinYinStr = flatten(pinYinArr).join('_')
       form.setFieldsValue({
         key: generateEntryKey(pinYinStr),
