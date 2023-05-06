@@ -17,7 +17,7 @@ interface EnvConfig {
 }
 export interface IConfig extends CommonConfig, EnvConfig {}
 
-type Env = 'development' | 'production' | 'test'
+type Env = 'development' | 'production'
 
 const env: any = process.env.NODE_ENV
 // 配置(公共)
@@ -29,22 +29,16 @@ const commonConfig: CommonConfig = {
 export const envConfig: Record<Env, EnvConfig> = {
   // 开发环境
   development: {
-    apiHost: 'http://localhost:3000', // 开发地址 http://192.168.10.233:10004 测试地址 https://peach-test.hjgpscm.com
-    uploadHost: '',
-    baseUrl: '/',
-  },
-  // 测试环境
-  test: {
-    apiHost: '',
+    apiHost: 'http://localhost:3000',
     uploadHost: '',
     baseUrl: '/',
   },
   // 生产环境
   production: {
-    apiHost: 'https://durian.hjgpscm.com',
+    apiHost: 'https://xiazhi-lang.hjgpscm.com',
     uploadHost: 'https://durian.hjgpscm.com',
     baseUrl: '/',
   },
 }
-const config = { ...commonConfig, ...envConfig[env] }
+const config: EnvConfig & CommonConfig = { ...commonConfig, ...envConfig[env] }
 export default config
