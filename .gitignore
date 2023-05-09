@@ -29,7 +29,8 @@ moduleConfig.json
 
 .vscode
 
-server/views/static
-server/views/index.html
-server/views/asset-manifest.json
-server/views/robots.txt
+server/static/static
+server/static/images
+server/static/index.html
+server/static/asset-manifest.json
+server/static/robots.txt
