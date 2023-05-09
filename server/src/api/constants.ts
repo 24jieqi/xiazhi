@@ -3,6 +3,7 @@ import { getIpAddress, getServerAddress } from "../utils";
 export const historyApiFallbackWhiteList = [
   "/graphql",
   "/assets/template.xlsx",
+  "/_upload"
 ];
 
 export const PORT = 3000;

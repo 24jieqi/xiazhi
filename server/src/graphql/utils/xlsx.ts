@@ -82,7 +82,7 @@ export async function readXlsxOrigin(url: string) {
   }
   const streamPipeline = promisify(pipeline);
   const filename = path.parse(url).base;
-  const filepath = path.resolve(__dirname, `../../../views/${filename}`);
+  const filepath = path.resolve(__dirname, `../../../readXlsxOrigin/${filename}`);
   await streamPipeline(response.body!, fs.createWriteStream(filepath));
   const file: any = xlsx.parse(filepath);
   return file;
