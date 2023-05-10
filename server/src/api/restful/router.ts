@@ -2,12 +2,17 @@ import Router from "@koa/router";
 import {Methods, Route} from "./types";
 import UploadController from "./controllers/UploadController";
 import multer from '@koa/multer';
+import fs from 'fs'
 
 const storage = multer.diskStorage({
-  destination(req, file, callback) {
-    callback(null, `${process.cwd()}/static/images`)
+  destination(_, __, callback) {
+    const dist = `${process.cwd()}/static/images`
+    if (!fs.existsSync(dist)) {
+      fs.mkdirSync(dist)
+    }
+    callback(null, dist)
   },
-  filename(req, file, callback) {
+  filename(_, file, callback) {
     callback(null, file.fieldname + '-' + Date.now() + file.originalname)
   },
 })

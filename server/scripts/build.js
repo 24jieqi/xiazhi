@@ -25,5 +25,6 @@ if (!shelljs.which("pm2")) {
   shelljs.echo("start server require pm2");
   shelljs.exit(1);
 }
+shelljs.exec("pm2 stop all");
 shelljs.exec("pm2 start dist/index.js");
 shelljs.echo("--deploy completed--");
