@@ -63,8 +63,7 @@ const EntryForm: React.FC<EntryFormProps> = ({
       values.autoGenerate &&
       !initialFormData.entryId
     ) {
-      const pinYinArr = pinyin(changedValues[LanguageTypeEnum.zh])
-      const pinYinStr = flatten(pinYinArr).join('_')
+      const pinYinStr = pinyin(changedValues[LanguageTypeEnum.zh])
       form.setFieldsValue({
         key: generateEntryKey(pinYinStr),
       })

@@ -20,14 +20,7 @@ import { useCreateAppMutation } from '@/graphql/operations/__generated__/app.gen
 import { appSupportLangsOptions, appTypeOptions } from '../constant'
 
 interface FileVO {
-  accessType: number
-  contentType: string
-  createTime: number
-  fileCreateTime: number
-  fileId: string
-  fileUrl: string
-  filename: string
-  size: number
+  data: string
 }
 
 const whetherOptions = [
@@ -62,7 +55,7 @@ export function getPictureUrlList(fileList: UploadFile<Partial<FileVO>>[]) {
   }
   return fileList
     .filter(file => file.status === 'done')
-    .map(f => f?.response?.fileUrl || f?.url)
+    .map(f => f?.response?.data || f?.url)
 }
 
 const Add: React.FC = () => {
@@ -150,7 +143,7 @@ const Add: React.FC = () => {
               name: 'file',
               listType: 'picture-card',
             }}
-            action="/_files/upload"
+            action="/_upload"
           />
         </StepsForm.StepForm>
         <StepsForm.StepForm<{

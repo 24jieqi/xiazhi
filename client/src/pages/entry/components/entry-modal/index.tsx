@@ -7,7 +7,7 @@ import {
 } from '@ant-design/pro-components'
 import { Button, message } from 'antd'
 import React, { useEffect, useMemo, useRef, useState } from 'react'
-import { flatten, omit } from 'lodash'
+import { omit } from 'lodash'
 import { pinyin } from 'pinyin-pro'
 import {
   useCreateEntryMutation,
@@ -55,8 +55,7 @@ const EntryModal: React.FC<EntryModalProps> = ({
       values.autoGenerate &&
       !initialFormData?.entryId
     ) {
-      const pinYinArr = pinyin(changedValues[LanguageTypeEnum.zh])
-      const pinYinStr = flatten(pinYinArr).join('_')
+      const pinYinStr = pinyin(changedValues[LanguageTypeEnum.zh])
       form.setFieldsValue({
         key: generateEntryKey(pinYinStr),
       })

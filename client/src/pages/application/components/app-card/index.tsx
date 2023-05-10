@@ -9,6 +9,7 @@ import {
 } from '@/router/config/main-routes/application/path'
 import useUser from '@/stores/user'
 
+import { useGetAppCollaboratorsQuery } from '@/graphql/operations/__generated__/app.generated'
 import styles from './index.module.less'
 
 const { Meta } = Card
@@ -31,6 +32,12 @@ const AppCard: React.FC<AppCardProps> = ({ data }) => {
   const navigate = useNavigate()
 
   const { info } = useUser()
+  // 获取协作者列表
+  const { data: collaboratorList } = useGetAppCollaboratorsQuery({
+    variables: {
+      appId: data.app_id,
+    },
+  })
 
   function handleRedirectAppSetting() {
     navigate(`${APP_DETAIL}/${data.app_id}`)
@@ -79,14 +86,17 @@ const AppCard: React.FC<AppCardProps> = ({ data }) => {
             />
           </Popover>
         }
-        description={data.description}
+        description={<p className={styles.appDesc}>{data.description}</p>}
       />
       <Row className={styles.cardInfoWrap}>
         <Col span={12}>
           <Statistic title="词条数" value={data.entryCount} />
         </Col>
         <Col span={12}>
-          <Statistic title="协作者" value={6} />
+          <Statistic
+            title="协作者"
+            value={collaboratorList?.getAppCollaborators?.length}
+          />
         </Col>
       </Row>
     </Card>

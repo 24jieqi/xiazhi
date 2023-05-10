@@ -181,7 +181,7 @@ const RegisterPage: React.FC = () => {
                 name: 'file',
                 listType: 'picture-card',
               }}
-              action="/_files/upload"
+              action="/_upload"
             />
             {/* <ProFormText
               name="mobile"

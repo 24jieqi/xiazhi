@@ -4,16 +4,7 @@ import { UploadFile } from 'antd/lib/upload/interface'
 import React, { useState } from 'react'
 
 interface UploadResp {
-  accessType: number
-  contentType: string
-  createTime: number
-  fileCreateTime?: number
-  fileId: string
-  fileUrl: string
-  filename?: string
-  size: number
-  tags?: string[]
-  updateTime?: number
+  data: string
 }
 
 interface UploadXlsxProps {
@@ -25,7 +16,7 @@ const UploadXlsx: React.FC<UploadXlsxProps> = ({ onUploadSuccess }) => {
   function handleOnChange(info: UploadChangeParam<UploadFile<UploadResp>>) {
     setLoading(true)
     if (info.file.status === 'done') {
-      onUploadSuccess(info.file.response.fileUrl, () => {
+      onUploadSuccess(info.file.response.data, () => {
         setLoading(false)
       })
     }
@@ -37,7 +28,7 @@ const UploadXlsx: React.FC<UploadXlsxProps> = ({ onUploadSuccess }) => {
     <Upload
       showUploadList={false}
       key="uplaod"
-      action="/_files/upload"
+      action="/_upload"
       onChange={handleOnChange}
       maxCount={1}>
       <Button size="small" type="primary" loading={loading}>

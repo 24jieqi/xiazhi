@@ -11,8 +11,8 @@ module.exports = {
         ws: false,
         secure: false,
       },
-      '/_files/upload': {
-        target: 'http://192.168.10.233:3004',
+      '/_upload': {
+        target: 'http://localhost:3000',
         secure: true,
         changeOrigin: true,
       },
