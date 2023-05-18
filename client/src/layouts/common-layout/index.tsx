@@ -81,6 +81,7 @@ const CommonLayout: React.FC = () => {
       }}>
       <ProLayout
         {...defaultProps}
+        logo={false}
         navTheme="light"
         breakpoint={false}
         layout="mix"

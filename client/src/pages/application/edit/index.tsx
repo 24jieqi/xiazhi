@@ -22,6 +22,7 @@ import TransformEntryModal, {
   TransformEntryModalRefProps,
 } from '@/pages/entry/components/transform-entry-modal'
 import ModifyRecordsModal from '@/pages/entry/components/modify-record-modal'
+import config from '@/config'
 import { appTypeOptions } from '../constant'
 import UploadXlsx from '../components/upload-xlsx'
 import styles from './index.module.less'
@@ -271,7 +272,7 @@ const EntryList: React.FC<EntryListProps> = ({
               key="list"
               type="link"
               onClick={() =>
-                window.open('http://localhost:3000/assets/template.xlsx')
+                window.open(`${config.apiHost}/assets/template.xlsx`)
               }>
               下载多语言模版
             </Button>,

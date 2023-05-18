@@ -9,6 +9,8 @@ import historyApiFallback from "koa2-connect-history-api-fallback";
 import schema from "../graphql";
 import { createContext } from "../graphql/context";
 import { historyApiFallbackWhiteList, PORT, serverAddress } from "./constants";
+import router from './restful/router'
+import bodyParser from "koa-bodyparser";
 
 const httpServer = http.createServer();
 
@@ -34,9 +36,12 @@ const apolloServer = new ApolloServer({
 const app = new Koa();
 
 app
+  .use(bodyParser())
   .use(cors())
   .use(historyApiFallback({ whiteList: historyApiFallbackWhiteList }))
-  .use(serve(path.resolve(__dirname, "../../views")));
+  .use(serve(path.resolve(__dirname, "../../static")))
+  .use(router.routes())
+  .use(router.allowedMethods())
 
 export default async function startApolloServer() {
   await apolloServer.start();

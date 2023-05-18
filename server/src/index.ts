@@ -1,2 +1,5 @@
-import startApolloServer from './api/server'
-startApolloServer()
+import startApolloServer from "./api/server";
+import * as dotenv from "dotenv";
+
+dotenv.config();
+startApolloServer();

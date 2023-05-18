@@ -87,7 +87,7 @@ const UserCard: React.FC = () => {
               name: 'file',
               listType: 'picture-card',
             }}
-            action="/_files/upload"
+            action="/_upload"
           />
         </ModalForm>,
         <LogoutOutlined key="logout" onClick={handleLogout} />,
