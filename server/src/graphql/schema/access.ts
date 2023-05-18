@@ -31,18 +31,12 @@ export const AccessQuery = extendType({
             },
           },
         });
-        return app?.entries?.map((item) => item.entry) || [];
+        return (
+          app?.entries?.map((item) => item.entry)?.filter((item) => item.key) ||
+          []
+        );
       },
     });
-  },
-});
-
-export const UploadEntryItem = inputObjectType({
-  name: "UploadEntryItem",
-  description: "新增词条上传信息",
-  definition(t) {
-    t.string("key");
-    t.json("langs");
   },
 });
 
@@ -60,63 +54,6 @@ export const ExtractLocalEntryItem = inputObjectType({
 export const AccessMutation = extendType({
   type: "Mutation",
   definition(t) {
-    t.field("uploadEntries", {
-      type: "Boolean",
-      args: {
-        accessKey: stringArg(),
-        entries: nonNull(list("UploadEntryItem")),
-      },
-      async resolve(_, args, ctx) {
-        const app = await ctx.prisma.app.findFirst({
-          where: {
-            accessKey: args.accessKey,
-            push: true,
-          },
-          include: {
-            entries: {
-              include: {
-                entry: true,
-              },
-            },
-          },
-        });
-        if (!app) {
-          throw new Error("accessKey不正确或无权访问此应用");
-        }
-        // 创建多个词条数据(但会进行一层筛选)
-        const entries = args.entries
-          .filter((item) => {
-            const mainLangText = item?.langs["zh"];
-            return !app.entries.find(
-              (e) => e.entry.mainLangText === mainLangText
-            );
-          })
-          .map((entry) => ({
-            key: entry?.key,
-            langs: entry?.langs,
-            mainLangText: entry?.langs["zh"], // 设置主语言文本
-            public: false,
-            uploaded: true,
-          }));
-        await ctx.prisma.app.update({
-          where: {
-            app_id: app.app_id,
-          },
-          data: {
-            entries: {
-              create: {
-                entry: {
-                  create: {
-                    ...entries,
-                  },
-                },
-              },
-            },
-          },
-        });
-        return true;
-      },
-    });
     t.field("extractLocalEntries", {
       deprecation: "提取本地词条信息",
       type: "Boolean",
