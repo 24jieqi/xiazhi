@@ -206,7 +206,6 @@ type Mutation {
 
   """编辑用户信息"""
   updateUserInfo(avatar: String, name: String, nickName: String, phone: String, role: UserRoleEnum): Boolean
-  uploadEntries(accessKey: String, entries: [UploadEntryItem]!): Boolean
 
   """通过excel上传词条"""
   uploadEntriesXlsx(appId: Int!, fileUrl: String!): Boolean
@@ -276,12 +275,6 @@ type RecordItem {
 type TransformAppEntryInfo {
   label: String
   value: Int
-}
-
-"""新增词条上传信息"""
-input UploadEntryItem {
-  key: String
-  langs: JSONObject
 }
 
 """用户基本信息"""

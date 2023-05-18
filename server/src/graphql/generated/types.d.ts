@@ -43,10 +43,6 @@ export interface NexusGenInputs {
     mainLang: string; // String!
     mainLangText?: string | null; // String
   }
-  UploadEntryItem: { // input type
-    key?: string | null; // String
-    langs?: NexusGenScalars['JSONObject'] | null; // JSONObject
-  }
 }
 
 export interface NexusGenEnums {
@@ -267,7 +263,6 @@ export interface NexusGenFieldTypes {
     updateAppBasicInfo: number | null; // Int
     updateEntry: boolean | null; // Boolean
     updateUserInfo: boolean | null; // Boolean
-    uploadEntries: boolean | null; // Boolean
     uploadEntriesXlsx: boolean | null; // Boolean
     verifyEmail: string | null; // String
   }
@@ -410,7 +405,6 @@ export interface NexusGenFieldTypeNames {
     updateAppBasicInfo: 'Int'
     updateEntry: 'Boolean'
     updateUserInfo: 'Boolean'
-    uploadEntries: 'Boolean'
     uploadEntriesXlsx: 'Boolean'
     verifyEmail: 'String'
   }
@@ -557,10 +551,6 @@ export interface NexusGenArgTypes {
       nickName?: string | null; // String
       phone?: string | null; // String
       role?: NexusGenEnums['UserRoleEnum'] | null; // UserRoleEnum
-    }
-    uploadEntries: { // args
-      accessKey?: string | null; // String
-      entries: Array<NexusGenInputs['UploadEntryItem'] | null>; // [UploadEntryItem]!
     }
     uploadEntriesXlsx: { // args
       appId: number; // Int!
