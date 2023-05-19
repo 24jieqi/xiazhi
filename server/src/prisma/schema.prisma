@@ -67,13 +67,14 @@ model App {
 
 // 协作者
 model Collaborator {
-  id         Int              @id @default(autoincrement())
-  role       CollaboratorRole
-  assignedAt DateTime         @default(now())
-  user       User             @relation(fields: [userId], references: [user_id])
-  app        App              @relation(fields: [appId], references: [app_id])
+  id         Int                      @id @default(autoincrement())
+  role       CollaboratorRole         @default(TRANSLATOR)
+  assignedAt DateTime                 @default(now())
+  user       User                     @relation(fields: [userId], references: [user_id])
+  app        App                      @relation(fields: [appId], references: [app_id])
   userId     Int
   appId      Int
+  status     CollaboratorInviteStatus @default(PENDDING)
 }
 
 model User {
@@ -124,4 +125,10 @@ enum CollaboratorRole {
   MANAGER
   GUEST
   TRANSLATOR
+}
+
+enum CollaboratorInviteStatus {
+  PENDDING
+  DONE
+  REJECT
 }

@@ -91,7 +91,7 @@ export const AppQuery = queryType({
         const decoded = decodedToken(ctx.req);
         return await ctx.prisma.app.findFirst({
           where: {
-            deleted:false,
+            deleted: false,
             app_id: args.id,
             creatorId: decoded?.userId,
           },
@@ -110,6 +110,13 @@ export const AppQuery = queryType({
       },
       async resolve(_root, args, ctx) {
         const decoded = decodedToken(ctx.req);
+        const languagesParams = args.languages?.length
+          ? {
+              languages: {
+                hasSome: args.languages || [],
+              },
+            }
+          : {};
         const records = await ctx.prisma.app.findMany({
           where: {
             OR: [
@@ -129,9 +136,7 @@ export const AppQuery = queryType({
               contains: args.name!,
             },
             type: args.type!,
-            languages: {
-              hasSome: args.languages || undefined
-            },
+            ...languagesParams,
             access: args.access!,
             push: args.push!,
           },
@@ -200,7 +205,7 @@ export const AppMutation = mutationType({
       },
       async resolve(_, args, ctx) {
         decodedToken(ctx.req);
-        await ctx.prisma.app.update({
+        const app = await ctx.prisma.app.update({
           where: {
             app_id: args.appId,
           },
@@ -210,7 +215,7 @@ export const AppMutation = mutationType({
             pictures: args.pictures,
           },
         });
-        return 1;
+        return app.app_id;
       },
     });
   },
@@ -229,6 +234,26 @@ export const AppAccessInfo = objectType({
     t.boolean("push", { description: "是否支持进行词条推送" });
     t.boolean("access", { description: "应用是否可以访问" });
     t.string("accessKey", { description: "应用访问key，重置后失效" });
+  },
+});
+
+export const AppAccessQuery = extendType({
+  type: "Query",
+  definition(t) {
+    t.field("getAccessKeyByAppId", {
+      type: "AppAccessInfo",
+      description: "根据应用id获取应用权限&访问相关的信息",
+      args: {
+        id: nonNull(intArg()),
+      },
+      async resolve(_, args, ctx) {
+        return await ctx.prisma.app.findUnique({
+          where: {
+            app_id: args.id,
+          },
+        });
+      },
+    });
   },
 });
 

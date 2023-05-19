@@ -73,7 +73,6 @@ const EntryModal: React.FC<EntryModalProps> = ({
           langs: {
             ...omit(formData, ['key']),
           },
-          isRollback: false,
         },
       })
       message.success('修改词条成功！')

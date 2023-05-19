@@ -150,7 +150,6 @@ const ModifyRecordsModal: React.FC<ModifyRecordsProps> = ({
         entryId,
         key,
         langs: prevLangs,
-        isRollback: true,
       },
     })
     onRollbackSuccess()
@@ -161,7 +160,10 @@ const ModifyRecordsModal: React.FC<ModifyRecordsProps> = ({
   const ActionComp = children ? (
     cloneElement(children, { onClick: handleShowModal })
   ) : (
-    <Button type="link" onClick={handleShowModal}>
+    <Button
+      type="link"
+      onClick={handleShowModal}
+      disabled={!modifyRecords || !modifyRecords.length}>
       查看
     </Button>
   )

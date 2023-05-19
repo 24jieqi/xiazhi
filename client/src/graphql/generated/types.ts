@@ -87,7 +87,15 @@ export type CollaborateInfo = {
   __typename?: 'CollaborateInfo'
   app?: Maybe<AppItem>
   assignedAt: Scalars['DateTime']
-  collaborator?: Maybe<UserInfo>
+  id: Scalars['Int']
+  user?: Maybe<UserInfo>
+}
+
+/** 协作者角色枚举 */
+export enum CollaboratorRoleEnum {
+  Guest = 'GUEST',
+  Manager = 'MANAGER',
+  Translator = 'TRANSLATOR',
 }
 
 /** 协作者应用统计维度 */
@@ -99,11 +107,18 @@ export type CollaboratorStatistics = {
   userId: Scalars['Int']
 }
 
+/** 邀请协作者表单 */
+export type CollaboratorsInput = {
+  role: CollaboratorRoleEnum
+  userId: Scalars['Int']
+}
+
 /** 词条基本信息 */
 export type EntryItem = {
   __typename?: 'EntryItem'
   archive?: Maybe<Scalars['Boolean']>
   createdAt?: Maybe<Scalars['DateTime']>
+  creatorId?: Maybe<Scalars['Int']>
   deleted?: Maybe<Scalars['Boolean']>
   entry_id?: Maybe<Scalars['Int']>
   key?: Maybe<Scalars['String']>
@@ -111,7 +126,6 @@ export type EntryItem = {
   mainLang?: Maybe<Scalars['String']>
   mainLangText?: Maybe<Scalars['String']>
   modifyRecords?: Maybe<Array<Maybe<RecordItem>>>
-  public?: Maybe<Scalars['Boolean']>
   updatedAt?: Maybe<Scalars['DateTime']>
 }
 
@@ -122,6 +136,14 @@ export type EntryPaging = {
   pageSize: Scalars['Int']
   records?: Maybe<Array<Maybe<EntryItem>>>
   total: Scalars['Int']
+}
+
+/** 提取本地词条信息 */
+export type ExtractLocalEntryItem = {
+  key?: InputMaybe<Scalars['String']>
+  langs?: InputMaybe<Scalars['JSONObject']>
+  mainLang: Scalars['String']
+  mainLangText?: InputMaybe<Scalars['String']>
 }
 
 /** 系统使用反馈项 */
@@ -154,7 +176,7 @@ export type Mutation = {
   checkEmailValidation?: Maybe<Scalars['Boolean']>
   /** 创建应用 */
   createApp?: Maybe<Scalars['Int']>
-  /** 创建词条，默认情况下都为公共词条 */
+  /** 创建词条，如果不穿入appId，则创建为公共词条 */
   createEntry?: Maybe<Scalars['Int']>
   /** 删除一个应用（逻辑删除），删除后应用对客户不可见 */
   deleteApp?: Maybe<Scalars['Boolean']>
@@ -162,6 +184,8 @@ export type Mutation = {
   deleteEntries?: Maybe<Scalars['Boolean']>
   /** 退出协作 */
   existCollaboration?: Maybe<Scalars['Boolean']>
+  /** @deprecated 提取本地词条信息 */
+  extractLocalEntries?: Maybe<Scalars['Boolean']>
   /** 反馈(新增/修改描述) */
   feedback?: Maybe<Scalars['Int']>
   /** 邀请协作者 */
@@ -186,7 +210,6 @@ export type Mutation = {
   updateEntry?: Maybe<Scalars['Boolean']>
   /** 编辑用户信息 */
   updateUserInfo?: Maybe<Scalars['Boolean']>
-  uploadEntries?: Maybe<Scalars['Boolean']>
   /** 通过excel上传词条 */
   uploadEntriesXlsx?: Maybe<Scalars['Boolean']>
   /** 邮箱验证 */
@@ -224,8 +247,8 @@ export type MutationCreateAppArgs = {
 
 export type MutationCreateEntryArgs = {
   appId?: InputMaybe<Scalars['Int']>
-  key?: InputMaybe<Scalars['String']>
-  langs?: InputMaybe<Scalars['JSONObject']>
+  key: Scalars['String']
+  langs: Scalars['JSONObject']
 }
 
 export type MutationDeleteAppArgs = {
@@ -241,6 +264,12 @@ export type MutationExistCollaborationArgs = {
   appId: Scalars['Int']
 }
 
+export type MutationExtractLocalEntriesArgs = {
+  accessKey: Scalars['String']
+  entries: Array<InputMaybe<ExtractLocalEntryItem>>
+  isCover?: InputMaybe<Scalars['Boolean']>
+}
+
 export type MutationFeedbackArgs = {
   feedbackId?: InputMaybe<Scalars['Int']>
   message?: InputMaybe<Scalars['String']>
@@ -250,7 +279,7 @@ export type MutationFeedbackArgs = {
 
 export type MutationInviteCollaboratorsArgs = {
   appId: Scalars['Int']
-  userIdList: Array<Scalars['Int']>
+  userIdList: Array<CollaboratorsInput>
 }
 
 export type MutationLoginArgs = {
@@ -282,7 +311,7 @@ export type MutationSendResetPasswordEmailArgs = {
 
 export type MutationTransformEntryArgs = {
   entryId: Scalars['Int']
-  targetAppId: Scalars['Int']
+  targetAppId?: InputMaybe<Scalars['Int']>
 }
 
 export type MutationUpdateAppBasicInfoArgs = {
@@ -295,7 +324,6 @@ export type MutationUpdateAppBasicInfoArgs = {
 export type MutationUpdateEntryArgs = {
   appId?: InputMaybe<Scalars['Int']>
   entryId: Scalars['Int']
-  isRollback: Scalars['Boolean']
   key?: InputMaybe<Scalars['String']>
   langs?: InputMaybe<Scalars['JSONObject']>
 }
@@ -306,11 +334,6 @@ export type MutationUpdateUserInfoArgs = {
   nickName?: InputMaybe<Scalars['String']>
   phone?: InputMaybe<Scalars['String']>
   role?: InputMaybe<UserRoleEnum>
-}
-
-export type MutationUploadEntriesArgs = {
-  accessKey?: InputMaybe<Scalars['String']>
-  entries: Array<InputMaybe<UploadEntryItem>>
 }
 
 export type MutationUploadEntriesXlsxArgs = {
@@ -336,8 +359,6 @@ export type Query = {
   getCurrentApps?: Maybe<AppPaging>
   /** 获取当前登录用户的基本信息 */
   getCurrentUser?: Maybe<UserInfo>
-  /** 根据应用id获取要共享的应用词库 */
-  getTransformAppInfoById?: Maybe<Array<Maybe<TransformAppEntryInfo>>>
   /** 用户姓名的模糊查询 */
   listUserFuzzyByUserName?: Maybe<Array<Maybe<UserInfo>>>
   /** 获取所有公共词条（分页） */
@@ -346,6 +367,8 @@ export type Query = {
   pageAppEntries?: Maybe<EntryPaging>
   /** 反馈问题内容分页 */
   pageFeedbackNegative?: Maybe<FeedbackPaging>
+  /** 通过中文查询公共词条 */
+  queryPublicEntryByMainText?: Maybe<EntryItem>
   /** 词条key应用内唯一校验 */
   validEntryKey?: Maybe<Scalars['Boolean']>
 }
@@ -378,10 +401,6 @@ export type QueryGetCurrentAppsArgs = {
   type?: InputMaybe<AppTypeEnum>
 }
 
-export type QueryGetTransformAppInfoByIdArgs = {
-  entryId: Scalars['Int']
-}
-
 export type QueryListUserFuzzyByUserNameArgs = {
   keywords: Scalars['String']
 }
@@ -412,6 +431,10 @@ export type QueryPageFeedbackNegativeArgs = {
   pageSize: Scalars['Int']
 }
 
+export type QueryQueryPublicEntryByMainTextArgs = {
+  mainText: Scalars['String']
+}
+
 export type QueryValidEntryKeyArgs = {
   appId?: InputMaybe<Scalars['Int']>
   entryId?: InputMaybe<Scalars['Int']>
@@ -430,19 +453,6 @@ export type RecordItem = {
   prevKey?: Maybe<Scalars['String']>
   prevLangs?: Maybe<Scalars['JSONObject']>
   record_id: Scalars['Int']
-}
-
-/** 词条要转换的应用词库信息 */
-export type TransformAppEntryInfo = {
-  __typename?: 'TransformAppEntryInfo'
-  label?: Maybe<Scalars['String']>
-  value?: Maybe<Scalars['Int']>
-}
-
-/** 新增词条上传信息 */
-export type UploadEntryItem = {
-  key?: InputMaybe<Scalars['String']>
-  langs?: InputMaybe<Scalars['JSONObject']>
 }
 
 /** 用户基本信息 */

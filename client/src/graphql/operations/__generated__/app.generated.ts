@@ -39,6 +39,7 @@ export type GetCurrentAppsQuery = {
         phone?: string
         role?: SchemaTypes.UserRoleEnum
         avatar?: string
+        verifyType?: string
       }
     }>
   }
@@ -46,16 +47,16 @@ export type GetCurrentAppsQuery = {
 
 export type CreateAppMutationVariables = SchemaTypes.Exact<{
   name: SchemaTypes.Scalars['String']
+  description?: SchemaTypes.InputMaybe<SchemaTypes.Scalars['String']>
   type: SchemaTypes.AppTypeEnum
   languages: Array<SchemaTypes.Scalars['String']>
   pictures: Array<SchemaTypes.Scalars['String']>
-  description?: SchemaTypes.InputMaybe<SchemaTypes.Scalars['String']>
 }>
 
 export type CreateAppMutation = { createApp?: number }
 
 export type GetAppInfoByIdQueryVariables = SchemaTypes.Exact<{
-  getAppInfoByIdId: SchemaTypes.Scalars['Int']
+  id: SchemaTypes.Scalars['Int']
 }>
 
 export type GetAppInfoByIdQuery = {
@@ -69,6 +70,7 @@ export type GetAppInfoByIdQuery = {
     pictures?: Array<string>
     access?: boolean
     push?: boolean
+    accessKey?: string
     creatorId?: number
     entryCount?: number
     creator?: {
@@ -80,50 +82,22 @@ export type GetAppInfoByIdQuery = {
       phone?: string
       role?: SchemaTypes.UserRoleEnum
       avatar?: string
+      verifyType?: string
     }
   }
 }
 
-export type GetTransformAppInfoByIdQueryVariables = SchemaTypes.Exact<{
-  entryId: SchemaTypes.Scalars['Int']
-}>
-
-export type GetTransformAppInfoByIdQuery = {
-  getTransformAppInfoById?: Array<{
-    __typename?: 'TransformAppEntryInfo'
-    label?: string
-    value?: number
-  }>
-}
-
 export type UpdateAppBasicInfoMutationVariables = SchemaTypes.Exact<{
   appId: SchemaTypes.Scalars['Int']
+  description?: SchemaTypes.InputMaybe<SchemaTypes.Scalars['String']>
   type: SchemaTypes.AppTypeEnum
   pictures: Array<SchemaTypes.Scalars['String']>
-  description?: SchemaTypes.InputMaybe<SchemaTypes.Scalars['String']>
 }>
 
 export type UpdateAppBasicInfoMutation = { updateAppBasicInfo?: number }
 
-export type GetAccessKeyByAppIdQueryVariables = SchemaTypes.Exact<{
-  getAccessKeyByAppIdId: SchemaTypes.Scalars['Int']
-}>
-
-export type GetAccessKeyByAppIdQuery = {
-  getAccessKeyByAppId?: {
-    __typename?: 'AppAccessInfo'
-    app_id: number
-    name?: string
-    deleted?: boolean
-    archived?: boolean
-    push?: boolean
-    access?: boolean
-    accessKey?: string
-  }
-}
-
 export type RefreshAccessKeyMutationVariables = SchemaTypes.Exact<{
-  refreshAccessKeyId: SchemaTypes.Scalars['Int']
+  id: SchemaTypes.Scalars['Int']
 }>
 
 export type RefreshAccessKeyMutation = { refreshAccessKey?: string }
@@ -137,13 +111,13 @@ export type ChangeAccessStatusMutationVariables = SchemaTypes.Exact<{
 export type ChangeAccessStatusMutation = { changeAccessStatus?: boolean }
 
 export type ArchivedAppMutationVariables = SchemaTypes.Exact<{
-  archivedAppId: SchemaTypes.Scalars['Int']
+  id: SchemaTypes.Scalars['Int']
 }>
 
 export type ArchivedAppMutation = { archivedApp?: boolean }
 
 export type DeleteAppMutationVariables = SchemaTypes.Exact<{
-  deleteAppId: SchemaTypes.Scalars['Int']
+  id: SchemaTypes.Scalars['Int']
 }>
 
 export type DeleteAppMutation = { deleteApp?: boolean }
@@ -156,7 +130,8 @@ export type GetAppCollaboratorsQuery = {
   getAppCollaborators?: Array<{
     __typename?: 'CollaborateInfo'
     assignedAt: number
-    collaborator?: {
+    id: number
+    user?: {
       __typename?: 'UserInfo'
       name?: string
       user_id?: number
@@ -165,6 +140,7 @@ export type GetAppCollaboratorsQuery = {
       phone?: string
       role?: SchemaTypes.UserRoleEnum
       avatar?: string
+      verifyType?: string
     }
     app?: {
       __typename?: 'AppItem'
@@ -188,6 +164,7 @@ export type GetAppCollaboratorsQuery = {
         phone?: string
         role?: SchemaTypes.UserRoleEnum
         avatar?: string
+        verifyType?: string
       }
     }
   }>
@@ -195,7 +172,7 @@ export type GetAppCollaboratorsQuery = {
 
 export type InviteCollaboratorsMutationVariables = SchemaTypes.Exact<{
   appId: SchemaTypes.Scalars['Int']
-  userIdList: Array<SchemaTypes.Scalars['Int']>
+  userIdList: Array<SchemaTypes.CollaboratorsInput>
 }>
 
 export type InviteCollaboratorsMutation = { inviteCollaborators?: boolean }
@@ -214,15 +191,32 @@ export type GetAppCollaboratorsStatisticsQueryVariables = SchemaTypes.Exact<{
 export type GetAppCollaboratorsStatisticsQuery = {
   getAppCollaboratorsStatistics?: Array<{
     __typename?: 'CollaboratorStatistics'
+    userId: number
     addCount: number
     addCountToday: number
     modifyCount: number
-    userId: number
   }>
 }
 
+export type GetAccessKeyByAppIdQueryVariables = SchemaTypes.Exact<{
+  id: SchemaTypes.Scalars['Int']
+}>
+
+export type GetAccessKeyByAppIdQuery = {
+  getAccessKeyByAppId?: {
+    __typename?: 'AppAccessInfo'
+    app_id: number
+    name?: string
+    deleted?: boolean
+    archived?: boolean
+    push?: boolean
+    access?: boolean
+    accessKey?: string
+  }
+}
+
 export const GetCurrentAppsDocument = gql`
-  query GetCurrentApps(
+  query getCurrentApps(
     $name: String
     $type: AppTypeEnum
     $languages: [String!]
@@ -258,6 +252,7 @@ export const GetCurrentAppsDocument = gql`
           phone
           role
           avatar
+          verifyType
         }
         entryCount
       }
@@ -320,19 +315,19 @@ export type GetCurrentAppsQueryResult = Apollo.QueryResult<
   GetCurrentAppsQueryVariables
 >
 export const CreateAppDocument = gql`
-  mutation CreateApp(
+  mutation createApp(
     $name: String!
+    $description: String
     $type: AppTypeEnum!
     $languages: [String!]!
     $pictures: [String!]!
-    $description: String
   ) {
     createApp(
       name: $name
+      description: $description
       type: $type
       languages: $languages
       pictures: $pictures
-      description: $description
     )
   }
 `
@@ -355,10 +350,10 @@ export type CreateAppMutationFn = Apollo.MutationFunction<
  * const [createAppMutation, { data, loading, error }] = useCreateAppMutation({
  *   variables: {
  *      name: // value for 'name'
+ *      description: // value for 'description'
  *      type: // value for 'type'
  *      languages: // value for 'languages'
  *      pictures: // value for 'pictures'
- *      description: // value for 'description'
  *   },
  * });
  */
@@ -383,8 +378,8 @@ export type CreateAppMutationOptions = Apollo.BaseMutationOptions<
   CreateAppMutationVariables
 >
 export const GetAppInfoByIdDocument = gql`
-  query GetAppInfoById($getAppInfoByIdId: Int!) {
-    getAppInfoById(id: $getAppInfoByIdId) {
+  query getAppInfoById($id: Int!) {
+    getAppInfoById(id: $id) {
       app_id
       name
       description
@@ -393,6 +388,7 @@ export const GetAppInfoByIdDocument = gql`
       pictures
       access
       push
+      accessKey
       creatorId
       creator {
         name
@@ -402,6 +398,7 @@ export const GetAppInfoByIdDocument = gql`
         phone
         role
         avatar
+        verifyType
       }
       entryCount
     }
@@ -420,7 +417,7 @@ export const GetAppInfoByIdDocument = gql`
  * @example
  * const { data, loading, error } = useGetAppInfoByIdQuery({
  *   variables: {
- *      getAppInfoByIdId: // value for 'getAppInfoByIdId'
+ *      id: // value for 'id'
  *   },
  * });
  */
@@ -458,77 +455,18 @@ export type GetAppInfoByIdQueryResult = Apollo.QueryResult<
   GetAppInfoByIdQuery,
   GetAppInfoByIdQueryVariables
 >
-export const GetTransformAppInfoByIdDocument = gql`
-  query GetTransformAppInfoById($entryId: Int!) {
-    getTransformAppInfoById(entryId: $entryId) {
-      label
-      value
-    }
-  }
-`
-
-/**
- * __useGetTransformAppInfoByIdQuery__
- *
- * To run a query within a React component, call `useGetTransformAppInfoByIdQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetTransformAppInfoByIdQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useGetTransformAppInfoByIdQuery({
- *   variables: {
- *      entryId: // value for 'entryId'
- *   },
- * });
- */
-export function useGetTransformAppInfoByIdQuery(
-  baseOptions: Apollo.QueryHookOptions<
-    GetTransformAppInfoByIdQuery,
-    GetTransformAppInfoByIdQueryVariables
-  >,
-) {
-  const options = { ...defaultOptions, ...baseOptions }
-  return Apollo.useQuery<
-    GetTransformAppInfoByIdQuery,
-    GetTransformAppInfoByIdQueryVariables
-  >(GetTransformAppInfoByIdDocument, options)
-}
-export function useGetTransformAppInfoByIdLazyQuery(
-  baseOptions?: Apollo.LazyQueryHookOptions<
-    GetTransformAppInfoByIdQuery,
-    GetTransformAppInfoByIdQueryVariables
-  >,
-) {
-  const options = { ...defaultOptions, ...baseOptions }
-  return Apollo.useLazyQuery<
-    GetTransformAppInfoByIdQuery,
-    GetTransformAppInfoByIdQueryVariables
-  >(GetTransformAppInfoByIdDocument, options)
-}
-export type GetTransformAppInfoByIdQueryHookResult = ReturnType<
-  typeof useGetTransformAppInfoByIdQuery
->
-export type GetTransformAppInfoByIdLazyQueryHookResult = ReturnType<
-  typeof useGetTransformAppInfoByIdLazyQuery
->
-export type GetTransformAppInfoByIdQueryResult = Apollo.QueryResult<
-  GetTransformAppInfoByIdQuery,
-  GetTransformAppInfoByIdQueryVariables
->
 export const UpdateAppBasicInfoDocument = gql`
-  mutation UpdateAppBasicInfo(
+  mutation updateAppBasicInfo(
     $appId: Int!
+    $description: String
     $type: AppTypeEnum!
     $pictures: [String!]!
-    $description: String
   ) {
     updateAppBasicInfo(
       appId: $appId
+      description: $description
       type: $type
       pictures: $pictures
-      description: $description
     )
   }
 `
@@ -551,9 +489,9 @@ export type UpdateAppBasicInfoMutationFn = Apollo.MutationFunction<
  * const [updateAppBasicInfoMutation, { data, loading, error }] = useUpdateAppBasicInfoMutation({
  *   variables: {
  *      appId: // value for 'appId'
+ *      description: // value for 'description'
  *      type: // value for 'type'
  *      pictures: // value for 'pictures'
- *      description: // value for 'description'
  *   },
  * });
  */
@@ -578,73 +516,9 @@ export type UpdateAppBasicInfoMutationOptions = Apollo.BaseMutationOptions<
   UpdateAppBasicInfoMutation,
   UpdateAppBasicInfoMutationVariables
 >
-export const GetAccessKeyByAppIdDocument = gql`
-  query GetAccessKeyByAppId($getAccessKeyByAppIdId: Int!) {
-    getAccessKeyByAppId(id: $getAccessKeyByAppIdId) {
-      app_id
-      name
-      deleted
-      archived
-      push
-      access
-      accessKey
-    }
-  }
-`
-
-/**
- * __useGetAccessKeyByAppIdQuery__
- *
- * To run a query within a React component, call `useGetAccessKeyByAppIdQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetAccessKeyByAppIdQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useGetAccessKeyByAppIdQuery({
- *   variables: {
- *      getAccessKeyByAppIdId: // value for 'getAccessKeyByAppIdId'
- *   },
- * });
- */
-export function useGetAccessKeyByAppIdQuery(
-  baseOptions: Apollo.QueryHookOptions<
-    GetAccessKeyByAppIdQuery,
-    GetAccessKeyByAppIdQueryVariables
-  >,
-) {
-  const options = { ...defaultOptions, ...baseOptions }
-  return Apollo.useQuery<
-    GetAccessKeyByAppIdQuery,
-    GetAccessKeyByAppIdQueryVariables
-  >(GetAccessKeyByAppIdDocument, options)
-}
-export function useGetAccessKeyByAppIdLazyQuery(
-  baseOptions?: Apollo.LazyQueryHookOptions<
-    GetAccessKeyByAppIdQuery,
-    GetAccessKeyByAppIdQueryVariables
-  >,
-) {
-  const options = { ...defaultOptions, ...baseOptions }
-  return Apollo.useLazyQuery<
-    GetAccessKeyByAppIdQuery,
-    GetAccessKeyByAppIdQueryVariables
-  >(GetAccessKeyByAppIdDocument, options)
-}
-export type GetAccessKeyByAppIdQueryHookResult = ReturnType<
-  typeof useGetAccessKeyByAppIdQuery
->
-export type GetAccessKeyByAppIdLazyQueryHookResult = ReturnType<
-  typeof useGetAccessKeyByAppIdLazyQuery
->
-export type GetAccessKeyByAppIdQueryResult = Apollo.QueryResult<
-  GetAccessKeyByAppIdQuery,
-  GetAccessKeyByAppIdQueryVariables
->
 export const RefreshAccessKeyDocument = gql`
-  mutation RefreshAccessKey($refreshAccessKeyId: Int!) {
-    refreshAccessKey(id: $refreshAccessKeyId)
+  mutation refreshAccessKey($id: Int!) {
+    refreshAccessKey(id: $id)
   }
 `
 export type RefreshAccessKeyMutationFn = Apollo.MutationFunction<
@@ -665,7 +539,7 @@ export type RefreshAccessKeyMutationFn = Apollo.MutationFunction<
  * @example
  * const [refreshAccessKeyMutation, { data, loading, error }] = useRefreshAccessKeyMutation({
  *   variables: {
- *      refreshAccessKeyId: // value for 'refreshAccessKeyId'
+ *      id: // value for 'id'
  *   },
  * });
  */
@@ -691,7 +565,7 @@ export type RefreshAccessKeyMutationOptions = Apollo.BaseMutationOptions<
   RefreshAccessKeyMutationVariables
 >
 export const ChangeAccessStatusDocument = gql`
-  mutation ChangeAccessStatus($appId: Int!, $access: Boolean, $push: Boolean) {
+  mutation changeAccessStatus($appId: Int!, $access: Boolean, $push: Boolean) {
     changeAccessStatus(appId: $appId, access: $access, push: $push)
   }
 `
@@ -741,8 +615,8 @@ export type ChangeAccessStatusMutationOptions = Apollo.BaseMutationOptions<
   ChangeAccessStatusMutationVariables
 >
 export const ArchivedAppDocument = gql`
-  mutation ArchivedApp($archivedAppId: Int!) {
-    archivedApp(id: $archivedAppId)
+  mutation archivedApp($id: Int!) {
+    archivedApp(id: $id)
   }
 `
 export type ArchivedAppMutationFn = Apollo.MutationFunction<
@@ -763,7 +637,7 @@ export type ArchivedAppMutationFn = Apollo.MutationFunction<
  * @example
  * const [archivedAppMutation, { data, loading, error }] = useArchivedAppMutation({
  *   variables: {
- *      archivedAppId: // value for 'archivedAppId'
+ *      id: // value for 'id'
  *   },
  * });
  */
@@ -789,8 +663,8 @@ export type ArchivedAppMutationOptions = Apollo.BaseMutationOptions<
   ArchivedAppMutationVariables
 >
 export const DeleteAppDocument = gql`
-  mutation DeleteApp($deleteAppId: Int!) {
-    deleteApp(id: $deleteAppId)
+  mutation deleteApp($id: Int!) {
+    deleteApp(id: $id)
   }
 `
 export type DeleteAppMutationFn = Apollo.MutationFunction<
@@ -811,7 +685,7 @@ export type DeleteAppMutationFn = Apollo.MutationFunction<
  * @example
  * const [deleteAppMutation, { data, loading, error }] = useDeleteAppMutation({
  *   variables: {
- *      deleteAppId: // value for 'deleteAppId'
+ *      id: // value for 'id'
  *   },
  * });
  */
@@ -836,10 +710,10 @@ export type DeleteAppMutationOptions = Apollo.BaseMutationOptions<
   DeleteAppMutationVariables
 >
 export const GetAppCollaboratorsDocument = gql`
-  query GetAppCollaborators($appId: Int!) {
+  query getAppCollaborators($appId: Int!) {
     getAppCollaborators(appId: $appId) {
       assignedAt
-      collaborator {
+      user {
         name
         user_id
         email
@@ -847,6 +721,7 @@ export const GetAppCollaboratorsDocument = gql`
         phone
         role
         avatar
+        verifyType
       }
       app {
         app_id
@@ -867,9 +742,11 @@ export const GetAppCollaboratorsDocument = gql`
           phone
           role
           avatar
+          verifyType
         }
         entryCount
       }
+      id
     }
   }
 `
@@ -925,7 +802,10 @@ export type GetAppCollaboratorsQueryResult = Apollo.QueryResult<
   GetAppCollaboratorsQueryVariables
 >
 export const InviteCollaboratorsDocument = gql`
-  mutation InviteCollaborators($appId: Int!, $userIdList: [Int!]!) {
+  mutation inviteCollaborators(
+    $appId: Int!
+    $userIdList: [CollaboratorsInput!]!
+  ) {
     inviteCollaborators(appId: $appId, userIdList: $userIdList)
   }
 `
@@ -974,7 +854,7 @@ export type InviteCollaboratorsMutationOptions = Apollo.BaseMutationOptions<
   InviteCollaboratorsMutationVariables
 >
 export const RemoveCollaboratorsDocument = gql`
-  mutation RemoveCollaborators($appId: Int!, $userIdList: [Int!]!) {
+  mutation removeCollaborators($appId: Int!, $userIdList: [Int!]!) {
     removeCollaborators(appId: $appId, userIdList: $userIdList)
   }
 `
@@ -1023,12 +903,12 @@ export type RemoveCollaboratorsMutationOptions = Apollo.BaseMutationOptions<
   RemoveCollaboratorsMutationVariables
 >
 export const GetAppCollaboratorsStatisticsDocument = gql`
-  query GetAppCollaboratorsStatistics($appId: Int!) {
+  query getAppCollaboratorsStatistics($appId: Int!) {
     getAppCollaboratorsStatistics(appId: $appId) {
+      userId
       addCount
       addCountToday
       modifyCount
-      userId
     }
   }
 `
@@ -1082,4 +962,68 @@ export type GetAppCollaboratorsStatisticsLazyQueryHookResult = ReturnType<
 export type GetAppCollaboratorsStatisticsQueryResult = Apollo.QueryResult<
   GetAppCollaboratorsStatisticsQuery,
   GetAppCollaboratorsStatisticsQueryVariables
+>
+export const GetAccessKeyByAppIdDocument = gql`
+  query getAccessKeyByAppId($id: Int!) {
+    getAccessKeyByAppId(id: $id) {
+      app_id
+      name
+      deleted
+      archived
+      push
+      access
+      accessKey
+    }
+  }
+`
+
+/**
+ * __useGetAccessKeyByAppIdQuery__
+ *
+ * To run a query within a React component, call `useGetAccessKeyByAppIdQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetAccessKeyByAppIdQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetAccessKeyByAppIdQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useGetAccessKeyByAppIdQuery(
+  baseOptions: Apollo.QueryHookOptions<
+    GetAccessKeyByAppIdQuery,
+    GetAccessKeyByAppIdQueryVariables
+  >,
+) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useQuery<
+    GetAccessKeyByAppIdQuery,
+    GetAccessKeyByAppIdQueryVariables
+  >(GetAccessKeyByAppIdDocument, options)
+}
+export function useGetAccessKeyByAppIdLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<
+    GetAccessKeyByAppIdQuery,
+    GetAccessKeyByAppIdQueryVariables
+  >,
+) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useLazyQuery<
+    GetAccessKeyByAppIdQuery,
+    GetAccessKeyByAppIdQueryVariables
+  >(GetAccessKeyByAppIdDocument, options)
+}
+export type GetAccessKeyByAppIdQueryHookResult = ReturnType<
+  typeof useGetAccessKeyByAppIdQuery
+>
+export type GetAccessKeyByAppIdLazyQueryHookResult = ReturnType<
+  typeof useGetAccessKeyByAppIdLazyQuery
+>
+export type GetAccessKeyByAppIdQueryResult = Apollo.QueryResult<
+  GetAccessKeyByAppIdQuery,
+  GetAccessKeyByAppIdQueryVariables
 >

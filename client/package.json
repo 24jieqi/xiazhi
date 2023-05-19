@@ -9,7 +9,7 @@
     "@craco/craco": "^6.4.3",
     "@loadable/component": "^5.15.2",
     "ahooks": "^3.0.5",
-    "antd": "^4.17.3",
+    "antd": "4",
     "axios": "^0.19.2",
     "dayjs": "^1.9.6",
     "graphql": "^16.1.0",

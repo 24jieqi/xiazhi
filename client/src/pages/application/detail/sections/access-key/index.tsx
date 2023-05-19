@@ -27,7 +27,7 @@ const AccessKeyManagement: React.FC<AccessKeyManagementProps> = () => {
     refetch,
   } = useGetAccessKeyByAppIdQuery({
     variables: {
-      getAccessKeyByAppIdId: appId,
+      id: appId,
     },
   })
   const [refreshAccessKey, { loading }] = useRefreshAccessKeyMutation()
@@ -35,10 +35,12 @@ const AccessKeyManagement: React.FC<AccessKeyManagementProps> = () => {
   const [archiveApp] = useArchivedAppMutation()
   const [deleteApp] = useDeleteAppMutation()
 
+  const accessInfo = data?.getAccessKeyByAppId
+
   async function handleRefreshAccessKey() {
     await refreshAccessKey({
       variables: {
-        refreshAccessKeyId: appId,
+        id: appId,
       },
     })
     refetch()
@@ -70,7 +72,7 @@ const AccessKeyManagement: React.FC<AccessKeyManagementProps> = () => {
       onOk: async () => {
         await archiveApp({
           variables: {
-            archivedAppId: appId,
+            id: appId,
           },
         })
         refetch()
@@ -86,7 +88,7 @@ const AccessKeyManagement: React.FC<AccessKeyManagementProps> = () => {
       onOk: async () => {
         await deleteApp({
           variables: {
-            deleteAppId: appId,
+            id: appId,
           },
         })
         refetch()
@@ -102,7 +104,7 @@ const AccessKeyManagement: React.FC<AccessKeyManagementProps> = () => {
       actions: [
         <AsyncSwitch
           key="access"
-          defaultChecked={data?.getAccessKeyByAppId?.access}
+          defaultChecked={accessInfo?.access}
           onChange={checked => handleChangeAppAccessStatus('access', checked)}
         />,
       ],
@@ -113,7 +115,7 @@ const AccessKeyManagement: React.FC<AccessKeyManagementProps> = () => {
       actions: [
         <AsyncSwitch
           key="push"
-          defaultChecked={data?.getAccessKeyByAppId?.push}
+          defaultChecked={accessInfo?.push}
           onChange={checked => handleChangeAppAccessStatus('push', checked)}
         />,
       ],
@@ -123,7 +125,7 @@ const AccessKeyManagement: React.FC<AccessKeyManagementProps> = () => {
       subTitle: <Tag color="#5BD8A6">应用访问</Tag>,
       actions: [
         <Paragraph key="assessKey" style={{ marginBottom: 0 }} copyable>
-          {data?.getAccessKeyByAppId?.accessKey}
+          {accessInfo?.accessKey}
         </Paragraph>,
         <Button
           onClick={handleRefreshAccessKey}
@@ -144,8 +146,8 @@ const AccessKeyManagement: React.FC<AccessKeyManagementProps> = () => {
       actions: [
         <Switch
           key="archived"
-          checked={data?.getAccessKeyByAppId?.archived}
-          disabled={data?.getAccessKeyByAppId?.archived}
+          checked={accessInfo?.archived}
+          disabled={accessInfo?.archived}
           onChange={handleArchivedApp}
         />,
       ],
@@ -156,8 +158,8 @@ const AccessKeyManagement: React.FC<AccessKeyManagementProps> = () => {
       actions: [
         <Switch
           key="deleted"
-          checked={data?.getAccessKeyByAppId?.deleted}
-          disabled={data?.getAccessKeyByAppId?.deleted}
+          checked={accessInfo?.deleted}
+          disabled={accessInfo?.deleted}
           onChange={handleDeleteApp}
         />,
       ],

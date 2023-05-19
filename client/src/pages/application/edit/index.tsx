@@ -26,6 +26,7 @@ import config from '@/config'
 import { appTypeOptions } from '../constant'
 import UploadXlsx from '../components/upload-xlsx'
 import styles from './index.module.less'
+import { DoubleRightOutlined } from '@ant-design/icons'
 
 type EntryListProps = {
   selectedEntry: EntryItem
@@ -239,9 +240,10 @@ const EntryList: React.FC<EntryListProps> = ({
               entryId: row.entry_id,
               langObj: row.langs,
               key: row.key,
+              mainLangText: row.mainLangText,
             })
           }}>
-          转换
+          <DoubleRightOutlined />
         </a>,
       ],
     },
@@ -358,7 +360,7 @@ const AppEntryEditPage: React.FC = () => {
 
   const { data } = useGetAppInfoByIdQuery({
     variables: {
-      getAppInfoByIdId: Number(params.id),
+      id: Number(params.id),
     },
   })
 

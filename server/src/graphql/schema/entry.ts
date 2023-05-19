@@ -63,7 +63,7 @@ export const EntryItem = objectType({
   definition(t) {
     t.int("entry_id");
     t.string("key");
-    t.int('creatorId')
+    t.int("creatorId");
     t.date("createdAt");
     t.date("updatedAt");
     t.boolean("archive");
@@ -108,6 +108,7 @@ export const EntryMutation = extendType({
             where: {
               appId: args.appId,
               mainLangText: mainLangText,
+              deleted: false,
             },
           });
           if (records.length) {
@@ -120,16 +121,16 @@ export const EntryMutation = extendType({
             key: args.key,
             langs: args.langs,
             mainLangText: args.langs["zh"], // 设置主语言文本
-            createBy:{
+            createBy: {
               connect: {
-                user_id: info?.userId
-              }
+                user_id: info?.userId,
+              },
             },
             belongsTo: {
               connect: {
-                app_id: args.appId ? args.appId : undefined
-              }
-            }
+                app_id: args.appId ? args.appId : undefined,
+              },
+            },
           },
         });
         return entry.entry_id;
@@ -150,7 +151,7 @@ export const EntryMutation = extendType({
             entry_id: args.entryId,
           },
           include: {
-            belongsTo: true
+            belongsTo: true,
           },
         });
         // 在某个应用中查找排除自身词条key相同的词条列表
@@ -178,13 +179,15 @@ export const EntryMutation = extendType({
             },
             mainLangText: args.langs["zh"], // 设置主语言文本
             modifyRecords: {
-              create: [{
-                prevLangs: currentEntry?.langs || {},
-                currLangs: args.langs,
-                prevKey: currentEntry?.key,
-                currKey: args.key,
-                creator: userId,
-              },],
+              create: [
+                {
+                  prevLangs: currentEntry?.langs || {},
+                  currLangs: args.langs,
+                  prevKey: currentEntry?.key,
+                  currKey: args.key,
+                  creator: userId,
+                },
+              ],
             },
           },
         });
@@ -264,7 +267,7 @@ export const EntryMutation = extendType({
         const entries = convertXlsxData(file);
         const entriesExist = await ctx.prisma.entry.findMany({
           where: {
-            appId: args.appId
+            appId: args.appId,
           },
         });
         const result = splitUpdateOrCreateEntries(entries, entriesExist);
@@ -300,7 +303,9 @@ export const EntryMutation = extendType({
             })
           )
         );
-        const entryListId = entriyList.map((entry) => ({ entry_id: entry.entry_id }));
+        const entryListId = entriyList.map((entry) => ({
+          entry_id: entry.entry_id,
+        }));
         // 更新应用
         ctx.prisma.app.update({
           where: {
@@ -308,10 +313,10 @@ export const EntryMutation = extendType({
           },
           data: {
             entries: {
-              connect: entryListId
-            }
-          }
-        })
+              connect: entryListId,
+            },
+          },
+        });
         return true;
       },
     });
@@ -323,14 +328,14 @@ export const EntryMutation = extendType({
         targetAppId: intArg(),
       },
       async resolve(_, args, ctx) {
-        const decoded = decodedToken(ctx.req)
-        const isPublic = args.targetAppId == undefined // 是否迁移至公有APP
+        const decoded = decodedToken(ctx.req);
+        const isPublic = args.targetAppId == undefined; // 是否迁移至公有APP
         // 1. 找到目标词条
         const targetEntry = await ctx.prisma.entry.findUnique({
           where: {
-            entry_id: args.entryId
-          }
-        })
+            entry_id: args.entryId,
+          },
+        });
         // 转换为私有词条，新建一个词条
         if (!isPublic) {
           // 创建一个私有词条
@@ -339,8 +344,8 @@ export const EntryMutation = extendType({
               key: targetEntry!.key,
               createBy: {
                 connect: {
-                  user_id: decoded!.userId
-                }
+                  user_id: decoded!.userId,
+                },
               },
               mainLang: targetEntry!.mainLang,
               mainLangText: targetEntry!.mainLangText,
@@ -348,35 +353,35 @@ export const EntryMutation = extendType({
               basedOn: {
                 connect: {
                   entry_id: targetEntry?.entry_id,
-                }
+                },
               },
               belongsTo: {
                 connect: {
-                  app_id: args.targetAppId || undefined
-                }
-              }
-            }
-          })
+                  app_id: args.targetAppId || undefined,
+                },
+              },
+            },
+          });
           // 更新词条间的关联关系
           await ctx.prisma.entry.update({
             where: {
-              entry_id: targetEntry?.entry_id
+              entry_id: targetEntry?.entry_id,
             },
             data: {
               base: {
-                connect: [{ entry_id: entry.entry_id }]
-              }
-            }
-          })
+                connect: [{ entry_id: entry.entry_id }],
+              },
+            },
+          });
         } else {
           // 转换为公有词条
           const entries = await ctx.prisma.entry.findMany({
             where: {
               mainLang: targetEntry!.mainLang,
               mainLangText: targetEntry!.mainLangText,
-              deleted: false
-            }
-          })
+              deleted: false,
+            },
+          });
           // 如果没有匹配的词条，则创建一个新的公共词条
           if (!entries.length) {
             const entry = await ctx.prisma.entry.create({
@@ -384,8 +389,8 @@ export const EntryMutation = extendType({
                 key: targetEntry!.key,
                 createBy: {
                   connect: {
-                    user_id: decoded!.userId
-                  }
+                    user_id: decoded!.userId,
+                  },
                 },
                 mainLang: targetEntry!.mainLang,
                 mainLangText: targetEntry!.mainLangText,
@@ -393,45 +398,49 @@ export const EntryMutation = extendType({
                 basedOn: {
                   connect: {
                     entry_id: targetEntry?.entry_id,
-                  }
+                  },
                 },
-              }
-            })
+              },
+            });
             // 更新和原有词条的关联关系
             await ctx.prisma.entry.update({
               where: {
-                entry_id: targetEntry?.entry_id
+                entry_id: targetEntry?.entry_id,
               },
               data: {
                 base: {
-                  connect: [{ entry_id: entry.entry_id }]
-                }
-              }
-            })
-          } else {
-            await ctx.prisma.$transaction(entries.map(item => ctx.prisma.entry.update({
-              where: {
-                entry_id: item.entry_id
+                  connect: [{ entry_id: entry.entry_id }],
+                },
               },
-              data: {
-                langs: targetEntry!.langs as any,
-                basedOn: {
-                  connect: {
-                    entry_id: item.entry_id
-                  }
-                }
-              }
-            })))
+            });
+          } else {
+            await ctx.prisma.$transaction(
+              entries.map((item) =>
+                ctx.prisma.entry.update({
+                  where: {
+                    entry_id: item.entry_id,
+                  },
+                  data: {
+                    langs: targetEntry!.langs as any,
+                    basedOn: {
+                      connect: {
+                        entry_id: item.entry_id,
+                      },
+                    },
+                  },
+                })
+              )
+            );
             await ctx.prisma.entry.update({
               where: {
                 entry_id: targetEntry!.entry_id,
               },
               data: {
                 base: {
-                  connect: entries.map(i => ({ entry_id: i.entry_id }))
-                }
-              }
-            })
+                  connect: entries.map((i) => ({ entry_id: i.entry_id })),
+                },
+              },
+            });
           }
         }
         return true;
@@ -581,6 +590,21 @@ export const EntryQuery = extendType({
           return false;
         }
         return true;
+      },
+    });
+    t.field("queryPublicEntryByMainText", {
+      type: "EntryItem",
+      description: "通过中文查询公共词条",
+      args: {
+        mainText: nonNull(stringArg()),
+      },
+      resolve(_, args, ctx) {
+        return ctx.prisma.entry.findFirst({
+          where: {
+            appId: null,
+            mainLang: args.mainText,
+          },
+        });
       },
     });
   },

@@ -59,6 +59,7 @@ const Entry: React.FC = () => {
       entryId: record.entry_id,
       langObj: record.langs,
       key: record.key,
+      mainLangText: record.mainLangText,
     })
   }
 

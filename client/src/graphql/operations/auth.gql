@@ -1,12 +1,15 @@
-mutation Register($email: String!, $password: String!) {
+# 用户邮箱&密码注册
+mutation register($email: String!, $password: String!) {
   register(email: $email, password: $password)
 }
 
-mutation Login($email: String!, $password: String!) {
+# 邮箱&密码登录
+mutation login($email: String!, $password: String!) {
   login(email: $email, password: $password)
 }
 
-mutation UpdateUserInfo(
+# 编辑用户信息
+mutation updateUserInfo(
   $name: String
   $phone: String
   $nickName: String
@@ -22,7 +25,8 @@ mutation UpdateUserInfo(
   )
 }
 
-query GetCurrentUser {
+# 获取当前登录用户的基本信息
+query getCurrentUser {
   getCurrentUser {
     name
     user_id
@@ -35,18 +39,21 @@ query GetCurrentUser {
   }
 }
 
-mutation SendVerifyEmail {
+# 发送验证邮件
+mutation sendVerifyEmail {
   sendVerifyEmail
 }
 
-mutation VerifyEmail {
+# 邮箱验证
+mutation verifyEmail {
   verifyEmail
 }
 
-mutation SendResetPasswordEmail($email: String!) {
+# 发送重设密码链接
+mutation sendResetPasswordEmail($email: String!) {
   sendResetPasswordEmail(email: $email)
 }
 
-mutation ResetPassword($password: String!) {
+mutation resetPassword($password: String!) {
   resetPassword(password: $password)
 }

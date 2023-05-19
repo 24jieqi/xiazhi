@@ -9,8 +9,6 @@ import {
   ProFormText,
   ProFormTextArea,
   StepsForm,
-  ProFormRadio,
-  ProFormList,
 } from '@ant-design/pro-components'
 import { message } from 'antd'
 import React, { useRef } from 'react'
@@ -18,36 +16,37 @@ import { UploadFile } from 'antd/lib/upload/interface'
 import { useNavigate } from 'react-router-dom'
 import { useCreateAppMutation } from '@/graphql/operations/__generated__/app.generated'
 import { appSupportLangsOptions, appTypeOptions } from '../constant'
+// import { CollaboratorRoleEnum } from '@/graphql/generated/types'
 
 interface FileVO {
   data: string
 }
 
-const whetherOptions = [
-  {
-    label: '是',
-    value: true,
-  },
-  {
-    label: '否',
-    value: false,
-  },
-]
+// const whetherOptions = [
+//   {
+//     label: '是',
+//     value: true,
+//   },
+//   {
+//     label: '否',
+//     value: false,
+//   },
+// ]
 
-const permissionOptions = [
-  {
-    label: '管理',
-    value: 'admin',
-  },
-  {
-    label: '编辑',
-    value: 'edit',
-  },
-  {
-    label: '只读',
-    value: 'readonly',
-  },
-]
+// const permissionOptions = [
+//   {
+//     label: '访客',
+//     value: CollaboratorRoleEnum.Guest,
+//   },
+//   {
+//     label: '成员',
+//     value: CollaboratorRoleEnum.Translator,
+//   },
+//   {
+//     label: '管理员',
+//     value: CollaboratorRoleEnum.Manager,
+//   },
+// ]
 
 export function getPictureUrlList(fileList: UploadFile<Partial<FileVO>>[]) {
   if (!fileList || !fileList.length) {
@@ -146,7 +145,7 @@ const Add: React.FC = () => {
             action="/_upload"
           />
         </StepsForm.StepForm>
-        <StepsForm.StepForm<{
+        {/* <StepsForm.StepForm<{
           checkbox: string
         }>
           name="permission"
@@ -192,12 +191,11 @@ const Add: React.FC = () => {
                 width="lg"
                 label="权限"
                 name="permission"
-                mode="multiple"
                 options={permissionOptions}
               />
             </ProForm.Group>
           </ProFormList>
-        </StepsForm.StepForm>
+        </StepsForm.StepForm> */}
       </StepsForm>
     </ProCard>
   )

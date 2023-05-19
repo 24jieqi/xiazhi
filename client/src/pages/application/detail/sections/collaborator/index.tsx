@@ -74,7 +74,7 @@ const CollaboratorManagement: React.FC<CollaboratorManagementProps> = ({
       <Space wrap>
         {data.getAppCollaborators.map((collaborator, index) => {
           const statistics = statisticsData?.getAppCollaboratorsStatistics.find(
-            item => item.userId === collaborator?.collaborator?.user_id,
+            item => item.userId === collaborator.id,
           )
           return (
             <ProCard.Group
@@ -85,7 +85,7 @@ const CollaboratorManagement: React.FC<CollaboratorManagementProps> = ({
                   type="link"
                   size="small"
                   onClick={() =>
-                    handleRemoveCollaborator(collaborator.collaborator.user_id)
+                    handleRemoveCollaborator(collaborator.user.user_id)
                   }>
                   移除
                 </Button>
@@ -99,7 +99,7 @@ const CollaboratorManagement: React.FC<CollaboratorManagementProps> = ({
                     title="协作者信息"
                     content={
                       <div>
-                        <p>邮件：{collaborator?.collaborator.email}</p>
+                        <p>邮件：{collaborator?.user?.email}</p>
                         <p>
                           加入时间：
                           {dayjs(collaborator.assignedAt).format(
@@ -113,11 +113,11 @@ const CollaboratorManagement: React.FC<CollaboratorManagementProps> = ({
                       className={styles.avatar}
                       style={{ marginRight: 8 }}
                       src={
-                        collaborator.collaborator.avatar ||
+                        collaborator.user.avatar ||
                         'https://joeschmoe.io/api/v1/random'
                       }
                     />
-                    <span>{collaborator.collaborator.name}</span>
+                    <span>{collaborator.user.name}</span>
                   </Popover>
                 </div>
               }

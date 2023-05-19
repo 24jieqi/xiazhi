@@ -1,6 +1,14 @@
 import { formatISO } from "date-fns";
 import dayjs from "dayjs";
-import { enumType, extendType, intArg, list, nonNull, objectType } from "nexus";
+import {
+  enumType,
+  extendType,
+  inputObjectType,
+  intArg,
+  list,
+  nonNull,
+  objectType,
+} from "nexus";
 import { decodedToken } from "../token";
 import { CollaboratorRole } from "@prisma/client";
 
@@ -9,6 +17,7 @@ export const CollaborateInfo = objectType({
   description: "协作信息项",
   definition(t) {
     t.nonNull.date("assignedAt");
+    t.nonNull.int("id");
     t.field("user", {
       type: "UserInfo",
     });
@@ -95,7 +104,7 @@ export const CollaboratorQuery = extendType({
               where: {
                 creator: collaborator.id,
                 entry: {
-                  appId: args.appId
+                  appId: args.appId,
                 },
               },
             })
@@ -115,10 +124,21 @@ export const CollaboratorQuery = extendType({
 });
 
 const CollaboratorRoleEnum = enumType({
-  description: '协作者角色枚举',
-  name: 'CollaboratorRoleEnum',
-  members: CollaboratorRole
-})
+  description: "协作者角色枚举",
+  name: "CollaboratorRoleEnum",
+  members: CollaboratorRole,
+});
+
+const CollaboratorsInput = inputObjectType({
+  description: "邀请协作者表单",
+  name: "CollaboratorsInput",
+  definition(t) {
+    t.nonNull.int("userId");
+    t.nonNull.field("role", {
+      type: CollaboratorRoleEnum,
+    });
+  },
+});
 
 export const CollaboratorMutation = extendType({
   type: "Mutation",
@@ -128,8 +148,7 @@ export const CollaboratorMutation = extendType({
       type: "Boolean",
       args: {
         appId: nonNull(intArg()),
-        userIdList: nonNull(list(nonNull(intArg()))),
-        role: nonNull(CollaboratorRoleEnum)
+        userIdList: nonNull(list(nonNull(CollaboratorsInput))),
       },
       async resolve(_, args, ctx) {
         decodedToken(ctx.req);
@@ -143,29 +162,31 @@ export const CollaboratorMutation = extendType({
             },
           });
         // 构造数据前先去除已经存在的用户
-        const data = args.userIdList
-          .filter(
-            (id) =>
-              !targetAppCollaboratorIdList.find(
-                (item) => item.id === id
-              )
-          )
+        const data = args.userIdList.filter(
+          (user) =>
+            !targetAppCollaboratorIdList.find((item) => item.id === user.userId)
+        );
         // 创建多个协作者
-        ctx.prisma.$transaction(data.map(uId => ctx.prisma.collaborator.create({
-          data: {
-            user: {
-              connect: {
-                user_id: uId
-              }
-            },
-            app: {
-              connect: {
-                app_id: args.appId
-              }
-            },
-            role: args.role
-          }
-        })))
+        ctx.prisma.$transaction(
+          data.map((user) =>
+            ctx.prisma.collaborator.create({
+              data: {
+                user: {
+                  connect: {
+                    user_id: user.userId,
+                  },
+                },
+                status: "PENDDING",
+                app: {
+                  connect: {
+                    app_id: args.appId,
+                  },
+                },
+                role: user.role || undefined,
+              },
+            })
+          )
+        );
         return true;
       },
     });
@@ -191,9 +212,11 @@ export const CollaboratorMutation = extendType({
         await ctx.prisma.collaborator.deleteMany({
           where: {
             appId: args.appId,
-            id: {
-              in: args.userIdList
-            }
+            user: {
+              user_id: {
+                in: args.userIdList,
+              },
+            },
           },
         });
         return true;
@@ -210,7 +233,7 @@ export const CollaboratorMutation = extendType({
         await ctx.prisma.collaborator.deleteMany({
           where: {
             appId: args.appId,
-            userId: info!.userId
+            userId: info!.userId,
           },
         });
         return true;

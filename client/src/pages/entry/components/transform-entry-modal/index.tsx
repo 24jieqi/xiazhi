@@ -1,4 +1,4 @@
-import { Alert, Form, message, Modal, Select } from 'antd'
+import { Alert, message, Modal } from 'antd'
 import React, {
   forwardRef,
   useImperativeHandle,
@@ -6,8 +6,8 @@ import React, {
   useState,
 } from 'react'
 import { appSupportLangsTableEnum } from '@/pages/application/constant'
-import { useGetTransformAppInfoByIdLazyQuery } from '@/graphql/operations/__generated__/app.generated'
 import {
+  useQueryPublicEntryByMainTextLazyQuery,
   useTransformEntryMutation,
   useValidEntryKeyLazyQuery,
 } from '@/graphql/operations/__generated__/entry.generated'
@@ -17,6 +17,7 @@ interface ParamsType {
   currentAppId?: number
   langObj: any
   key: string
+  mainLangText: string
 }
 
 export interface TransformEntryModalRefProps {
@@ -32,32 +33,30 @@ const TransformEntryModal: React.ForwardRefRenderFunction<
   TransformEntryModalRefProps,
   TransformEntryModalProps
 > = ({ onResetCurrent, onActionSuccess }, ref) => {
-  const [form] = Form.useForm()
   const [visible, setVisible] = useState<boolean>(false)
   const [data, setData] = useState<ParamsType>(null)
+  const [queryPublicEntry, { data: publicEntry }] =
+    useQueryPublicEntryByMainTextLazyQuery()
 
-  const [getTransformAppInfo, { data: transformAppInfo }] =
-    useGetTransformAppInfoByIdLazyQuery()
   const [validEntryKey] = useValidEntryKeyLazyQuery()
   const [transformEntry, { loading }] = useTransformEntryMutation()
 
   useImperativeHandle(ref, () => ({
     open: params => {
-      getTransformAppInfo({
+      setData(params)
+      queryPublicEntry({
         variables: {
-          entryId: params.entryId,
+          mainText: params.mainLangText,
         },
       })
-      setData(params)
       setVisible(true)
     },
   }))
 
   async function handleOk() {
-    const formData = await form.validateFields()
     const res = await validEntryKey({
       variables: {
-        appId: formData.targetAppId === -1 ? undefined : formData.targetAppId,
+        appId: data.currentAppId,
         entryId: data.entryId,
         key: data.key,
       },
@@ -66,7 +65,7 @@ const TransformEntryModal: React.ForwardRefRenderFunction<
       await transformEntry({
         variables: {
           entryId: data.entryId,
-          targetAppId: formData.targetAppId,
+          targetAppId: data.currentAppId,
         },
       })
       message.success('转换成功')
@@ -79,7 +78,6 @@ const TransformEntryModal: React.ForwardRefRenderFunction<
 
   function handleCancel() {
     onResetCurrent?.()
-    form.resetFields()
     setVisible(false)
   }
 
@@ -98,23 +96,6 @@ const TransformEntryModal: React.ForwardRefRenderFunction<
     }
     return langArray.filter(lang => lang.value)
   }, [data])
-
-  const options = useMemo(() => {
-    let arr = transformAppInfo?.getTransformAppInfoById || []
-    if (data?.currentAppId) {
-      arr = [].concat(
-        [
-          {
-            label: '公共词库',
-            value: -1,
-          },
-        ],
-        arr,
-      )
-    }
-    return arr
-  }, [transformAppInfo, data])
-
   return (
     <Modal
       title="词条转换"
@@ -139,15 +120,6 @@ const TransformEntryModal: React.ForwardRefRenderFunction<
         }
         type="info"
       />
-      <Form form={form} layout="vertical">
-        <Form.Item
-          label="转换目标"
-          name="targetAppId"
-          preserve={false}
-          rules={[{ required: true, message: '请选择转换目标' }]}>
-          <Select placeholder="请选择转换目标" options={options as []} />
-        </Form.Item>
-      </Form>
     </Modal>
   )
 }

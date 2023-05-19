@@ -39,9 +39,9 @@ const ApplicationDetail: React.FC = () => {
   const [tabActiveKey, setTabActiveKey] = useState<SectionKeyEnum>(
     SectionKeyEnum.BASIC,
   )
-  const { data, loading } = useGetAppInfoByIdQuery({
+  const { data, loading, refetch } = useGetAppInfoByIdQuery({
     variables: {
-      getAppInfoByIdId: Number(params.id),
+      id: Number(params.id),
     },
   })
 
@@ -65,7 +65,10 @@ const ApplicationDetail: React.FC = () => {
         }}
         loading={loading}
         tabActiveKey={tabActiveKey}
-        onTabChange={key => setTabActiveKey(key as SectionKeyEnum)}
+        onTabChange={key => {
+          setTabActiveKey(key as SectionKeyEnum)
+          refetch()
+        }}
         tabList={tabListOptions}>
         <ProCard>
           <ActiveComp app={appInfo} />

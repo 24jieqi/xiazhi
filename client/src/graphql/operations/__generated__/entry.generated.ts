@@ -22,80 +22,9 @@ export type PageAllPublicEntriesQuery = {
       __typename?: 'EntryItem'
       entry_id?: number
       key?: string
+      creatorId?: number
       createdAt?: number
       updatedAt?: number
-      public?: boolean
-      archive?: boolean
-      deleted?: boolean
-      mainLangText?: string
-      mainLang?: string
-      langs?: any
-      modifyRecords?: Array<{
-        __typename?: 'RecordItem'
-        record_id: number
-        createdAt?: number
-        entryEntry_id?: number
-        prevLangs?: any
-        currLangs?: any
-        prevKey?: string
-        currKey?: string
-        creatorInfo?: {
-          __typename?: 'UserInfo'
-          name?: string
-          user_id?: number
-          email?: string
-          nickName?: string
-          phone?: string
-          avatar?: string
-        }
-      }>
-    }>
-  }
-}
-
-export type CreateEntryMutationVariables = SchemaTypes.Exact<{
-  appId?: SchemaTypes.InputMaybe<SchemaTypes.Scalars['Int']>
-  langs?: SchemaTypes.InputMaybe<SchemaTypes.Scalars['JSONObject']>
-  key?: SchemaTypes.InputMaybe<SchemaTypes.Scalars['String']>
-}>
-
-export type CreateEntryMutation = { createEntry?: number }
-
-export type UpdateEntryMutationVariables = SchemaTypes.Exact<{
-  entryId: SchemaTypes.Scalars['Int']
-  appId?: SchemaTypes.InputMaybe<SchemaTypes.Scalars['Int']>
-  isRollback: SchemaTypes.Scalars['Boolean']
-  langs?: SchemaTypes.InputMaybe<SchemaTypes.Scalars['JSONObject']>
-  key?: SchemaTypes.InputMaybe<SchemaTypes.Scalars['String']>
-}>
-
-export type UpdateEntryMutation = { updateEntry?: boolean }
-
-export type PageAppEntriesQueryVariables = SchemaTypes.Exact<{
-  pageSize: SchemaTypes.Scalars['Int']
-  pageNo: SchemaTypes.Scalars['Int']
-  appId: SchemaTypes.Scalars['Int']
-  archive?: SchemaTypes.InputMaybe<SchemaTypes.Scalars['Boolean']>
-  startTime?: SchemaTypes.InputMaybe<SchemaTypes.Scalars['Float']>
-  endTime?: SchemaTypes.InputMaybe<SchemaTypes.Scalars['Float']>
-  mainLangText?: SchemaTypes.InputMaybe<SchemaTypes.Scalars['String']>
-  latest?: SchemaTypes.InputMaybe<SchemaTypes.Scalars['Boolean']>
-  key?: SchemaTypes.InputMaybe<SchemaTypes.Scalars['String']>
-}>
-
-export type PageAppEntriesQuery = {
-  pageAppEntries?: {
-    __typename?: 'EntryPaging'
-    total: number
-    pageSize: number
-    current: number
-    records?: Array<{
-      __typename?: 'EntryItem'
-      entry_id?: number
-      key?: string
-      createdAt?: number
-      updatedAt?: number
-      public?: boolean
       archive?: boolean
       deleted?: boolean
       mainLangText?: string
@@ -120,6 +49,80 @@ export type PageAppEntriesQuery = {
           phone?: string
           role?: SchemaTypes.UserRoleEnum
           avatar?: string
+          verifyType?: string
+        }
+      }>
+    }>
+  }
+}
+
+export type CreateEntryMutationVariables = SchemaTypes.Exact<{
+  appId?: SchemaTypes.InputMaybe<SchemaTypes.Scalars['Int']>
+  langs: SchemaTypes.Scalars['JSONObject']
+  key: SchemaTypes.Scalars['String']
+}>
+
+export type CreateEntryMutation = { createEntry?: number }
+
+export type UpdateEntryMutationVariables = SchemaTypes.Exact<{
+  entryId: SchemaTypes.Scalars['Int']
+  appId?: SchemaTypes.InputMaybe<SchemaTypes.Scalars['Int']>
+  langs?: SchemaTypes.InputMaybe<SchemaTypes.Scalars['JSONObject']>
+  key?: SchemaTypes.InputMaybe<SchemaTypes.Scalars['String']>
+}>
+
+export type UpdateEntryMutation = { updateEntry?: boolean }
+
+export type PageAppEntriesQueryVariables = SchemaTypes.Exact<{
+  pageSize: SchemaTypes.Scalars['Int']
+  pageNo: SchemaTypes.Scalars['Int']
+  appId: SchemaTypes.Scalars['Int']
+  startTime?: SchemaTypes.InputMaybe<SchemaTypes.Scalars['Float']>
+  endTime?: SchemaTypes.InputMaybe<SchemaTypes.Scalars['Float']>
+  mainLangText?: SchemaTypes.InputMaybe<SchemaTypes.Scalars['String']>
+  latest?: SchemaTypes.InputMaybe<SchemaTypes.Scalars['Boolean']>
+  key?: SchemaTypes.InputMaybe<SchemaTypes.Scalars['String']>
+  archive?: SchemaTypes.InputMaybe<SchemaTypes.Scalars['Boolean']>
+}>
+
+export type PageAppEntriesQuery = {
+  pageAppEntries?: {
+    __typename?: 'EntryPaging'
+    total: number
+    pageSize: number
+    current: number
+    records?: Array<{
+      __typename?: 'EntryItem'
+      entry_id?: number
+      key?: string
+      creatorId?: number
+      createdAt?: number
+      updatedAt?: number
+      archive?: boolean
+      deleted?: boolean
+      mainLangText?: string
+      mainLang?: string
+      langs?: any
+      modifyRecords?: Array<{
+        __typename?: 'RecordItem'
+        record_id: number
+        createdAt?: number
+        entryEntry_id?: number
+        prevLangs?: any
+        currLangs?: any
+        prevKey?: string
+        currKey?: string
+        creator?: number
+        creatorInfo?: {
+          __typename?: 'UserInfo'
+          name?: string
+          user_id?: number
+          email?: string
+          nickName?: string
+          phone?: string
+          role?: SchemaTypes.UserRoleEnum
+          avatar?: string
+          verifyType?: string
         }
       }>
     }>
@@ -161,13 +164,33 @@ export type UploadEntriesXlsxMutation = { uploadEntriesXlsx?: boolean }
 
 export type TransformEntryMutationVariables = SchemaTypes.Exact<{
   entryId: SchemaTypes.Scalars['Int']
-  targetAppId: SchemaTypes.Scalars['Int']
+  targetAppId?: SchemaTypes.InputMaybe<SchemaTypes.Scalars['Int']>
 }>
 
 export type TransformEntryMutation = { transformEntry?: boolean }
 
+export type QueryPublicEntryByMainTextQueryVariables = SchemaTypes.Exact<{
+  mainText: SchemaTypes.Scalars['String']
+}>
+
+export type QueryPublicEntryByMainTextQuery = {
+  queryPublicEntryByMainText?: {
+    __typename?: 'EntryItem'
+    entry_id?: number
+    key?: string
+    creatorId?: number
+    createdAt?: number
+    updatedAt?: number
+    archive?: boolean
+    deleted?: boolean
+    mainLangText?: string
+    mainLang?: string
+    langs?: any
+  }
+}
+
 export const PageAllPublicEntriesDocument = gql`
-  query PageAllPublicEntries(
+  query pageAllPublicEntries(
     $pageSize: Int!
     $pageNo: Int!
     $key: String
@@ -189,9 +212,9 @@ export const PageAllPublicEntriesDocument = gql`
       records {
         entry_id
         key
+        creatorId
         createdAt
         updatedAt
-        public
         archive
         deleted
         mainLangText
@@ -204,13 +227,16 @@ export const PageAllPublicEntriesDocument = gql`
           currLangs
           prevKey
           currKey
+          creator
           creatorInfo {
             name
             user_id
             email
             nickName
             phone
+            role
             avatar
+            verifyType
           }
         }
         langs
@@ -275,7 +301,7 @@ export type PageAllPublicEntriesQueryResult = Apollo.QueryResult<
   PageAllPublicEntriesQueryVariables
 >
 export const CreateEntryDocument = gql`
-  mutation CreateEntry($appId: Int, $langs: JSONObject, $key: String) {
+  mutation createEntry($appId: Int, $langs: JSONObject!, $key: String!) {
     createEntry(appId: $appId, langs: $langs, key: $key)
   }
 `
@@ -325,20 +351,13 @@ export type CreateEntryMutationOptions = Apollo.BaseMutationOptions<
   CreateEntryMutationVariables
 >
 export const UpdateEntryDocument = gql`
-  mutation UpdateEntry(
+  mutation updateEntry(
     $entryId: Int!
     $appId: Int
-    $isRollback: Boolean!
     $langs: JSONObject
     $key: String
   ) {
-    updateEntry(
-      entryId: $entryId
-      appId: $appId
-      isRollback: $isRollback
-      langs: $langs
-      key: $key
-    )
+    updateEntry(entryId: $entryId, appId: $appId, langs: $langs, key: $key)
   }
 `
 export type UpdateEntryMutationFn = Apollo.MutationFunction<
@@ -361,7 +380,6 @@ export type UpdateEntryMutationFn = Apollo.MutationFunction<
  *   variables: {
  *      entryId: // value for 'entryId'
  *      appId: // value for 'appId'
- *      isRollback: // value for 'isRollback'
  *      langs: // value for 'langs'
  *      key: // value for 'key'
  *   },
@@ -389,27 +407,27 @@ export type UpdateEntryMutationOptions = Apollo.BaseMutationOptions<
   UpdateEntryMutationVariables
 >
 export const PageAppEntriesDocument = gql`
-  query PageAppEntries(
+  query pageAppEntries(
     $pageSize: Int!
     $pageNo: Int!
     $appId: Int!
-    $archive: Boolean
     $startTime: Float
     $endTime: Float
     $mainLangText: String
     $latest: Boolean
     $key: String
+    $archive: Boolean
   ) {
     pageAppEntries(
       pageSize: $pageSize
       pageNo: $pageNo
       appId: $appId
-      archive: $archive
       startTime: $startTime
       endTime: $endTime
       mainLangText: $mainLangText
       latest: $latest
       key: $key
+      archive: $archive
     ) {
       total
       pageSize
@@ -417,9 +435,9 @@ export const PageAppEntriesDocument = gql`
       records {
         entry_id
         key
+        creatorId
         createdAt
         updatedAt
-        public
         archive
         deleted
         mainLangText
@@ -441,6 +459,7 @@ export const PageAppEntriesDocument = gql`
             phone
             role
             avatar
+            verifyType
           }
         }
         langs
@@ -464,12 +483,12 @@ export const PageAppEntriesDocument = gql`
  *      pageSize: // value for 'pageSize'
  *      pageNo: // value for 'pageNo'
  *      appId: // value for 'appId'
- *      archive: // value for 'archive'
  *      startTime: // value for 'startTime'
  *      endTime: // value for 'endTime'
  *      mainLangText: // value for 'mainLangText'
  *      latest: // value for 'latest'
  *      key: // value for 'key'
+ *      archive: // value for 'archive'
  *   },
  * });
  */
@@ -508,7 +527,7 @@ export type PageAppEntriesQueryResult = Apollo.QueryResult<
   PageAppEntriesQueryVariables
 >
 export const ChangeEntryAccessStatusDocument = gql`
-  mutation ChangeEntryAccessStatus(
+  mutation changeEntryAccessStatus(
     $appId: Int!
     $entryId: Int!
     $archive: Boolean
@@ -569,7 +588,7 @@ export type ChangeEntryAccessStatusMutationOptions = Apollo.BaseMutationOptions<
   ChangeEntryAccessStatusMutationVariables
 >
 export const DeleteEntriesDocument = gql`
-  mutation DeleteEntries($appId: Int!, $entryIds: [Int!]!) {
+  mutation deleteEntries($appId: Int!, $entryIds: [Int!]!) {
     deleteEntries(appId: $appId, entryIds: $entryIds)
   }
 `
@@ -618,7 +637,7 @@ export type DeleteEntriesMutationOptions = Apollo.BaseMutationOptions<
   DeleteEntriesMutationVariables
 >
 export const ValidEntryKeyDocument = gql`
-  query ValidEntryKey($appId: Int, $entryId: Int, $key: String) {
+  query validEntryKey($appId: Int, $entryId: Int, $key: String) {
     validEntryKey(appId: $appId, entryId: $entryId, key: $key)
   }
 `
@@ -676,7 +695,7 @@ export type ValidEntryKeyQueryResult = Apollo.QueryResult<
   ValidEntryKeyQueryVariables
 >
 export const UploadEntriesXlsxDocument = gql`
-  mutation UploadEntriesXlsx($appId: Int!, $fileUrl: String!) {
+  mutation uploadEntriesXlsx($appId: Int!, $fileUrl: String!) {
     uploadEntriesXlsx(appId: $appId, fileUrl: $fileUrl)
   }
 `
@@ -725,7 +744,7 @@ export type UploadEntriesXlsxMutationOptions = Apollo.BaseMutationOptions<
   UploadEntriesXlsxMutationVariables
 >
 export const TransformEntryDocument = gql`
-  mutation TransformEntry($entryId: Int!, $targetAppId: Int!) {
+  mutation transformEntry($entryId: Int!, $targetAppId: Int) {
     transformEntry(entryId: $entryId, targetAppId: $targetAppId)
   }
 `
@@ -772,4 +791,71 @@ export type TransformEntryMutationResult =
 export type TransformEntryMutationOptions = Apollo.BaseMutationOptions<
   TransformEntryMutation,
   TransformEntryMutationVariables
+>
+export const QueryPublicEntryByMainTextDocument = gql`
+  query queryPublicEntryByMainText($mainText: String!) {
+    queryPublicEntryByMainText(mainText: $mainText) {
+      entry_id
+      key
+      creatorId
+      createdAt
+      updatedAt
+      archive
+      deleted
+      mainLangText
+      mainLang
+      langs
+    }
+  }
+`
+
+/**
+ * __useQueryPublicEntryByMainTextQuery__
+ *
+ * To run a query within a React component, call `useQueryPublicEntryByMainTextQuery` and pass it any options that fit your needs.
+ * When your component renders, `useQueryPublicEntryByMainTextQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useQueryPublicEntryByMainTextQuery({
+ *   variables: {
+ *      mainText: // value for 'mainText'
+ *   },
+ * });
+ */
+export function useQueryPublicEntryByMainTextQuery(
+  baseOptions: Apollo.QueryHookOptions<
+    QueryPublicEntryByMainTextQuery,
+    QueryPublicEntryByMainTextQueryVariables
+  >,
+) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useQuery<
+    QueryPublicEntryByMainTextQuery,
+    QueryPublicEntryByMainTextQueryVariables
+  >(QueryPublicEntryByMainTextDocument, options)
+}
+export function useQueryPublicEntryByMainTextLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<
+    QueryPublicEntryByMainTextQuery,
+    QueryPublicEntryByMainTextQueryVariables
+  >,
+) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useLazyQuery<
+    QueryPublicEntryByMainTextQuery,
+    QueryPublicEntryByMainTextQueryVariables
+  >(QueryPublicEntryByMainTextDocument, options)
+}
+export type QueryPublicEntryByMainTextQueryHookResult = ReturnType<
+  typeof useQueryPublicEntryByMainTextQuery
+>
+export type QueryPublicEntryByMainTextLazyQueryHookResult = ReturnType<
+  typeof useQueryPublicEntryByMainTextLazyQuery
+>
+export type QueryPublicEntryByMainTextQueryResult = Apollo.QueryResult<
+  QueryPublicEntryByMainTextQuery,
+  QueryPublicEntryByMainTextQueryVariables
 >

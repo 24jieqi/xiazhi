@@ -43,18 +43,14 @@ const AppBasicInfo: React.FC<AppBasicInfoProps> = ({ app }) => {
   const [updateAppBasicInfo] = useUpdateAppBasicInfoMutation()
 
   async function handleUpdateAppInfo(formData: Record<string, any>) {
-    try {
-      await updateAppBasicInfo({
-        variables: {
-          appId: Number(params.id),
-          type: formData.type,
-          pictures: getPictureUrlList(formData.pictures),
-          description: formData.description,
-        },
-      })
-    } catch (error) {
-      console.log(error)
-    }
+    await updateAppBasicInfo({
+      variables: {
+        appId: Number(params.id),
+        type: formData.type,
+        pictures: getPictureUrlList(formData.pictures),
+        description: formData.description,
+      },
+    })
     message.success('编辑应用成功！')
   }
 
