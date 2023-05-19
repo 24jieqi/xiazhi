@@ -1,14 +1,15 @@
 import { formatISO } from "date-fns";
 import dayjs from "dayjs";
-import { extendType, intArg, list, nonNull, objectType } from "nexus";
+import { enumType, extendType, intArg, list, nonNull, objectType } from "nexus";
 import { decodedToken } from "../token";
+import { CollaboratorRole } from "@prisma/client";
 
 export const CollaborateInfo = objectType({
   name: "CollaborateInfo",
   description: "协作信息项",
   definition(t) {
     t.nonNull.date("assignedAt");
-    t.field("collaborator", {
+    t.field("user", {
       type: "UserInfo",
     });
     t.field("app", { type: "AppItem" });
@@ -37,12 +38,12 @@ export const CollaboratorQuery = extendType({
       },
       async resolve(_, args, ctx) {
         decodedToken(ctx.req);
-        const res = await ctx.prisma.collaboratorsOnApps.findMany({
+        const res = await ctx.prisma.collaborator.findMany({
           where: {
             appId: args.appId,
           },
           include: {
-            collaborator: true,
+            user: true,
             app: true,
           },
         });
@@ -56,12 +57,9 @@ export const CollaboratorQuery = extendType({
         appId: nonNull(intArg()),
       },
       async resolve(_, args, ctx) {
-        const collaborators = await ctx.prisma.collaboratorsOnApps.findMany({
+        const collaborators = await ctx.prisma.collaborator.findMany({
           where: {
             appId: args.appId,
-          },
-          select: {
-            collaboratorId: true,
           },
         });
         // 1. 统计用户新增词条数
@@ -69,12 +67,8 @@ export const CollaboratorQuery = extendType({
           collaborators.map((collaborator) =>
             ctx.prisma.entry.count({
               where: {
-                app: {
-                  every: {
-                    appId: args.appId,
-                  },
-                },
-                createBy: collaborator.collaboratorId,
+                appId: args.appId,
+                creatorId: collaborator.id,
               },
             })
           )
@@ -84,12 +78,8 @@ export const CollaboratorQuery = extendType({
           collaborators.map((collaborator) =>
             ctx.prisma.entry.count({
               where: {
-                app: {
-                  every: {
-                    appId: args.appId,
-                  },
-                },
-                createBy: collaborator.collaboratorId,
+                appId: args.appId,
+                creatorId: collaborator.id,
                 createdAt: {
                   lte: formatISO(dayjs().endOf("day").toDate()),
                   gte: formatISO(dayjs().startOf("day").toDate()),
@@ -103,13 +93,9 @@ export const CollaboratorQuery = extendType({
           collaborators.map((collaborator) =>
             ctx.prisma.record.count({
               where: {
-                creator: collaborator.collaboratorId,
-                Entry: {
-                  app: {
-                    every: {
-                      appId: args.appId,
-                    },
-                  },
+                creator: collaborator.id,
+                entry: {
+                  appId: args.appId
                 },
               },
             })
@@ -120,13 +106,19 @@ export const CollaboratorQuery = extendType({
           addCount: countList[index],
           addCountToday: countListToday[index],
           modifyCount: modifyCountList[index],
-          userId: collaborator.collaboratorId,
+          userId: collaborator.id,
         }));
         return result;
       },
     });
   },
 });
+
+const CollaboratorRoleEnum = enumType({
+  description: '协作者角色枚举',
+  name: 'CollaboratorRoleEnum',
+  members: CollaboratorRole
+})
 
 export const CollaboratorMutation = extendType({
   type: "Mutation",
@@ -137,16 +129,17 @@ export const CollaboratorMutation = extendType({
       args: {
         appId: nonNull(intArg()),
         userIdList: nonNull(list(nonNull(intArg()))),
+        role: nonNull(CollaboratorRoleEnum)
       },
       async resolve(_, args, ctx) {
         decodedToken(ctx.req);
         const targetAppCollaboratorIdList =
-          await ctx.prisma.collaboratorsOnApps.findMany({
+          await ctx.prisma.collaborator.findMany({
             where: {
               appId: args.appId,
             },
             select: {
-              collaboratorId: true,
+              id: true,
             },
           });
         // 构造数据前先去除已经存在的用户
@@ -154,24 +147,25 @@ export const CollaboratorMutation = extendType({
           .filter(
             (id) =>
               !targetAppCollaboratorIdList.find(
-                (item) => item.collaboratorId === id
+                (item) => item.id === id
               )
           )
-          .map((userId) => ({
-            collaboratorId: userId,
-          }));
-        await ctx.prisma.app.update({
-          where: {
-            app_id: args.appId,
-          },
+        // 创建多个协作者
+        ctx.prisma.$transaction(data.map(uId => ctx.prisma.collaborator.create({
           data: {
-            CollaboratorsOnApps: {
-              createMany: {
-                data,
-              },
+            user: {
+              connect: {
+                user_id: uId
+              }
             },
-          },
-        });
+            app: {
+              connect: {
+                app_id: args.appId
+              }
+            },
+            role: args.role
+          }
+        })))
         return true;
       },
     });
@@ -194,12 +188,12 @@ export const CollaboratorMutation = extendType({
           return false;
         }
         // 删除记录
-        await ctx.prisma.collaboratorsOnApps.deleteMany({
+        await ctx.prisma.collaborator.deleteMany({
           where: {
             appId: args.appId,
-            collaboratorId: {
-              in: args.userIdList,
-            },
+            id: {
+              in: args.userIdList
+            }
           },
         });
         return true;
@@ -213,12 +207,10 @@ export const CollaboratorMutation = extendType({
       },
       async resolve(_, args, ctx) {
         const info = decodedToken(ctx.req);
-        await ctx.prisma.collaboratorsOnApps.delete({
+        await ctx.prisma.collaborator.deleteMany({
           where: {
-            collaboratorId_appId: {
-              appId: args.appId,
-              collaboratorId: info?.userId!,
-            },
+            appId: args.appId,
+            userId: info!.userId
           },
         });
         return true;

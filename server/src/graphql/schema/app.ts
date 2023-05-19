@@ -91,6 +91,7 @@ export const AppQuery = queryType({
         const decoded = decodedToken(ctx.req);
         return await ctx.prisma.app.findFirst({
           where: {
+            deleted:false,
             app_id: args.id,
             creatorId: decoded?.userId,
           },
@@ -109,14 +110,6 @@ export const AppQuery = queryType({
       },
       async resolve(_root, args, ctx) {
         const decoded = decodedToken(ctx.req);
-        const languagesParams = args.languages
-          ? {
-              languages: {
-                hasSome: args.languages || [],
-              },
-            }
-          : {};
-
         const records = await ctx.prisma.app.findMany({
           where: {
             OR: [
@@ -124,18 +117,21 @@ export const AppQuery = queryType({
                 creatorId: decoded?.userId,
               },
               {
-                CollaboratorsOnApps: {
+                collaborator: {
                   some: {
-                    collaboratorId: decoded?.userId,
+                    userId: decoded?.userId,
                   },
                 },
               },
             ],
+            deleted: false,
             name: {
               contains: args.name!,
             },
             type: args.type!,
-            ...languagesParams,
+            languages: {
+              hasSome: args.languages || undefined
+            },
             access: args.access!,
             push: args.push!,
           },
@@ -236,83 +232,6 @@ export const AppAccessInfo = objectType({
   },
 });
 
-export const TransformAppEntryInfo = objectType({
-  name: "TransformAppEntryInfo",
-  description: "词条要转换的应用词库信息",
-  definition(t) {
-    t.string("label");
-    t.int("value");
-  },
-});
-
-export const AppAccessQuery = extendType({
-  type: "Query",
-  definition(t) {
-    t.field("getAccessKeyByAppId", {
-      type: "AppAccessInfo",
-      description: "根据应用id获取应用权限&访问相关的信息",
-      args: {
-        id: nonNull(intArg()),
-      },
-      async resolve(_, args, ctx) {
-        return await ctx.prisma.app.findUnique({
-          where: {
-            app_id: args.id,
-          },
-        });
-      },
-    });
-  },
-});
-
-export const TransformAppEntry = extendType({
-  type: "Query",
-  definition(t) {
-    t.list.field("getTransformAppInfoById", {
-      type: "TransformAppEntryInfo",
-      description: "根据应用id获取要共享的应用词库",
-      args: {
-        entryId: nonNull(intArg()),
-      },
-      async resolve(_, args, ctx) {
-        const entryData = await ctx.prisma.entry.findUnique({
-          where: {
-            entry_id: args.entryId,
-          },
-          include: {
-            app: true,
-          },
-        });
-        const appData = await ctx.prisma.app.findMany({
-          select: {
-            app_id: true,
-            name: true,
-          },
-        });
-        // 大于0代表该词条有关联的应用
-        if (entryData!.app?.length > 0) {
-          return appData
-            .filter((appItem) => {
-              return (
-                entryData?.app.findIndex(
-                  (entryItem) => entryItem.appId === appItem.app_id
-                ) === -1
-              );
-            })
-            .map((appItem) => ({
-              label: appItem?.name,
-              value: appItem?.app_id,
-            }));
-        }
-        return appData.map((appItem) => ({
-          label: appItem?.name,
-          value: appItem?.app_id,
-        }));
-      },
-    });
-  },
-});
-
 export const AppAccessMutation = extendType({
   type: "Mutation",
   definition(t) {
@@ -373,15 +292,6 @@ export const AppAccessMutation = extendType({
           },
           data: {
             deleted: true,
-            creator: {
-              disconnect: true,
-            },
-            entries: {
-              set: [],
-            },
-          },
-          include: {
-            creator: true,
           },
         });
         return true;

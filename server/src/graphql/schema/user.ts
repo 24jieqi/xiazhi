@@ -9,10 +9,7 @@ import {
 import bcrypt from "bcrypt";
 import { decodedToken, generateToken } from "../token";
 import { sendRestEmail, sendVerifyEmail } from "../utils/mailer";
-import { getIpAddress } from "../../utils";
 import { serverAddress } from "../../api/constants";
-
-const ipAddress = getIpAddress();
 
 export const UserRoleEnum = enumType({
   description: "用户角色枚举",
@@ -46,7 +43,7 @@ export const UserQuery = extendType({
     t.field("getCurrentUser", {
       description: "获取当前登录用户的基本信息",
       type: "UserInfo",
-      async resolve(_, args, ctx) {
+      async resolve(_, __, ctx) {
         const decoded = decodedToken(ctx.req);
         return await ctx.prisma.user.findUnique({
           where: {

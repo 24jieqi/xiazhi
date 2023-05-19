@@ -6,13 +6,12 @@ import {
   inputObjectType,
   booleanArg,
 } from "nexus";
-import { EntryItem } from "./entry";
 
 export const AccessQuery = extendType({
   type: "Query",
   definition(t) {
     t.field("getAllEntries", {
-      type: list(EntryItem),
+      type: list("EntryItem"),
       args: {
         accessKey: nonNull(stringArg()),
       },
@@ -24,15 +23,12 @@ export const AccessQuery = extendType({
             access: true,
           },
           include: {
-            entries: {
-              include: {
-                entry: true,
-              },
-            },
+            entries: true
           },
         });
+        // 只返回有key的词条
         return (
-          app?.entries?.map((item) => item.entry)?.filter((item) => item.key) ||
+          app?.entries?.filter((item) => item.key) ||
           []
         );
       },
@@ -69,11 +65,7 @@ export const AccessMutation = extendType({
             push: true,
           },
           include: {
-            entries: {
-              include: {
-                entry: true,
-              },
-            },
+            entries: true
           },
         });
         if (!app) {
@@ -84,7 +76,7 @@ export const AccessMutation = extendType({
           public: false,
           uploaded: true,
         }));
-        const oldEntry = app.entries?.map((item) => item.entry);
+        const oldEntry = app.entries || []
         const addEntryArr = currentEntry.filter(
           (item) =>
             oldEntry.findIndex(
@@ -130,28 +122,20 @@ export const AccessMutation = extendType({
         }
         // 新增词条
         if (addEntryArr.length > 0) {
-          const createdEntries = await ctx.prisma.$transaction(
+          await ctx.prisma.$transaction(
             addEntryArr.map((entry) => {
               return ctx.prisma.entry.create({
                 data: {
                   ...entry,
+                  belongsTo: {
+                    connect: {
+                      app_id: app.app_id
+                    }
+                  }
                 },
               });
             })
-          );
-          const entryIdArr = createdEntries.map((entry) => entry.entry_id);
-          await ctx.prisma.app.update({
-            where: {
-              app_id: app.app_id,
-            },
-            data: {
-              entries: {
-                create: entryIdArr.map((item) => ({
-                  entryId: item,
-                })),
-              },
-            },
-          });
+          )
         }
 
         return true;

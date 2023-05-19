@@ -14,7 +14,7 @@ datasource db {
 model Record {
   record_id     Int      @id @default(autoincrement())
   createdAt     DateTime @default(now())
-  Entry         Entry?   @relation(fields: [entryEntry_id], references: [entry_id])
+  entry         Entry?   @relation(fields: [entryEntry_id], references: [entry_id])
   entryEntry_id Int?
   prevLangs     Json?
   currLangs     Json?
@@ -27,79 +27,71 @@ model Record {
 model Entry {
   entry_id      Int      @id @default(autoincrement())
   key           String?
-  createBy      Int?
+  createBy      User?    @relation(fields: [creatorId], references: [user_id])
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
-  public        Boolean  @default(false)
   archive       Boolean  @default(false)
   deleted       Boolean  @default(false)
   modifyRecords Record[]
   mainLang      String   @default("zh")
   mainLangText  String?
   langs         Json?
-  app           EntryiesOnApps[]
-  uploaded      Boolean      @default(false)
+  belongsTo     App?     @relation(fields: [appId], references: [app_id])
+  uploaded      Boolean  @default(false)
+  creatorId     Int?
+  appId         Int?
+  basedOn       Entry?   @relation("EntryRelation", fields: [basedOnId], references: [entry_id])
+  basedOnId     Int?     @unique
+  base          Entry[]  @relation("EntryRelation")
 }
 
 // 应用
 model App {
-  app_id              Int                   @id @default(autoincrement())
-  name                String
-  description         String?
-  type                AppType
-  languages           String[]
-  pictures            String[]
-  createdAt           DateTime              @default(now())
-  entries             EntryiesOnApps[]
-  accessKey           String?
-  deleted             Boolean               @default(false)
-  archived            Boolean               @default(false)
-  push                Boolean               @default(true)
-  access              Boolean               @default(true)
-  creator             User?                 @relation(fields: [creatorId], references: [user_id])
-  creatorId           Int?
-  CollaboratorsOnApps CollaboratorsOnApps[]
+  app_id       Int            @id @default(autoincrement())
+  name         String
+  description  String?
+  type         AppType
+  languages    String[]
+  pictures     String[]
+  createdAt    DateTime       @default(now())
+  accessKey    String?
+  deleted      Boolean        @default(false)
+  archived     Boolean        @default(false)
+  push         Boolean        @default(true)
+  access       Boolean        @default(true)
+  creator      User?          @relation(fields: [creatorId], references: [user_id])
+  creatorId    Int?
+  entries      Entry[]
+  collaborator Collaborator[]
 }
 
-// 词条应用关联表
-model EntryiesOnApps {
-  app       App     @relation(fields: [appId], references: [app_id])
-  appId     Int 
-  entry     Entry   @relation(fields: [entryId], references: [entry_id])
-  entryId Int 
-  assignedAt DateTime @default(now())
-  assignedBy String?
- 
-  @@id([appId, entryId])
-}
-
-// 应用协作者关联表
-model CollaboratorsOnApps {
-  collaborator   User     @relation(fields: [collaboratorId], references: [user_id])
-  app            App      @relation(fields: [appId], references: [app_id])
-  collaboratorId Int
-  appId          Int
-  assignedAt     DateTime @default(now())
-  assignedBy     String?
-
-  @@id([collaboratorId, appId])
+// 协作者
+model Collaborator {
+  id         Int              @id @default(autoincrement())
+  role       CollaboratorRole
+  assignedAt DateTime         @default(now())
+  user       User             @relation(fields: [userId], references: [user_id])
+  app        App              @relation(fields: [appId], references: [app_id])
+  userId     Int
+  appId      Int
 }
 
 model User {
-  user_id             Int                   @id @default(autoincrement())
-  account             String?
-  email               String                @unique
-  phone               String?               @unique
-  nickName            String?
-  name                String?
-  role                UserRole?
-  avatar              String?
-  password            String
-  createdAt           DateTime              @default(now())
-  apps                App[]
-  Feedback            Feedback[]
-  CollaboratorsOnApps CollaboratorsOnApps[]
-  verifyType          String?
+  user_id      Int            @id @default(autoincrement())
+  account      String?
+  email        String         @unique
+  phone        String?        @unique
+  nickName     String?
+  name         String?
+  role         UserRole?
+  avatar       String?
+  password     String
+  createdAt    DateTime       @default(now())
+  apps         App[]
+  feedback     Feedback[]
+  verifyType   String?
+  entry        Entry[]
+  collaborator Collaborator[]
 }
 
 model Feedback {
@@ -126,4 +118,10 @@ enum UserRole {
   TRANSLATOR
   MANAGER
   OTHER
+}
+
+enum CollaboratorRole {
+  MANAGER
+  GUEST
+  TRANSLATOR
 }

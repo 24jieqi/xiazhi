@@ -47,6 +47,7 @@ export interface NexusGenInputs {
 
 export interface NexusGenEnums {
   AppTypeEnum: "CONTACT" | "EDUCATION" | "EFFICIENCY" | "FINANCE" | "GAME" | "MUSIC" | "OTHER" | "TOOL"
+  CollaboratorRoleEnum: "GUEST" | "MANAGER" | "TRANSLATOR"
   UserRoleEnum: "DEVELOPER" | "MANAGER" | "OTHER" | "TRANSLATOR"
 }
 
@@ -91,7 +92,7 @@ export interface NexusGenObjects {
   CollaborateInfo: { // root type
     app?: NexusGenRootTypes['AppItem'] | null; // AppItem
     assignedAt: NexusGenScalars['DateTime']; // DateTime!
-    collaborator?: NexusGenRootTypes['UserInfo'] | null; // UserInfo
+    user?: NexusGenRootTypes['UserInfo'] | null; // UserInfo
   }
   CollaboratorStatistics: { // root type
     addCount: number; // Int!
@@ -102,13 +103,13 @@ export interface NexusGenObjects {
   EntryItem: { // root type
     archive?: boolean | null; // Boolean
     createdAt?: NexusGenScalars['DateTime'] | null; // DateTime
+    creatorId?: number | null; // Int
     deleted?: boolean | null; // Boolean
     entry_id?: number | null; // Int
     key?: string | null; // String
     langs?: NexusGenScalars['JSONObject'] | null; // JSONObject
     mainLang?: string | null; // String
     mainLangText?: string | null; // String
-    public?: boolean | null; // Boolean
     updatedAt?: NexusGenScalars['DateTime'] | null; // DateTime
   }
   EntryPaging: { // root type
@@ -140,10 +141,6 @@ export interface NexusGenObjects {
     prevKey?: string | null; // String
     prevLangs?: NexusGenScalars['JSONObject'] | null; // JSONObject
     record_id: number; // Int!
-  }
-  TransformAppEntryInfo: { // root type
-    label?: string | null; // String
-    value?: number | null; // Int
   }
   UserInfo: { // root type
     avatar?: string | null; // String
@@ -200,7 +197,7 @@ export interface NexusGenFieldTypes {
   CollaborateInfo: { // field return type
     app: NexusGenRootTypes['AppItem'] | null; // AppItem
     assignedAt: NexusGenScalars['DateTime']; // DateTime!
-    collaborator: NexusGenRootTypes['UserInfo'] | null; // UserInfo
+    user: NexusGenRootTypes['UserInfo'] | null; // UserInfo
   }
   CollaboratorStatistics: { // field return type
     addCount: number; // Int!
@@ -211,6 +208,7 @@ export interface NexusGenFieldTypes {
   EntryItem: { // field return type
     archive: boolean | null; // Boolean
     createdAt: NexusGenScalars['DateTime'] | null; // DateTime
+    creatorId: number | null; // Int
     deleted: boolean | null; // Boolean
     entry_id: number | null; // Int
     key: string | null; // String
@@ -218,7 +216,6 @@ export interface NexusGenFieldTypes {
     mainLang: string | null; // String
     mainLangText: string | null; // String
     modifyRecords: Array<NexusGenRootTypes['RecordItem'] | null> | null; // [RecordItem]
-    public: boolean | null; // Boolean
     updatedAt: NexusGenScalars['DateTime'] | null; // DateTime
   }
   EntryPaging: { // field return type
@@ -268,14 +265,12 @@ export interface NexusGenFieldTypes {
   }
   Query: { // field return type
     countPositive: number | null; // Int
-    getAccessKeyByAppId: NexusGenRootTypes['AppAccessInfo'] | null; // AppAccessInfo
     getAllEntries: Array<NexusGenRootTypes['EntryItem'] | null> | null; // [EntryItem]
     getAppCollaborators: Array<NexusGenRootTypes['CollaborateInfo'] | null> | null; // [CollaborateInfo]
     getAppCollaboratorsStatistics: Array<NexusGenRootTypes['CollaboratorStatistics'] | null> | null; // [CollaboratorStatistics]
     getAppInfoById: NexusGenRootTypes['AppItem'] | null; // AppItem
     getCurrentApps: NexusGenRootTypes['AppPaging'] | null; // AppPaging
     getCurrentUser: NexusGenRootTypes['UserInfo'] | null; // UserInfo
-    getTransformAppInfoById: Array<NexusGenRootTypes['TransformAppEntryInfo'] | null> | null; // [TransformAppEntryInfo]
     listUserFuzzyByUserName: Array<NexusGenRootTypes['UserInfo'] | null> | null; // [UserInfo]
     pageAllPublicEntries: NexusGenRootTypes['EntryPaging'] | null; // EntryPaging
     pageAppEntries: NexusGenRootTypes['EntryPaging'] | null; // EntryPaging
@@ -292,10 +287,6 @@ export interface NexusGenFieldTypes {
     prevKey: string | null; // String
     prevLangs: NexusGenScalars['JSONObject'] | null; // JSONObject
     record_id: number; // Int!
-  }
-  TransformAppEntryInfo: { // field return type
-    label: string | null; // String
-    value: number | null; // Int
   }
   UserInfo: { // field return type
     avatar: string | null; // String
@@ -342,7 +333,7 @@ export interface NexusGenFieldTypeNames {
   CollaborateInfo: { // field return type name
     app: 'AppItem'
     assignedAt: 'DateTime'
-    collaborator: 'UserInfo'
+    user: 'UserInfo'
   }
   CollaboratorStatistics: { // field return type name
     addCount: 'Int'
@@ -353,6 +344,7 @@ export interface NexusGenFieldTypeNames {
   EntryItem: { // field return type name
     archive: 'Boolean'
     createdAt: 'DateTime'
+    creatorId: 'Int'
     deleted: 'Boolean'
     entry_id: 'Int'
     key: 'String'
@@ -360,7 +352,6 @@ export interface NexusGenFieldTypeNames {
     mainLang: 'String'
     mainLangText: 'String'
     modifyRecords: 'RecordItem'
-    public: 'Boolean'
     updatedAt: 'DateTime'
   }
   EntryPaging: { // field return type name
@@ -410,14 +401,12 @@ export interface NexusGenFieldTypeNames {
   }
   Query: { // field return type name
     countPositive: 'Int'
-    getAccessKeyByAppId: 'AppAccessInfo'
     getAllEntries: 'EntryItem'
     getAppCollaborators: 'CollaborateInfo'
     getAppCollaboratorsStatistics: 'CollaboratorStatistics'
     getAppInfoById: 'AppItem'
     getCurrentApps: 'AppPaging'
     getCurrentUser: 'UserInfo'
-    getTransformAppInfoById: 'TransformAppEntryInfo'
     listUserFuzzyByUserName: 'UserInfo'
     pageAllPublicEntries: 'EntryPaging'
     pageAppEntries: 'EntryPaging'
@@ -434,10 +423,6 @@ export interface NexusGenFieldTypeNames {
     prevKey: 'String'
     prevLangs: 'JSONObject'
     record_id: 'Int'
-  }
-  TransformAppEntryInfo: { // field return type name
-    label: 'String'
-    value: 'Int'
   }
   UserInfo: { // field return type name
     avatar: 'String'
@@ -479,8 +464,8 @@ export interface NexusGenArgTypes {
     }
     createEntry: { // args
       appId?: number | null; // Int
-      key?: string | null; // String
-      langs?: NexusGenScalars['JSONObject'] | null; // JSONObject
+      key: string; // String!
+      langs: NexusGenScalars['JSONObject']; // JSONObject!
     }
     deleteApp: { // args
       id: number; // Int!
@@ -505,6 +490,7 @@ export interface NexusGenArgTypes {
     }
     inviteCollaborators: { // args
       appId: number; // Int!
+      role: NexusGenEnums['CollaboratorRoleEnum']; // CollaboratorRoleEnum!
       userIdList: number[]; // [Int!]!
     }
     login: { // args
@@ -530,7 +516,7 @@ export interface NexusGenArgTypes {
     }
     transformEntry: { // args
       entryId: number; // Int!
-      targetAppId: number; // Int!
+      targetAppId?: number | null; // Int
     }
     updateAppBasicInfo: { // args
       appId: number; // Int!
@@ -541,7 +527,6 @@ export interface NexusGenArgTypes {
     updateEntry: { // args
       appId?: number | null; // Int
       entryId: number; // Int!
-      isRollback: boolean; // Boolean!
       key?: string | null; // String
       langs?: NexusGenScalars['JSONObject'] | null; // JSONObject
     }
@@ -558,9 +543,6 @@ export interface NexusGenArgTypes {
     }
   }
   Query: {
-    getAccessKeyByAppId: { // args
-      id: number; // Int!
-    }
     getAllEntries: { // args
       accessKey: string; // String!
     }
@@ -579,9 +561,6 @@ export interface NexusGenArgTypes {
       name?: string | null; // String
       push?: boolean | null; // Boolean
       type?: NexusGenEnums['AppTypeEnum'] | null; // AppTypeEnum
-    }
-    getTransformAppInfoById: { // args
-      entryId: number; // Int!
     }
     listUserFuzzyByUserName: { // args
       keywords: string; // String!

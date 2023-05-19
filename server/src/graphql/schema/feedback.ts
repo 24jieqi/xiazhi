@@ -102,21 +102,14 @@ export const FeedbackMutation = extendType({
         const feedback = await ctx.prisma.feedback.create({
           data: {
             result: args.result,
-            message: args.message
-          }
-        })
-        if (args.userId) {
-          await ctx.prisma.user.update({
-            where: {
-              user_id: args.userId
-            },
-            data: {
-              Feedback: {
-                connect: [{ feedback_id: feedback.feedback_id }]
+            message: args.message,
+            user: {
+              connect: {
+                user_id: args.userId || undefined,
               }
             }
-          })
-        }
+          }
+        })
         return feedback.feedback_id
       }
     })
