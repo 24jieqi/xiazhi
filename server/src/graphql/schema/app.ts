@@ -84,7 +84,7 @@ export const AppPaging = objectType({
 export const AppQuery = queryType({
   definition(t) {
     t.field("getAppInfoById", {
-      description: "通过应用id获取应用基本信息",
+      description: "应用: 通过应用id获取应用基本信息",
       args: {
         id: nonNull(intArg()),
       },
@@ -101,7 +101,7 @@ export const AppQuery = queryType({
       },
     });
     t.field("getCurrentApps", {
-      description: "获取当前用户创建的应用列表",
+      description: "应用: 获取当前用户创建的应用列表",
       type: "AppPaging",
       args: {
         name: stringArg(),
@@ -157,7 +157,7 @@ export const AppQuery = queryType({
 export const AppMutation = mutationType({
   definition(t) {
     t.field("createApp", {
-      description: "创建应用",
+      description: "应用: 创建应用",
       type: "Int",
       args: {
         name: nonNull(stringArg()),
@@ -197,7 +197,7 @@ export const AppMutation = mutationType({
       },
     });
     t.field("updateAppBasicInfo", {
-      description: "更新应用基本信息",
+      description: "应用: 更新应用基本信息",
       type: "Int",
       args: {
         appId: nonNull(intArg()),
@@ -221,7 +221,7 @@ export const AppMutation = mutationType({
       },
     });
     t.field("downloadAppXlsTemplate", {
-      description: "生成多语言模版文件并返回",
+      description: "应用: 生成多语言模版文件并返回",
       type: "String",
       args: {
         appId: nonNull(intArg()),
@@ -262,7 +262,7 @@ export const AppAccessQuery = extendType({
   definition(t) {
     t.field("getAccessKeyByAppId", {
       type: "AppAccessInfo",
-      description: "根据应用id获取应用权限&访问相关的信息",
+      description: "应用管理: 根据应用id获取应用权限&访问相关的信息",
       args: {
         id: nonNull(intArg()),
       },
@@ -282,7 +282,7 @@ export const AppAccessMutation = extendType({
   definition(t) {
     t.field("refreshAccessKey", {
       type: "String",
-      description: "刷新应用accessKey",
+      description: "应用管理: 刷新应用accessKey",
       args: {
         id: nonNull(intArg()),
       },
@@ -302,7 +302,7 @@ export const AppAccessMutation = extendType({
     });
     t.field("archivedApp", {
       type: "Boolean",
-      description: "归档一个应用（归档后不能再编辑）",
+      description: "应用管理: 归档一个应用（归档后不能再编辑）",
       args: {
         id: nonNull(intArg()),
       },
@@ -320,7 +320,7 @@ export const AppAccessMutation = extendType({
     });
     t.field("deleteApp", {
       type: "Boolean",
-      description: "删除一个应用（逻辑删除），删除后应用对客户不可见",
+      description: "应用管理: 删除一个应用（逻辑删除），删除后应用对客户不可见",
       args: {
         id: nonNull(intArg()),
       },
@@ -344,7 +344,7 @@ export const AppAccessMutation = extendType({
     });
     t.field("changeAccessStatus", {
       type: "Boolean",
-      description: "更改应用在可访问和推送上的状态",
+      description: "应用管理: 更改应用在可访问和推送上的状态",
       args: {
         appId: nonNull(intArg()),
         access: booleanArg(),

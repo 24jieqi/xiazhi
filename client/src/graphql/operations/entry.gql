@@ -1,12 +1,5 @@
 # 获取所有公共词条（分页）
-query pageAllPublicEntries(
-  $pageSize: Int!
-  $pageNo: Int!
-  $key: String
-  $mainLangText: String
-  $startTime: Float
-  $endTime: Float
-) {
+query pageAllPublicEntries($pageSize: Int!, $pageNo: Int!, $key: String, $mainLangText: String, $startTime: Float, $endTime: Float) {
   pageAllPublicEntries(
     pageSize: $pageSize
     pageNo: $pageNo
@@ -58,27 +51,12 @@ mutation createEntry($appId: Int, $langs: JSONObject!, $key: String!) {
   createEntry(appId: $appId, langs: $langs, key: $key)
 }
 
-mutation updateEntry(
-  $entryId: Int!
-  $appId: Int
-  $langs: JSONObject
-  $key: String
-) {
+mutation updateEntry($entryId: Int!, $appId: Int, $langs: JSONObject, $key: String) {
   updateEntry(entryId: $entryId, appId: $appId, langs: $langs, key: $key)
 }
 
 # 获取应用所有词条（分页）
-query pageAppEntries(
-  $pageSize: Int!
-  $pageNo: Int!
-  $appId: Int!
-  $startTime: Float
-  $endTime: Float
-  $mainLangText: String
-  $latest: Boolean
-  $key: String
-  $archive: Boolean
-) {
+query pageAppEntries($pageSize: Int!, $pageNo: Int!, $appId: Int!, $startTime: Float, $endTime: Float, $mainLangText: String, $latest: Boolean, $key: String, $archive: Boolean) {
   pageAppEntries(
     pageSize: $pageSize
     pageNo: $pageNo
@@ -129,12 +107,7 @@ query pageAppEntries(
 }
 
 # 归档词条或者删除词条（仅针对非公共词条）
-mutation changeEntryAccessStatus(
-  $appId: Int!
-  $entryId: Int!
-  $archive: Boolean
-  $deleted: Boolean
-) {
+mutation changeEntryAccessStatus($appId: Int!, $entryId: Int!, $archive: Boolean, $deleted: Boolean) {
   changeEntryAccessStatus(
     appId: $appId
     entryId: $entryId

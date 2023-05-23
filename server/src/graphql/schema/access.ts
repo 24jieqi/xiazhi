@@ -15,7 +15,7 @@ export const AccessQuery = extendType({
       args: {
         accessKey: nonNull(stringArg()),
       },
-      description: "根据accessKey获取所有应用词条",
+      description: "外部API: 根据accessKey获取所有应用词条",
       async resolve(_, args, ctx) {
         const app = await ctx.prisma.app.findFirst({
           where: {
@@ -51,7 +51,7 @@ export const AccessMutation = extendType({
   type: "Mutation",
   definition(t) {
     t.field("extractLocalEntries", {
-      deprecation: "提取本地词条信息",
+      description: "外部API: 提取本地词条信息",
       type: "Boolean",
       args: {
         accessKey: nonNull(stringArg()),

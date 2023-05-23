@@ -43,7 +43,7 @@ export const CollaboratorQuery = extendType({
   type: "Query",
   definition(t) {
     t.field("getAppCollaborators", {
-      description: "获取应用的协作者列表",
+      description: "协作者: 获取应用的协作者列表",
       type: list(CollaborateInfo),
       args: {
         appId: nonNull(intArg()),
@@ -63,7 +63,7 @@ export const CollaboratorQuery = extendType({
       },
     });
     t.field("getAppCollaboratorsStatistics", {
-      description: "获取应用协作者的统计信息",
+      description: "协作者: 获取应用协作者的统计信息",
       type: list(CollaboratorStatistics),
       args: {
         appId: nonNull(intArg()),
@@ -147,7 +147,7 @@ export const CollaboratorMutation = extendType({
   type: "Mutation",
   definition(t) {
     t.field("inviteCollaborators", {
-      description: "邀请协作者",
+      description: "协作者: 邀请协作者",
       type: "Boolean",
       args: {
         appId: nonNull(intArg()),
@@ -194,7 +194,7 @@ export const CollaboratorMutation = extendType({
       },
     });
     t.field("removeCollaborators", {
-      description: "移除协作者",
+      description: "协作者: 移除协作者",
       type: "Boolean",
       args: {
         appId: nonNull(intArg()),
@@ -226,7 +226,7 @@ export const CollaboratorMutation = extendType({
       },
     });
     t.field("existCollaboration", {
-      description: "退出协作",
+      description: "协作者: 退出协作",
       type: "Boolean",
       args: {
         appId: nonNull(intArg()),

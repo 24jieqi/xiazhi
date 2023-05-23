@@ -30,7 +30,7 @@ export const FeedbackQuery = extendType({
   type: 'Query',
   definition(t) {
     t.field('countPositive', {
-      description: '点赞次数统计',
+      description: '反馈: 点赞次数统计',
       type: 'Int',
       async resolve(_, args, ctx) {
         return await ctx.prisma.feedback.count({
@@ -41,7 +41,7 @@ export const FeedbackQuery = extendType({
       }
     })
     t.field('pageFeedbackNegative', {
-      description: '反馈问题内容分页',
+      description: '反馈: 反馈问题内容分页',
       type: FeedbackPaging,
       args: {
         pageSize: nonNull(intArg()),
@@ -76,7 +76,7 @@ export const FeedbackMutation = extendType({
   definition(t) {
     t.field('feedback', {
       type: 'Int',
-      description: '反馈(新增/修改描述)',
+      description: '反馈: 反馈(新增/修改描述)',
       args: {
         result: nonNull(booleanArg()),
         userId: intArg(),

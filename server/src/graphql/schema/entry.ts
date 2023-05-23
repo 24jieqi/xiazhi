@@ -88,7 +88,7 @@ export const EntryMutation = extendType({
   type: "Mutation",
   definition(t) {
     t.field("createEntry", {
-      description: "创建词条，如果不穿入appId，则创建为公共词条",
+      description: "词条: 创建词条，如果不穿入appId，则创建为公共词条",
       type: "Int",
       args: {
         appId: intArg(),
@@ -137,6 +137,7 @@ export const EntryMutation = extendType({
       },
     });
     t.field("updateEntry", {
+      description: '词条: 更新单个词条',
       type: "Boolean",
       args: {
         entryId: nonNull(intArg()),
@@ -196,7 +197,7 @@ export const EntryMutation = extendType({
     });
     t.field("changeEntryAccessStatus", {
       type: "Boolean",
-      description: "归档词条或者删除词条（仅针对非公共词条）",
+      description: "词条: 归档词条或者删除词条（仅针对非公共词条）",
       args: {
         appId: nonNull(intArg()),
         entryId: nonNull(intArg()),
@@ -233,7 +234,7 @@ export const EntryMutation = extendType({
     });
     t.field("deleteEntries", {
       type: "Boolean",
-      description: "删除（批量）应用词条",
+      description: "词条: 删除（批量）应用词条",
       args: {
         appId: nonNull(intArg()),
         entryIds: nonNull(list(nonNull(intArg()))),
@@ -256,7 +257,7 @@ export const EntryMutation = extendType({
     });
     t.field("uploadEntriesXlsx", {
       type: "Boolean",
-      description: "通过excel上传词条",
+      description: "词条: 通过excel上传词条",
       args: {
         appId: nonNull(intArg()),
         fileUrl: nonNull(stringArg()),
@@ -324,7 +325,7 @@ export const EntryMutation = extendType({
     });
     t.field("transformEntry", {
       type: "Boolean",
-      description: "公共词条、私有词条相互转换",
+      description: "词条: 公共词条、私有词条相互转换",
       args: {
         entryId: nonNull(intArg()),
         targetAppId: intArg(),
@@ -456,7 +457,7 @@ export const EntryQuery = extendType({
   definition(t) {
     t.field("pageAllPublicEntries", {
       type: "EntryPaging",
-      description: "获取所有公共词条（分页）",
+      description: "词条: 获取所有公共词条（分页）",
       args: {
         pageSize: nonNull(intArg()),
         pageNo: nonNull(intArg()),
@@ -504,7 +505,7 @@ export const EntryQuery = extendType({
     });
     t.field("pageAppEntries", {
       type: "EntryPaging",
-      description: "获取应用所有词条（分页）",
+      description: "词条: 获取应用所有词条（分页）",
       args: {
         pageSize: nonNull(intArg()),
         pageNo: nonNull(intArg()),
@@ -570,7 +571,7 @@ export const EntryQuery = extendType({
       },
     });
     t.field("validEntryKey", {
-      description: "词条key应用内唯一校验",
+      description: "词条: 词条key应用内唯一校验",
       type: "Boolean",
       args: {
         appId: intArg(),
@@ -596,7 +597,7 @@ export const EntryQuery = extendType({
     });
     t.field("queryPublicEntryByMainText", {
       type: "EntryItem",
-      description: "通过中文查询公共词条",
+      description: "词条: 通过中文查询公共词条",
       args: {
         mainText: nonNull(stringArg()),
       },
