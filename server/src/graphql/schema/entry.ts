@@ -12,7 +12,7 @@ import { formatISO } from "date-fns";
 import { decodedToken } from "../token";
 import {
   convertXlsxData,
-  readXlsxOrigin,
+  readXlsxLocal,
   splitUpdateOrCreateEntries,
 } from "../utils/xlsx";
 
@@ -263,7 +263,7 @@ export const EntryMutation = extendType({
       },
       async resolve(_, args, ctx) {
         const { userId } = decodedToken(ctx.req)!;
-        const file = await readXlsxOrigin(args.fileUrl);
+        const file = await readXlsxLocal(args.fileUrl);
         const entries = convertXlsxData(file);
         const entriesExist = await ctx.prisma.entry.findMany({
           where: {
@@ -271,6 +271,7 @@ export const EntryMutation = extendType({
           },
         });
         const result = splitUpdateOrCreateEntries(entries, entriesExist);
+        console.log(result);
         // 更新已存在的词条（更新词条/创建编辑记录）
         await ctx.prisma.$transaction(
           result.update.map((item) =>
@@ -299,6 +300,7 @@ export const EntryMutation = extendType({
             ctx.prisma.entry.create({
               data: {
                 ...entry,
+                appId: args.appId,
               },
             })
           )
@@ -523,7 +525,7 @@ export const EntryQuery = extendType({
             mainLangText: {
               contains: args.mainLangText || undefined,
             },
-            key: args.key,
+            key: args.key || undefined,
             archive: args.archive || undefined,
             createdAt: {
               lte: args.endTime

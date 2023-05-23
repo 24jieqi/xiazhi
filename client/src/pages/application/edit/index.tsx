@@ -8,7 +8,10 @@ import { Tag, Button, Empty, message, Space, Table } from 'antd'
 import React, { useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import dayjs from 'dayjs'
-import { useGetAppInfoByIdQuery } from '@/graphql/operations/__generated__/app.generated'
+import {
+  useDownloadAppXlsTemplateMutation,
+  useGetAppInfoByIdQuery,
+} from '@/graphql/operations/__generated__/app.generated'
 import {
   useChangeEntryAccessStatusMutation,
   useDeleteEntriesMutation,
@@ -52,6 +55,7 @@ const EntryList: React.FC<EntryListProps> = ({
   const [changeEntryAccess] = useChangeEntryAccessStatusMutation()
   const [deleteEntries] = useDeleteEntriesMutation()
   const [uploadXlxs] = useUploadEntriesXlsxMutation()
+  const [downloadXlsTemplate, { loading }] = useDownloadAppXlsTemplateMutation()
 
   async function handleMultiDelete(entryIds: number[], onSuccess?: () => void) {
     await deleteEntries({
@@ -88,6 +92,15 @@ const EntryList: React.FC<EntryListProps> = ({
     actionRef.current.reload()
     message.success('导入词条成功！')
     callback()
+  }
+
+  async function handleDownloadTemplate() {
+    const resp = await downloadXlsTemplate({
+      variables: {
+        appId: appId,
+      },
+    })
+    window.open(resp?.data?.downloadAppXlsTemplate)
   }
 
   async function handleRollbackSuccess() {
@@ -273,9 +286,8 @@ const EntryList: React.FC<EntryListProps> = ({
               size="small"
               key="list"
               type="link"
-              onClick={() =>
-                window.open(`${config.apiHost}/assets/template.xlsx`)
-              }>
+              loading={loading}
+              onClick={handleDownloadTemplate}>
               下载多语言模版
             </Button>,
             <UploadXlsx key="upload" onUploadSuccess={handleUploadEntries} />,

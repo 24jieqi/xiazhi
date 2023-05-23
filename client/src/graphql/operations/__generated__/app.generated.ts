@@ -131,6 +131,7 @@ export type GetAppCollaboratorsQuery = {
     __typename?: 'CollaborateInfo'
     assignedAt: number
     id: number
+    role: SchemaTypes.CollaboratorRoleEnum
     user?: {
       __typename?: 'UserInfo'
       name?: string
@@ -214,6 +215,12 @@ export type GetAccessKeyByAppIdQuery = {
     accessKey?: string
   }
 }
+
+export type DownloadAppXlsTemplateMutationVariables = SchemaTypes.Exact<{
+  appId: SchemaTypes.Scalars['Int']
+}>
+
+export type DownloadAppXlsTemplateMutation = { downloadAppXlsTemplate?: string }
 
 export const GetCurrentAppsDocument = gql`
   query getCurrentApps(
@@ -713,6 +720,8 @@ export const GetAppCollaboratorsDocument = gql`
   query getAppCollaborators($appId: Int!) {
     getAppCollaborators(appId: $appId) {
       assignedAt
+      id
+      role
       user {
         name
         user_id
@@ -746,7 +755,6 @@ export const GetAppCollaboratorsDocument = gql`
         }
         entryCount
       }
-      id
     }
   }
 `
@@ -1026,4 +1034,52 @@ export type GetAccessKeyByAppIdLazyQueryHookResult = ReturnType<
 export type GetAccessKeyByAppIdQueryResult = Apollo.QueryResult<
   GetAccessKeyByAppIdQuery,
   GetAccessKeyByAppIdQueryVariables
+>
+export const DownloadAppXlsTemplateDocument = gql`
+  mutation downloadAppXlsTemplate($appId: Int!) {
+    downloadAppXlsTemplate(appId: $appId)
+  }
+`
+export type DownloadAppXlsTemplateMutationFn = Apollo.MutationFunction<
+  DownloadAppXlsTemplateMutation,
+  DownloadAppXlsTemplateMutationVariables
+>
+
+/**
+ * __useDownloadAppXlsTemplateMutation__
+ *
+ * To run a mutation, you first call `useDownloadAppXlsTemplateMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDownloadAppXlsTemplateMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [downloadAppXlsTemplateMutation, { data, loading, error }] = useDownloadAppXlsTemplateMutation({
+ *   variables: {
+ *      appId: // value for 'appId'
+ *   },
+ * });
+ */
+export function useDownloadAppXlsTemplateMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    DownloadAppXlsTemplateMutation,
+    DownloadAppXlsTemplateMutationVariables
+  >,
+) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useMutation<
+    DownloadAppXlsTemplateMutation,
+    DownloadAppXlsTemplateMutationVariables
+  >(DownloadAppXlsTemplateDocument, options)
+}
+export type DownloadAppXlsTemplateMutationHookResult = ReturnType<
+  typeof useDownloadAppXlsTemplateMutation
+>
+export type DownloadAppXlsTemplateMutationResult =
+  Apollo.MutationResult<DownloadAppXlsTemplateMutation>
+export type DownloadAppXlsTemplateMutationOptions = Apollo.BaseMutationOptions<
+  DownloadAppXlsTemplateMutation,
+  DownloadAppXlsTemplateMutationVariables
 >

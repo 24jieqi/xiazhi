@@ -13,6 +13,8 @@ import {
 } from "nexus";
 import bcrypt from "bcrypt";
 import { decodedToken } from "../token";
+import { buildTemplateFile } from "../utils/xlsx";
+import { GraphQLError } from "graphql";
 
 export const AppTypeEnum = enumType({
   description: "应用类型枚举",
@@ -216,6 +218,24 @@ export const AppMutation = mutationType({
           },
         });
         return app.app_id;
+      },
+    });
+    t.field("downloadAppXlsTemplate", {
+      description: "生成多语言模版文件并返回",
+      type: "String",
+      args: {
+        appId: nonNull(intArg()),
+      },
+      async resolve(_, args, ctx) {
+        const app = await ctx.prisma.app.findUnique({
+          where: {
+            app_id: args.appId,
+          },
+        });
+        if (!app) {
+          throw new GraphQLError("参数错误，APP不存在");
+        }
+        return buildTemplateFile(app.languages);
       },
     });
   },

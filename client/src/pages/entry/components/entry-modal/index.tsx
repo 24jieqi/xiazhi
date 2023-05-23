@@ -55,7 +55,9 @@ const EntryModal: React.FC<EntryModalProps> = ({
       values.autoGenerate &&
       !initialFormData?.entryId
     ) {
-      const pinYinStr = pinyin(changedValues[LanguageTypeEnum.zh])
+      const pinYinStr = pinyin(changedValues[LanguageTypeEnum.zh], {
+        toneType: 'none',
+      })
       form.setFieldsValue({
         key: generateEntryKey(pinYinStr),
       })

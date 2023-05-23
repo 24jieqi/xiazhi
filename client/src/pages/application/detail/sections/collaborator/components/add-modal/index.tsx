@@ -7,13 +7,13 @@ import {
 } from '@ant-design/pro-components'
 import { debounce } from 'lodash'
 import React from 'react'
+import { Select } from 'antd'
 import { useInviteCollaboratorsMutation } from '@/graphql/operations/__generated__/app.generated'
 import { useListUserFuzzyByUserNameLazyQuery } from '@/graphql/operations/__generated__/basic.generated'
 import {
   CollaboratorRoleEnum,
   CollaboratorsInput,
 } from '@/graphql/generated/types'
-import { Col, Row, Select } from 'antd'
 
 interface AddCollaboratorsModalProps {
   trigger: JSX.Element
@@ -121,6 +121,7 @@ const AddCollaboratorsModal: React.FC<AddCollaboratorsModalProps> = ({
                   <ProForm.Item
                     label="角色"
                     name={['role', user.user_id]}
+                    rules={[{ required: true, message: '请选择协作者角色' }]}
                     labelCol={{ span: 8 }}
                     wrapperCol={{ span: 8 }}>
                     <Select

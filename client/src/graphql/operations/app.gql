@@ -125,6 +125,8 @@ mutation deleteApp($id: Int!) {
 query getAppCollaborators($appId: Int!) {
   getAppCollaborators(appId: $appId) {
     assignedAt
+    id
+    role
     user {
       name
       user_id
@@ -158,7 +160,6 @@ query getAppCollaborators($appId: Int!) {
       }
       entryCount
     }
-    id
   }
 }
 
@@ -196,4 +197,9 @@ query getAccessKeyByAppId($id: Int!) {
     access
     accessKey
   }
+}
+
+# 生成多语言模版文件并返回
+mutation downloadAppXlsTemplate($appId: Int!) {
+  downloadAppXlsTemplate(appId: $appId)
 }

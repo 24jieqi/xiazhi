@@ -106,6 +106,7 @@ type CollaborateInfo {
   app: AppItem
   assignedAt: DateTime!
   id: Int!
+  role: CollaboratorRoleEnum!
   user: UserInfo
 }
 
@@ -254,6 +255,11 @@ type Mutation {
   删除（批量）应用词条
   """
   deleteEntries(appId: Int!, entryIds: [Int!]!): Boolean
+
+  """
+  生成多语言模版文件并返回
+  """
+  downloadAppXlsTemplate(appId: Int!): String
 
   """
   退出协作

@@ -88,6 +88,7 @@ export type CollaborateInfo = {
   app?: Maybe<AppItem>
   assignedAt: Scalars['DateTime']
   id: Scalars['Int']
+  role: CollaboratorRoleEnum
   user?: Maybe<UserInfo>
 }
 
@@ -182,6 +183,8 @@ export type Mutation = {
   deleteApp?: Maybe<Scalars['Boolean']>
   /** 删除（批量）应用词条 */
   deleteEntries?: Maybe<Scalars['Boolean']>
+  /** 生成多语言模版文件并返回 */
+  downloadAppXlsTemplate?: Maybe<Scalars['String']>
   /** 退出协作 */
   existCollaboration?: Maybe<Scalars['Boolean']>
   /** @deprecated 提取本地词条信息 */
@@ -258,6 +261,10 @@ export type MutationDeleteAppArgs = {
 export type MutationDeleteEntriesArgs = {
   appId: Scalars['Int']
   entryIds: Array<Scalars['Int']>
+}
+
+export type MutationDownloadAppXlsTemplateArgs = {
+  appId: Scalars['Int']
 }
 
 export type MutationExistCollaborationArgs = {

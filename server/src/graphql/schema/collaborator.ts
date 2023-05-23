@@ -18,6 +18,9 @@ export const CollaborateInfo = objectType({
   definition(t) {
     t.nonNull.date("assignedAt");
     t.nonNull.int("id");
+    t.nonNull.field("role", {
+      type: "CollaboratorRoleEnum",
+    });
     t.field("user", {
       type: "UserInfo",
     });
