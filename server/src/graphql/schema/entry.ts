@@ -70,6 +70,7 @@ export const EntryItem = objectType({
     t.boolean("deleted");
     t.string("mainLangText");
     t.string("mainLang");
+    t.int("appId");
     t.field("modifyRecords", {
       type: list(RecordItem),
       async resolve(root, _, ctx) {
@@ -137,7 +138,7 @@ export const EntryMutation = extendType({
       },
     });
     t.field("updateEntry", {
-      description: '词条: 更新单个词条',
+      description: "词条: 更新单个词条",
       type: "Boolean",
       args: {
         entryId: nonNull(intArg()),

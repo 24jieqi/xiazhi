@@ -30,6 +30,7 @@ export type GetCurrentAppsQuery = {
       accessKey?: string
       creatorId?: number
       entryCount?: number
+      role?: SchemaTypes.CollaboratorRoleEnum
       creator?: {
         __typename?: 'UserInfo'
         name?: string
@@ -262,6 +263,7 @@ export const GetCurrentAppsDocument = gql`
           verifyType
         }
         entryCount
+        role
       }
     }
   }

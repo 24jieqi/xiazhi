@@ -38,6 +38,7 @@ query getCurrentApps(
         verifyType
       }
       entryCount
+      role
     }
   }
 }

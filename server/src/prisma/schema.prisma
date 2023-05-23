@@ -125,6 +125,7 @@ enum CollaboratorRole {
   MANAGER
   GUEST
   TRANSLATOR
+  OWNER
 }
 
 enum CollaboratorInviteStatus {

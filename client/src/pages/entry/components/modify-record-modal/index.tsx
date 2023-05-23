@@ -1,17 +1,11 @@
 import React, { cloneElement, useMemo, useState } from 'react'
-import { Button, message, Modal, Space, Tag } from 'antd'
+import { Button, Modal, Space, Tag } from 'antd'
 import dayjs from 'dayjs'
 import { ProList } from '@ant-design/pro-components'
 import { omit } from 'lodash'
 import { EntryItem, RecordItem } from '@/graphql/generated/types'
-import { useUpdateEntryMutation } from '@/graphql/operations/__generated__/entry.generated'
-import {
-  appSupportLangsTableEnum,
-  langKeys,
-} from '@/pages/application/constant'
 
 import styles from './index.module.less'
-
 interface ModifyRecordsProps {
   modifyRecords: RecordItem[]
   records: {
@@ -76,11 +70,8 @@ const ModifyRecordsModal: React.FC<ModifyRecordsProps> = ({
   modifyRecords,
   records,
   children,
-  onRollbackSuccess,
 }) => {
   const [visible, setVisible] = useState(false)
-
-  const [updateEntry] = useUpdateEntryMutation()
 
   function handleShowModal() {
     setVisible(true)
@@ -88,73 +79,6 @@ const ModifyRecordsModal: React.FC<ModifyRecordsProps> = ({
 
   function handleCloseModal() {
     setVisible(false)
-  }
-
-  function formateRollbackMessage(langs: Array<any>, type: string) {
-    return langs
-      .map(result => {
-        let str = ''
-        langKeys.forEach(lang => {
-          const curr = result[type][lang]
-          if (curr !== undefined) {
-            str = `${appSupportLangsTableEnum[lang].text}:${curr}`
-          }
-        })
-        return str
-      })
-      .filter(result => result)
-  }
-
-  function rollbackDiffLang(currLang, prevLang) {
-    const result = []
-    Object.keys(currLang).forEach(lang => {
-      if (currLang[lang] !== prevLang[lang]) {
-        result.push({
-          curr: {
-            [lang]: currLang[lang],
-          },
-          prev: {
-            [lang]: prevLang[lang],
-          },
-        })
-      }
-    })
-    return result
-  }
-
-  function handleRollback(record: ProListType) {
-    const {
-      data: { langs, prevLangs, key, entry_id },
-    } = record
-    const diffResult = rollbackDiffLang(langs, prevLangs)
-    if (!diffResult.length) {
-      message.warning('回滚词条与当前一致，不支持回滚')
-      return
-    }
-    const curr = formateRollbackMessage(diffResult, 'curr')
-    const prev = formateRollbackMessage(diffResult, 'prev')
-
-    Modal.confirm({
-      title: '确认回滚?',
-      content: `确认将词条【${curr.join('，')}】回滚为【${prev.join('，')}】?`,
-      onOk: async () => {
-        confirmRollback(entry_id, key, prevLangs)
-      },
-    })
-  }
-
-  async function confirmRollback(entryId: number, key: string, prevLangs: any) {
-    await updateEntry({
-      variables: {
-        appId: records.appId,
-        entryId,
-        key,
-        langs: prevLangs,
-      },
-    })
-    onRollbackSuccess()
-    setVisible(false)
-    message.success('回滚成功')
   }
 
   const ActionComp = children ? (
@@ -234,7 +158,7 @@ const ModifyRecordsModal: React.FC<ModifyRecordsProps> = ({
         width={768}
         destroyOnClose
         title="编辑记录"
-        visible={visible}
+        open={visible}
         maskClosable={false}
         onOk={handleCloseModal}
         onCancel={handleCloseModal}>
@@ -248,27 +172,6 @@ const ModifyRecordsModal: React.FC<ModifyRecordsProps> = ({
             title: {},
             subTitle: {},
             content: {},
-            actions: {
-              render: (_, row) => [
-                <Button
-                  key={row.data.entry_id}
-                  type="link"
-                  onClick={() => handleRollback(row)}>
-                  回滚
-                </Button>,
-              ],
-            },
-            avatar: {
-              // render(_, entity) {
-              //   return (
-              //     <Popover title="123">
-              //       <Avatar size="small" src={entity.avatar?.avatar}>
-              //         U
-              //       </Avatar>
-              //     </Popover>
-              //   )
-              // },
-            },
           }}
           dataSource={dataSource}
         />

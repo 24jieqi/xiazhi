@@ -1,4 +1,4 @@
-import { AppType } from "@prisma/client";
+import { AppType, CollaboratorRole } from "@prisma/client";
 import {
   objectType,
   queryType,
@@ -63,6 +63,23 @@ export const AppItem = objectType({
           },
         });
         return app?.entries?.length || 0;
+      },
+    });
+    t.field("role", {
+      description: "权限（沿用协作者），把APP所有人映射成为管理员角色",
+      type: "CollaboratorRoleEnum",
+      async resolve(root, __, ctx) {
+        const decoded = decodedToken(ctx.req);
+        if (root.creatorId === decoded?.userId) {
+          return CollaboratorRole.OWNER;
+        }
+        const record = await ctx.prisma.collaborator.findFirst({
+          where: {
+            appId: root.app_id!,
+            userId: decoded!.userId,
+          },
+        });
+        return record?.role || null;
       },
     });
   },
@@ -176,20 +193,10 @@ export const AppMutation = mutationType({
             type: args.type,
             languages: args.languages,
             pictures: args.pictures,
-          },
-        });
-        // 更新客户&建立关联管理
-        await ctx.prisma.user.update({
-          where: {
-            user_id: decoded?.userId,
-          },
-          data: {
-            apps: {
-              connect: [
-                {
-                  app_id: app.app_id,
-                },
-              ],
+            creator: {
+              connect: {
+                user_id: decoded?.userId,
+              },
             },
           },
         });

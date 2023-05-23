@@ -19,31 +19,35 @@ import {
   useGetAppCollaboratorsStatisticsQuery,
   useRemoveCollaboratorsMutation,
 } from '@/graphql/operations/__generated__/app.generated'
+import { CollaboratorRoleEnum } from '@/graphql/generated/types'
 import { AppSection } from '../interface'
 import styles from './style.module.less'
 import AddCollaboratorsModal from './components/add-modal'
-import { CollaboratorRoleEnum } from '@/graphql/generated/types'
 
 const { Divider } = ProCard
 
 interface CollaboratorManagementProps extends AppSection {}
 
-const collaboratorRoleMap: {
+export const collaboratorRoleMap: {
   [key in CollaboratorRoleEnum]: {
     label: string
     color: string
   }
 } = {
   [CollaboratorRoleEnum.Guest]: {
-    label: '访客',
+    label: 'Visitor',
     color: '#f50',
   },
   [CollaboratorRoleEnum.Manager]: {
-    label: '管理员',
+    label: 'Manager',
     color: '#2db7f5',
   },
   [CollaboratorRoleEnum.Translator]: {
-    label: '成员',
+    label: 'Member',
+    color: '#0065fe',
+  },
+  [CollaboratorRoleEnum.Owner]: {
+    label: 'Owner',
     color: '#0065fe',
   },
 }
