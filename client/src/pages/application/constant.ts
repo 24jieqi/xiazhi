@@ -109,6 +109,16 @@ export const langTableColumns: ProColumns<EntryItem, 'text'>[] = langKeys.map(
   }),
 )
 
+export function getGivenLangsColumns(langs: string[]) {
+  if (!langs) {
+    return []
+  }
+  return langs.map(lang => ({
+    title: langMap[lang].zhName,
+    dataIndex: ['langs', lang],
+  }))
+}
+
 function getlangColumnsState() {
   const result: Record<string, ColumnsState> = {}
   for (const lang of langKeys) {

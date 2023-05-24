@@ -31,6 +31,7 @@ import ModifyRecordsModal from '@/pages/entry/components/modify-record-modal'
 import { appTypeOptions } from '../constant'
 import UploadXlsx from '../components/upload-xlsx'
 import styles from './index.module.less'
+import PublicEntrySelector from '../components/public-entry-selector'
 
 type EntryListProps = {
   selectedEntry: EntryItem
@@ -131,7 +132,6 @@ const EntryList: React.FC<EntryListProps> = ({
     })
     window.open(resp?.data?.downloadAppXlsTemplate)
   }
-
   async function handleRollbackSuccess() {
     await actionRef.current?.reload()
     selectedEntry && onChange?.(null)
@@ -308,6 +308,7 @@ const EntryList: React.FC<EntryListProps> = ({
             onClick={handleDownloadTemplate}>
             下载多语言模版
           </Button>,
+          <PublicEntrySelector key="insert_public" appId={appId} />,
           <UploadXlsx key="upload" onUploadSuccess={handleUploadEntries} />,
           <EntryModal
             initialFormData={{
