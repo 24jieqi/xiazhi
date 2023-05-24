@@ -261,6 +261,7 @@ export interface NexusGenFieldTypes {
     entry_id: number | null; // Int
     key: string | null; // String
     langs: NexusGenScalars["JSONObject"] | null; // JSONObject
+    lastContributor: NexusGenRootTypes["UserInfo"] | null; // UserInfo
     mainLang: string | null; // String
     mainLangText: string | null; // String
     modifyRecords: Array<NexusGenRootTypes["RecordItem"] | null> | null; // [RecordItem]
@@ -421,6 +422,7 @@ export interface NexusGenFieldTypeNames {
     entry_id: "Int";
     key: "String";
     langs: "JSONObject";
+    lastContributor: "UserInfo";
     mainLang: "String";
     mainLangText: "String";
     modifyRecords: "RecordItem";

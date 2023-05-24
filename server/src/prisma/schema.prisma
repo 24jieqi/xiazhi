@@ -40,9 +40,6 @@ model Entry {
   uploaded      Boolean  @default(false)
   creatorId     Int?
   appId         Int?
-  basedOn       Entry?   @relation("EntryRelation", fields: [basedOnId], references: [entry_id])
-  basedOnId     Int?     @unique
-  base          Entry[]  @relation("EntryRelation")
 }
 
 // 应用

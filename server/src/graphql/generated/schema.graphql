@@ -163,6 +163,11 @@ type EntryItem {
   entry_id: Int
   key: String
   langs: JSONObject
+
+  """
+  最近一次公共词条的贡献者
+  """
+  lastContributor: UserInfo
   mainLang: String
   mainLangText: String
   modifyRecords: [RecordItem]

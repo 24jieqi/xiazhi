@@ -1842,6 +1842,13 @@
     commander "^9.1.0"
     cross-spawn "^7.0.3"
 
+"@fruits-chain/utils@^1.0.1":
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/@fruits-chain/utils/-/utils-1.0.1.tgz#01da9321835b91d6508722007d9fa6a23d5f260e"
+  integrity sha512-OZyVrHiNOQzA2HukrYTu1aj46r1q0Wrn89ehHGEDp72CN5t8N9UTZYQj9b6bFgYDVofBO2js40C1LGiWJhk5EA==
+  dependencies:
+    decimal.js-light "^2.5.1"
+
 "@graphql-codegen/add@^3.1.1":
   version "3.1.1"
   resolved "https://registry.yarnpkg.com/@graphql-codegen/add/-/add-3.1.1.tgz#e161ff1c7cdf74ce20b32f75f640f9592b9a18ca"
@@ -5240,6 +5247,11 @@ decamelize@^1.2.0:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/decamelize/-/decamelize-1.2.0.tgz#f6534d15148269b20352e7bee26f501f9a191290"
   integrity sha512-z2S+W9X73hAUUki+N+9Za2lBlun89zigOyGrsax+KUQ6wKW4ZoWpEYBkGhQjwAjjDCkWxhY0VKEhk8wzY7F5cA==
+
+decimal.js-light@^2.5.1:
+  version "2.5.1"
+  resolved "https://registry.yarnpkg.com/decimal.js-light/-/decimal.js-light-2.5.1.tgz#134fd32508f19e208f4fb2f8dac0d2626a867934"
+  integrity sha512-qIMFpTMZmny+MMIitAB6D7iVPEorVw6YQRWkvarTkT4tBeSLLiHzcwj6q0MmYSFCiVpiqPJTJEYIrpcPzVEIvg==
 
 decimal.js@^10.2.1:
   version "10.3.1"

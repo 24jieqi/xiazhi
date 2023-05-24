@@ -4,10 +4,14 @@ import type {
   ProColumns,
 } from '@ant-design/pro-components'
 import { ProCard, ProTable } from '@ant-design/pro-components'
-import { Tag, Button, Empty, message, Space, Table } from 'antd'
+import { Tag, Button, Empty, message, Space, Table, Modal } from 'antd'
 import React, { useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import dayjs from 'dayjs'
+import {
+  DoubleRightOutlined,
+  ExclamationCircleOutlined,
+} from '@ant-design/icons'
 import {
   useDownloadAppXlsTemplateMutation,
   useGetAppInfoByIdQuery,
@@ -16,20 +20,17 @@ import {
   useChangeEntryAccessStatusMutation,
   useDeleteEntriesMutation,
   usePageAppEntriesLazyQuery,
+  useQueryPublicEntryByMainTextLazyQuery,
+  useTransformEntryMutation,
   useUploadEntriesXlsxMutation,
 } from '@/graphql/operations/__generated__/entry.generated'
 import { EntryItem } from '@/graphql/generated/types'
 import EntryModal from '@/pages/entry/components/entry-modal'
 import EntryForm from '@/pages/entry/components/entry-form'
-import TransformEntryModal, {
-  TransformEntryModalRefProps,
-} from '@/pages/entry/components/transform-entry-modal'
 import ModifyRecordsModal from '@/pages/entry/components/modify-record-modal'
-import config from '@/config'
 import { appTypeOptions } from '../constant'
 import UploadXlsx from '../components/upload-xlsx'
 import styles from './index.module.less'
-import { DoubleRightOutlined } from '@ant-design/icons'
 
 type EntryListProps = {
   selectedEntry: EntryItem
@@ -41,21 +42,19 @@ type EntryListProps = {
 
 const EntryList: React.FC<EntryListProps> = ({
   onChange,
-  onResetCurrent,
   selectedEntry,
   languageArray,
   actionRef,
 }) => {
   const routeParams = useParams()
   const appId = Number(routeParams.id)
-
-  const transformEntryRef = useRef<TransformEntryModalRefProps>(null)
-
   const [pageAllPublicEntries] = usePageAppEntriesLazyQuery()
   const [changeEntryAccess] = useChangeEntryAccessStatusMutation()
   const [deleteEntries] = useDeleteEntriesMutation()
   const [uploadXlxs] = useUploadEntriesXlsxMutation()
   const [downloadXlsTemplate, { loading }] = useDownloadAppXlsTemplateMutation()
+  const [queryPublicEntryByMainText] = useQueryPublicEntryByMainTextLazyQuery()
+  const [transformEntry] = useTransformEntryMutation()
 
   async function handleMultiDelete(entryIds: number[], onSuccess?: () => void) {
     await deleteEntries({
@@ -92,6 +91,36 @@ const EntryList: React.FC<EntryListProps> = ({
     actionRef.current.reload()
     message.success('导入词条成功！')
     callback()
+  }
+
+  async function handleTransform(id: number) {
+    await transformEntry({
+      variables: {
+        entryId: id,
+      },
+    })
+    message.success('转换为公共词条成功！')
+  }
+
+  async function handleTransformEntry(entry: EntryItem) {
+    const resp = await queryPublicEntryByMainText({
+      variables: {
+        mainText: entry.mainLangText,
+      },
+    })
+    if (resp?.data.queryPublicEntryByMainText) {
+      Modal.confirm({
+        title: '提示',
+        icon: <ExclamationCircleOutlined />,
+        content: `检测到已经存在中文名为：${entry.mainLangText}的词条，继续将会对该词条进行合并！`,
+        okText: '继续',
+        onOk: async () => {
+          await handleTransform(entry.entry_id)
+        },
+      })
+    } else {
+      await handleTransform(entry.entry_id)
+    }
   }
 
   async function handleDownloadTemplate() {
@@ -245,17 +274,7 @@ const EntryList: React.FC<EntryListProps> = ({
           }}>
           删除
         </a>,
-        <a
-          key="transform"
-          onClick={() => {
-            transformEntryRef.current?.open({
-              currentAppId: +routeParams.id,
-              entryId: row.entry_id,
-              langObj: row.langs,
-              key: row.key,
-              mainLangText: row.mainLangText,
-            })
-          }}>
+        <a key="transform" onClick={() => handleTransformEntry(row)}>
           <DoubleRightOutlined />
         </a>,
       ],
@@ -263,104 +282,97 @@ const EntryList: React.FC<EntryListProps> = ({
   ]
 
   return (
-    <>
-      <ProTable<EntryItem>
-        actionRef={actionRef}
-        columns={columns}
-        request={handleRequest}
-        rowKey="entry_id"
-        search={{
-          labelWidth: 'auto',
-        }}
-        pagination={{
-          pageSize: 10,
-        }}
-        rowClassName={record => {
-          return record?.entry_id === selectedEntry?.entry_id
-            ? styles['split-row-select-active']
-            : ''
-        }}
-        toolbar={{
-          actions: [
-            <Button
-              size="small"
-              key="list"
-              type="link"
-              loading={loading}
-              onClick={handleDownloadTemplate}>
-              下载多语言模版
-            </Button>,
-            <UploadXlsx key="upload" onUploadSuccess={handleUploadEntries} />,
-            <EntryModal
-              initialFormData={{
-                appId: Number(appId),
-              }}
-              supportLanguageArray={languageArray || []}
-              key="add"
-              onActionSuccess={() => {
+    <ProTable<EntryItem>
+      actionRef={actionRef}
+      columns={columns}
+      request={handleRequest}
+      rowKey="entry_id"
+      search={{
+        labelWidth: 'auto',
+      }}
+      pagination={{
+        pageSize: 10,
+      }}
+      rowClassName={record => {
+        return record?.entry_id === selectedEntry?.entry_id
+          ? styles['split-row-select-active']
+          : ''
+      }}
+      toolbar={{
+        actions: [
+          <Button
+            size="small"
+            key="list"
+            type="link"
+            loading={loading}
+            onClick={handleDownloadTemplate}>
+            下载多语言模版
+          </Button>,
+          <UploadXlsx key="upload" onUploadSuccess={handleUploadEntries} />,
+          <EntryModal
+            initialFormData={{
+              appId: Number(appId),
+            }}
+            supportedLangs={languageArray}
+            key="add"
+            onActionSuccess={() => {
+              actionRef.current.reload()
+            }}>
+            <Button size="small" type="primary">
+              新增词条
+            </Button>
+          </EntryModal>,
+        ],
+      }}
+      onRow={record => {
+        if (record.archive) {
+          return {}
+        }
+        return {
+          onClick: () => {
+            if (record.entry_id) {
+              onChange(record)
+            }
+          },
+        }
+      }}
+      rowSelection={{
+        selections: [Table.SELECTION_ALL, Table.SELECTION_INVERT],
+        defaultSelectedRowKeys: [],
+      }}
+      tableAlertRender={({ selectedRowKeys, onCleanSelected }) => {
+        return (
+          <Space size={24}>
+            <span>
+              已选 {selectedRowKeys.length} 项
+              <a style={{ marginLeft: 8 }} onClick={onCleanSelected}>
+                取消选择
+              </a>
+            </span>
+          </Space>
+        )
+      }}
+      tableAlertOptionRender={({ selectedRowKeys, onCleanSelected }) => {
+        return (
+          <a
+            onClick={() =>
+              handleMultiDelete(selectedRowKeys as number[], () => {
+                onCleanSelected()
                 actionRef.current.reload()
-              }}>
-              <Button size="small" type="primary">
-                新增词条
-              </Button>
-            </EntryModal>,
-          ],
-        }}
-        onRow={record => {
-          if (record.archive) {
-            return {}
-          }
-          return {
-            onClick: () => {
-              if (record.entry_id) {
-                onChange(record)
-              }
-            },
-          }
-        }}
-        rowSelection={{
-          selections: [Table.SELECTION_ALL, Table.SELECTION_INVERT],
-          defaultSelectedRowKeys: [],
-        }}
-        tableAlertRender={({ selectedRowKeys, onCleanSelected }) => {
-          return (
-            <Space size={24}>
-              <span>
-                已选 {selectedRowKeys.length} 项
-                <a style={{ marginLeft: 8 }} onClick={onCleanSelected}>
-                  取消选择
-                </a>
-              </span>
-            </Space>
-          )
-        }}
-        tableAlertOptionRender={({ selectedRowKeys, onCleanSelected }) => {
-          return (
-            <a
-              onClick={() =>
-                handleMultiDelete(selectedRowKeys as number[], () => {
-                  onCleanSelected()
-                  actionRef.current.reload()
-                  // 当被选中的包含在删除列表中，清空表格
-                  if (
-                    selectedEntry &&
-                    selectedRowKeys.includes(selectedEntry.entry_id)
-                  ) {
-                    onChange?.(null)
-                  }
-                })
-              }>
-              批量删除
-            </a>
-          )
-        }}
-      />
-      <TransformEntryModal
-        ref={transformEntryRef}
-        onResetCurrent={onResetCurrent}
-        onActionSuccess={() => actionRef.current.reload()}
-      />
-    </>
+                // 当被选中的包含在删除列表中，清空表格
+                if (
+                  selectedEntry &&
+                  selectedRowKeys.includes(selectedEntry.entry_id)
+                ) {
+                  onChange?.(null)
+                }
+              })
+            }>
+            批量删除
+          </a>
+        )
+      }}
+    />
   )
 }
 
@@ -429,7 +441,7 @@ const AppEntryEditPage: React.FC = () => {
                 请在左侧表格选择词条编辑或是{' '}
                 <EntryModal
                   initialFormData={{ appId: Number(params.id) }}
-                  supportLanguageArray={data?.getAppInfoById?.languages || []}
+                  supportedLangs={data?.getAppInfoById?.languages}
                   onActionSuccess={reloadTableList}>
                   <a>新增词条</a>
                 </EntryModal>

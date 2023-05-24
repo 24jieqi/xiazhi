@@ -15,6 +15,7 @@ import bcrypt from "bcrypt";
 import { decodedToken } from "../token";
 import { buildTemplateFile } from "../utils/xlsx";
 import { GraphQLError } from "graphql";
+import { checkAppManagementRole } from "../utils/role";
 
 export const AppTypeEnum = enumType({
   description: "应用类型枚举",
@@ -54,15 +55,12 @@ export const AppItem = objectType({
       type: "Int",
       description: "当前应用包含的词条数量",
       async resolve(root, _, ctx) {
-        const app = await ctx.prisma.app.findUnique({
+        return ctx.prisma.entry.count({
           where: {
-            app_id: root.app_id!,
-          },
-          include: {
-            entries: true,
+            appId: root.app_id,
+            deleted: false,
           },
         });
-        return app?.entries?.length || 0;
       },
     });
     t.field("role", {
@@ -213,7 +211,8 @@ export const AppMutation = mutationType({
         pictures: nonNull(list(nonNull("String"))),
       },
       async resolve(_, args, ctx) {
-        decodedToken(ctx.req);
+        const decoded = decodedToken(ctx.req);
+        await checkAppManagementRole(decoded!.userId, args.appId, ctx.prisma);
         const app = await ctx.prisma.app.update({
           where: {
             app_id: args.appId,
@@ -274,6 +273,8 @@ export const AppAccessQuery = extendType({
         id: nonNull(intArg()),
       },
       async resolve(_, args, ctx) {
+        const decoded = decodedToken(ctx.req);
+        await checkAppManagementRole(decoded!.userId, args.id, ctx.prisma);
         return await ctx.prisma.app.findUnique({
           where: {
             app_id: args.id,
@@ -294,7 +295,8 @@ export const AppAccessMutation = extendType({
         id: nonNull(intArg()),
       },
       async resolve(_, args, ctx) {
-        decodedToken(ctx.req);
+        const decoded = decodedToken(ctx.req);
+        await checkAppManagementRole(decoded!.userId, args.id, ctx.prisma);
         const accessKey = await bcrypt.hash(String(Date.now()), 10);
         await ctx.prisma.app.update({
           where: {
@@ -314,6 +316,8 @@ export const AppAccessMutation = extendType({
         id: nonNull(intArg()),
       },
       async resolve(_, args, ctx) {
+        const decoded = decodedToken(ctx.req);
+        await checkAppManagementRole(decoded!.userId, args.id, ctx.prisma);
         await ctx.prisma.app.update({
           where: {
             app_id: args.id,
@@ -332,12 +336,8 @@ export const AppAccessMutation = extendType({
         id: nonNull(intArg()),
       },
       async resolve(_, args, ctx) {
-        /**
-         * 逻辑删除一个应用步骤
-         * 1.设置删除标记
-         * 2.断开创建者关系（可能也有写作者）
-         * 3.断开与词条的关系（这些词条将变为不可查询的词条）
-         */
+        const decoded = decodedToken(ctx.req);
+        await checkAppManagementRole(decoded!.userId, args.id, ctx.prisma);
         await ctx.prisma.app.update({
           where: {
             app_id: args.id,
@@ -358,7 +358,8 @@ export const AppAccessMutation = extendType({
         push: booleanArg(),
       },
       async resolve(_, args, ctx) {
-        decodedToken(ctx.req);
+        const decoded = decodedToken(ctx.req);
+        await checkAppManagementRole(decoded!.userId, args.appId, ctx.prisma);
         await ctx.prisma.app.update({
           where: {
             app_id: args.appId,

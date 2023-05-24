@@ -1,8 +1,9 @@
 /* eslint-disable max-params */
 /* eslint-disable react/no-unstable-nested-components */
-import { EditOutlined, PlusOutlined, SwapOutlined } from '@ant-design/icons'
+import { EditOutlined, PlusOutlined } from '@ant-design/icons'
 import type {
   ActionType,
+  ColumnsState,
   ParamsType,
   ProColumns,
 } from '@ant-design/pro-components'
@@ -14,18 +15,18 @@ import { EntryItem } from '@/graphql/generated/types'
 import { usePageAllPublicEntriesLazyQuery } from '@/graphql/operations/__generated__/entry.generated'
 import EntryModal from '@/pages/entry/components/entry-modal'
 import ModifyRecordsModal from '@/pages/entry/components/modify-record-modal'
-import TransformEntryModal, {
-  TransformEntryModalRefProps,
-} from '@/pages/entry/components/transform-entry-modal'
-import { LanguageTypeEnum, langKeys } from '@/pages/application/constant'
+import {
+  langColumnsState,
+  langKeys,
+  langTableColumns,
+} from '@/pages/application/constant'
 
 const Entry: React.FC = () => {
   const actionRef = useRef<ActionType>()
-  const transformEntryRef = useRef<TransformEntryModalRefProps>(null)
   const [editableKeys, setEditableRowKeys] = useState<React.Key[]>([])
-
   const [pageAllPublicEntries] = usePageAllPublicEntriesLazyQuery()
-
+  const [columnsStateMap, setColumnsStateMap] =
+    useState<Record<string, ColumnsState>>(langColumnsState)
   async function handleRequest(
     params: ParamsType & {
       pageSize?: number
@@ -54,15 +55,6 @@ const Entry: React.FC = () => {
     }
   }
 
-  function openTransformModal(record: EntryItem) {
-    transformEntryRef.current?.open({
-      entryId: record.entry_id,
-      langObj: record.langs,
-      key: record.key,
-      mainLangText: record.mainLangText,
-    })
-  }
-
   const columns: ProColumns<EntryItem>[] = [
     {
       title: '词条Key',
@@ -82,25 +74,8 @@ const Entry: React.FC = () => {
     },
     {
       title: '多语言',
-      children: [
-        {
-          title: '中文',
-          dataIndex: ['langs', LanguageTypeEnum.zh],
-          readonly: true,
-        },
-        {
-          title: '英文',
-          dataIndex: ['langs', LanguageTypeEnum.en],
-        },
-        {
-          title: '泰语',
-          dataIndex: ['langs', LanguageTypeEnum.th],
-        },
-        {
-          title: '越南语',
-          dataIndex: ['langs', LanguageTypeEnum.vie],
-        },
-      ],
+      tip: '更多语言查看请点击右侧列设置',
+      children: langTableColumns,
       hideInSearch: true,
     },
     {
@@ -170,68 +145,54 @@ const Entry: React.FC = () => {
               key: record.key,
               ...record.langs,
             }}
-            supportLanguageArray={supportLanguageArray}
             onActionSuccess={actionRef.current?.reload}>
             <Button key="button" type="link">
               <EditOutlined />
               编辑
             </Button>
           </EntryModal>,
-          <Button
-            type="link"
-            key="transform"
-            icon={<SwapOutlined />}
-            onClick={() => {
-              openTransformModal(record)
-            }}>
-            转换
-          </Button>,
         ]
       },
     },
   ]
-
   return (
-    <>
-      <ProTable<EntryItem>
-        columns={columns}
-        actionRef={actionRef}
-        cardBordered
-        bordered
-        scroll={{ x: 960 }}
-        request={handleRequest}
-        rowKey="entry_id"
-        search={{
-          labelWidth: 'auto',
-        }}
-        pagination={{
-          pageSize: 10,
-        }}
-        dateFormatter="string"
-        headerTitle="公共词条库"
-        toolBarRender={() => [
-          <EntryModal
-            key="new"
-            onActionSuccess={actionRef.current?.reload}
-            supportLanguageArray={langKeys}>
-            <Button key="button" type="primary">
-              <PlusOutlined />
-              新建
-            </Button>
-          </EntryModal>,
-        ]}
-        editable={{
-          type: 'multiple',
-          editableKeys,
-          onSave: async (rowKey, data, row) => {},
-          onChange: setEditableRowKeys,
-        }}
-      />
-      <TransformEntryModal
-        ref={transformEntryRef}
-        onActionSuccess={() => actionRef.current.reload()}
-      />
-    </>
+    <ProTable<EntryItem>
+      columns={columns}
+      actionRef={actionRef}
+      cardBordered
+      bordered
+      scroll={{ x: 960 }}
+      request={handleRequest}
+      rowKey="entry_id"
+      search={{
+        labelWidth: 'auto',
+      }}
+      pagination={{
+        pageSize: 10,
+      }}
+      dateFormatter="string"
+      headerTitle="公共词条库"
+      toolBarRender={() => [
+        <EntryModal key="new" onActionSuccess={actionRef.current?.reload}>
+          <Button key="button" type="primary">
+            <PlusOutlined />
+            新建
+          </Button>
+        </EntryModal>,
+      ]}
+      editable={{
+        type: 'multiple',
+        editableKeys,
+        onSave: async (rowKey, data, row) => {},
+        onChange: setEditableRowKeys,
+      }}
+      columnsState={{
+        value: columnsStateMap,
+        onChange: map => {
+          setColumnsStateMap(map)
+        },
+      }}
+    />
   )
 }
 

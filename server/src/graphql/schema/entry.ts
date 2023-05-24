@@ -71,6 +71,29 @@ export const EntryItem = objectType({
     t.string("mainLangText");
     t.string("mainLang");
     t.int("appId");
+    t.field("lastContributor", {
+      description: "最近一次公共词条的贡献者",
+      type: "UserInfo",
+      async resolve(root, _, ctx) {
+        const entry = await ctx.prisma.entry.findUnique({
+          where: {
+            entry_id: root.entry_id!,
+          },
+          include: {
+            modifyRecords: true,
+          },
+        });
+        const userId = entry?.modifyRecords?.[0].creator;
+        if (!userId) {
+          return null;
+        }
+        return ctx.prisma.user.findUnique({
+          where: {
+            user_id: userId,
+          },
+        });
+      },
+    });
     t.field("modifyRecords", {
       type: list(RecordItem),
       async resolve(root, _, ctx) {
@@ -116,6 +139,16 @@ export const EntryMutation = extendType({
             throw new Error("无法新增已经存在的词条");
           }
         }
+        let params = {};
+        if (args.appId) {
+          params = {
+            belongsTo: {
+              connect: {
+                app_id: args.appId,
+              },
+            },
+          };
+        }
         // 创建词条
         const entry = await ctx.prisma.entry.create({
           data: {
@@ -127,11 +160,7 @@ export const EntryMutation = extendType({
                 user_id: info?.userId,
               },
             },
-            belongsTo: {
-              connect: {
-                app_id: args.appId ? args.appId : undefined,
-              },
-            },
+            ...params,
           },
         });
         return entry.entry_id;
@@ -160,7 +189,7 @@ export const EntryMutation = extendType({
         const entries = await ctx.prisma.entry.count({
           where: {
             key: args.key,
-            appId: args.appId,
+            appId: args.appId || null,
             entry_id: {
               not: args.entryId,
             },
@@ -343,7 +372,7 @@ export const EntryMutation = extendType({
         // 转换为私有词条，新建一个词条
         if (!isPublic) {
           // 创建一个私有词条
-          const entry = await ctx.prisma.entry.create({
+          await ctx.prisma.entry.create({
             data: {
               key: targetEntry!.key,
               createBy: {
@@ -354,41 +383,37 @@ export const EntryMutation = extendType({
               mainLang: targetEntry!.mainLang,
               mainLangText: targetEntry!.mainLangText,
               langs: targetEntry!.langs as any,
-              basedOn: {
-                connect: {
-                  entry_id: targetEntry?.entry_id,
-                },
-              },
               belongsTo: {
                 connect: {
                   app_id: args.targetAppId || undefined,
                 },
               },
-            },
-          });
-          // 更新词条间的关联关系
-          await ctx.prisma.entry.update({
-            where: {
-              entry_id: targetEntry?.entry_id,
-            },
-            data: {
-              base: {
-                connect: [{ entry_id: entry.entry_id }],
+              modifyRecords: {
+                create: [
+                  {
+                    prevLangs: undefined,
+                    currLangs: targetEntry?.langs,
+                    prevKey: undefined,
+                    currKey: targetEntry?.key,
+                    creator: decoded?.userId,
+                  },
+                ],
               },
             },
           });
         } else {
-          // 转换为公有词条
+          // 1. 查询所有公共词条
           const entries = await ctx.prisma.entry.findMany({
             where: {
               mainLang: targetEntry!.mainLang,
               mainLangText: targetEntry!.mainLangText,
+              appId: null,
               deleted: false,
             },
           });
           // 如果没有匹配的词条，则创建一个新的公共词条
           if (!entries.length) {
-            const entry = await ctx.prisma.entry.create({
+            await ctx.prisma.entry.create({
               data: {
                 key: targetEntry!.key,
                 createBy: {
@@ -399,21 +424,16 @@ export const EntryMutation = extendType({
                 mainLang: targetEntry!.mainLang,
                 mainLangText: targetEntry!.mainLangText,
                 langs: targetEntry!.langs as any,
-                basedOn: {
-                  connect: {
-                    entry_id: targetEntry?.entry_id,
-                  },
-                },
-              },
-            });
-            // 更新和原有词条的关联关系
-            await ctx.prisma.entry.update({
-              where: {
-                entry_id: targetEntry?.entry_id,
-              },
-              data: {
-                base: {
-                  connect: [{ entry_id: entry.entry_id }],
+                modifyRecords: {
+                  create: [
+                    {
+                      prevLangs: undefined,
+                      currLangs: targetEntry?.langs,
+                      prevKey: undefined,
+                      currKey: targetEntry?.key,
+                      creator: decoded?.userId,
+                    },
+                  ],
                 },
               },
             });
@@ -425,26 +445,23 @@ export const EntryMutation = extendType({
                     entry_id: item.entry_id,
                   },
                   data: {
-                    langs: targetEntry!.langs as any,
-                    basedOn: {
-                      connect: {
-                        entry_id: item.entry_id,
-                      },
+                    mainLangText: targetEntry!.mainLangText,
+                    langs: Object.assign(item.langs as any, targetEntry!.langs),
+                    modifyRecords: {
+                      create: [
+                        {
+                          prevLangs: item.langs,
+                          currLangs: targetEntry?.langs,
+                          prevKey: item.key,
+                          currKey: item.key,
+                          creator: decoded?.userId,
+                        },
+                      ],
                     },
                   },
                 })
               )
             );
-            await ctx.prisma.entry.update({
-              where: {
-                entry_id: targetEntry!.entry_id,
-              },
-              data: {
-                base: {
-                  connect: entries.map((i) => ({ entry_id: i.entry_id })),
-                },
-              },
-            });
           }
         }
         return true;
@@ -587,7 +604,7 @@ export const EntryQuery = extendType({
               not: args.entryId || undefined,
             },
             key: args.key,
-            appId: args.appId,
+            appId: args.appId || null,
           },
         });
         if (targetEntries > 0) {

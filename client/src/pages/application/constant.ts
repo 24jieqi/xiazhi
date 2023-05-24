@@ -1,9 +1,10 @@
+import { ColumnsState, ProColumns } from '@ant-design/pro-components'
 import langMap from '@/config/langMap'
-import { AppTypeEnum } from '@/graphql/generated/types'
+import { AppTypeEnum, EntryItem } from '@/graphql/generated/types'
 
 type LangMapType = typeof langMap
 
-type LangMapKeyType = keyof LangMapType
+export type LangMapKeyType = keyof LangMapType
 
 type LanguageType = {
   [key in LangMapKeyType]?: string
@@ -100,3 +101,22 @@ export const LanguageTypeEnum: LanguageType = langKeys.reduce(
   }),
   {},
 )
+
+export const langTableColumns: ProColumns<EntryItem, 'text'>[] = langKeys.map(
+  lang => ({
+    title: langMap[lang].zhName,
+    dataIndex: ['langs', lang],
+  }),
+)
+
+function getlangColumnsState() {
+  const result: Record<string, ColumnsState> = {}
+  for (const lang of langKeys) {
+    result[`langs,${lang}`] = {
+      show: ['zh', 'en'].includes(lang),
+    }
+  }
+  return result
+}
+
+export const langColumnsState = getlangColumnsState()
