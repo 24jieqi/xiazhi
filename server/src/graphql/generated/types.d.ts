@@ -259,6 +259,7 @@ export interface NexusGenFieldTypes {
     creatorId: number | null; // Int
     deleted: boolean | null; // Boolean
     entry_id: number | null; // Int
+    existInApp: boolean | null; // Boolean
     key: string | null; // String
     langs: NexusGenScalars["JSONObject"] | null; // JSONObject
     lastContributor: NexusGenRootTypes["UserInfo"] | null; // UserInfo
@@ -311,6 +312,7 @@ export interface NexusGenFieldTypes {
     sendResetPasswordEmail: boolean | null; // Boolean
     sendVerifyEmail: boolean | null; // Boolean
     transformEntry: boolean | null; // Boolean
+    transformEntryForApp: boolean | null; // Boolean
     updateAppBasicInfo: number | null; // Int
     updateEntry: boolean | null; // Boolean
     updateUserInfo: boolean | null; // Boolean
@@ -335,6 +337,7 @@ export interface NexusGenFieldTypes {
     pageAllPublicEntries: NexusGenRootTypes["EntryPaging"] | null; // EntryPaging
     pageAppEntries: NexusGenRootTypes["EntryPaging"] | null; // EntryPaging
     pageFeedbackNegative: NexusGenRootTypes["FeedbackPaging"] | null; // FeedbackPaging
+    pagePublicEntriesByApp: NexusGenRootTypes["EntryPaging"] | null; // EntryPaging
     queryPublicEntryByMainText: NexusGenRootTypes["EntryItem"] | null; // EntryItem
     validEntryKey: boolean | null; // Boolean
   };
@@ -420,6 +423,7 @@ export interface NexusGenFieldTypeNames {
     creatorId: "Int";
     deleted: "Boolean";
     entry_id: "Int";
+    existInApp: "Boolean";
     key: "String";
     langs: "JSONObject";
     lastContributor: "UserInfo";
@@ -472,6 +476,7 @@ export interface NexusGenFieldTypeNames {
     sendResetPasswordEmail: "Boolean";
     sendVerifyEmail: "Boolean";
     transformEntry: "Boolean";
+    transformEntryForApp: "Boolean";
     updateAppBasicInfo: "Int";
     updateEntry: "Boolean";
     updateUserInfo: "Boolean";
@@ -492,6 +497,7 @@ export interface NexusGenFieldTypeNames {
     pageAllPublicEntries: "EntryPaging";
     pageAppEntries: "EntryPaging";
     pageFeedbackNegative: "FeedbackPaging";
+    pagePublicEntriesByApp: "EntryPaging";
     queryPublicEntryByMainText: "EntryItem";
     validEntryKey: "Boolean";
   };
@@ -521,6 +527,12 @@ export interface NexusGenFieldTypeNames {
 }
 
 export interface NexusGenArgTypes {
+  EntryItem: {
+    existInApp: {
+      // args
+      appId: number; // Int!
+    };
+  };
   Mutation: {
     archivedApp: {
       // args
@@ -624,6 +636,11 @@ export interface NexusGenArgTypes {
       entryId: number; // Int!
       targetAppId?: number | null; // Int
     };
+    transformEntryForApp: {
+      // args
+      appId: number; // Int!
+      entryIds: number[]; // [Int!]!
+    };
     updateAppBasicInfo: {
       // args
       appId: number; // Int!
@@ -708,6 +725,13 @@ export interface NexusGenArgTypes {
     };
     pageFeedbackNegative: {
       // args
+      pageNo: number; // Int!
+      pageSize: number; // Int!
+    };
+    pagePublicEntriesByApp: {
+      // args
+      key?: string | null; // String
+      mainLangText?: string | null; // String
       pageNo: number; // Int!
       pageSize: number; // Int!
     };

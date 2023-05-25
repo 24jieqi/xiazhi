@@ -126,12 +126,21 @@ export type EntryItem = {
   creatorId?: Maybe<Scalars['Int']>
   deleted?: Maybe<Scalars['Boolean']>
   entry_id?: Maybe<Scalars['Int']>
+  /** 给定appId，校验当前词条是否存在在给定的APP中（仅在公共词条私有化查询使用） */
+  existInApp?: Maybe<Scalars['Boolean']>
   key?: Maybe<Scalars['String']>
   langs?: Maybe<Scalars['JSONObject']>
+  /** 最近一次公共词条的贡献者 */
+  lastContributor?: Maybe<UserInfo>
   mainLang?: Maybe<Scalars['String']>
   mainLangText?: Maybe<Scalars['String']>
   modifyRecords?: Maybe<Array<Maybe<RecordItem>>>
   updatedAt?: Maybe<Scalars['DateTime']>
+}
+
+/** 词条基本信息 */
+export type EntryItemExistInAppArgs = {
+  appId: Scalars['Int']
 }
 
 /** 词条分页对象 */
@@ -213,6 +222,8 @@ export type Mutation = {
   sendVerifyEmail?: Maybe<Scalars['Boolean']>
   /** 词条: 公共词条、私有词条相互转换 */
   transformEntry?: Maybe<Scalars['Boolean']>
+  /** 词条: 公共词条转换为应用内词条（批量） */
+  transformEntryForApp?: Maybe<Scalars['Boolean']>
   /** 应用: 更新应用基本信息 */
   updateAppBasicInfo?: Maybe<Scalars['Int']>
   /** 词条: 更新单个词条 */
@@ -327,6 +338,11 @@ export type MutationTransformEntryArgs = {
   targetAppId?: InputMaybe<Scalars['Int']>
 }
 
+export type MutationTransformEntryForAppArgs = {
+  appId: Scalars['Int']
+  entryIds: Array<Scalars['Int']>
+}
+
 export type MutationUpdateAppBasicInfoArgs = {
   appId: Scalars['Int']
   description?: InputMaybe<Scalars['String']>
@@ -380,6 +396,8 @@ export type Query = {
   pageAppEntries?: Maybe<EntryPaging>
   /** 反馈: 反馈问题内容分页 */
   pageFeedbackNegative?: Maybe<FeedbackPaging>
+  /** 词条: 获取公共词条（已经存在某个应用的词条会被打上标记） */
+  pagePublicEntriesByApp?: Maybe<EntryPaging>
   /** 词条: 通过中文查询公共词条 */
   queryPublicEntryByMainText?: Maybe<EntryItem>
   /** 词条: 词条key应用内唯一校验 */
@@ -440,6 +458,13 @@ export type QueryPageAppEntriesArgs = {
 }
 
 export type QueryPageFeedbackNegativeArgs = {
+  pageNo: Scalars['Int']
+  pageSize: Scalars['Int']
+}
+
+export type QueryPagePublicEntriesByAppArgs = {
+  key?: InputMaybe<Scalars['String']>
+  mainLangText?: InputMaybe<Scalars['String']>
   pageNo: Scalars['Int']
   pageSize: Scalars['Int']
 }

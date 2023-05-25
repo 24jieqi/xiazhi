@@ -189,6 +189,78 @@ export type QueryPublicEntryByMainTextQuery = {
   }
 }
 
+export type PagePublicEntriesByAppQueryVariables = SchemaTypes.Exact<{
+  pageSize: SchemaTypes.Scalars['Int']
+  pageNo: SchemaTypes.Scalars['Int']
+  key?: SchemaTypes.InputMaybe<SchemaTypes.Scalars['String']>
+  mainLangText?: SchemaTypes.InputMaybe<SchemaTypes.Scalars['String']>
+  appId: SchemaTypes.Scalars['Int']
+}>
+
+export type PagePublicEntriesByAppQuery = {
+  pagePublicEntriesByApp?: {
+    __typename?: 'EntryPaging'
+    total: number
+    pageSize: number
+    current: number
+    records?: Array<{
+      __typename?: 'EntryItem'
+      entry_id?: number
+      key?: string
+      creatorId?: number
+      createdAt?: number
+      updatedAt?: number
+      archive?: boolean
+      deleted?: boolean
+      mainLangText?: string
+      mainLang?: string
+      appId?: number
+      langs?: any
+      existInApp?: boolean
+      lastContributor?: {
+        __typename?: 'UserInfo'
+        name?: string
+        user_id?: number
+        email?: string
+        nickName?: string
+        phone?: string
+        role?: SchemaTypes.UserRoleEnum
+        avatar?: string
+        verifyType?: string
+      }
+      modifyRecords?: Array<{
+        __typename?: 'RecordItem'
+        record_id: number
+        createdAt?: number
+        entryEntry_id?: number
+        prevLangs?: any
+        currLangs?: any
+        prevKey?: string
+        currKey?: string
+        creator?: number
+        creatorInfo?: {
+          __typename?: 'UserInfo'
+          name?: string
+          user_id?: number
+          email?: string
+          nickName?: string
+          phone?: string
+          role?: SchemaTypes.UserRoleEnum
+          avatar?: string
+          verifyType?: string
+        }
+      }>
+    }>
+  }
+}
+
+export type TransformEntryForAppMutationVariables = SchemaTypes.Exact<{
+  appId: SchemaTypes.Scalars['Int']
+  entryIds: Array<SchemaTypes.Scalars['Int']>
+}>
+
+export type TransformEntryForAppMutation = { transformEntryForApp?: boolean }
+
 export const PageAllPublicEntriesDocument = gql`
   query pageAllPublicEntries(
     $pageSize: Int!
@@ -858,4 +930,172 @@ export type QueryPublicEntryByMainTextLazyQueryHookResult = ReturnType<
 export type QueryPublicEntryByMainTextQueryResult = Apollo.QueryResult<
   QueryPublicEntryByMainTextQuery,
   QueryPublicEntryByMainTextQueryVariables
+>
+export const PagePublicEntriesByAppDocument = gql`
+  query pagePublicEntriesByApp(
+    $pageSize: Int!
+    $pageNo: Int!
+    $key: String
+    $mainLangText: String
+    $appId: Int!
+  ) {
+    pagePublicEntriesByApp(
+      pageSize: $pageSize
+      pageNo: $pageNo
+      key: $key
+      mainLangText: $mainLangText
+    ) {
+      total
+      pageSize
+      current
+      records {
+        entry_id
+        key
+        creatorId
+        createdAt
+        updatedAt
+        archive
+        deleted
+        mainLangText
+        mainLang
+        appId
+        lastContributor {
+          name
+          user_id
+          email
+          nickName
+          phone
+          role
+          avatar
+          verifyType
+        }
+        modifyRecords {
+          record_id
+          createdAt
+          entryEntry_id
+          prevLangs
+          currLangs
+          prevKey
+          currKey
+          creator
+          creatorInfo {
+            name
+            user_id
+            email
+            nickName
+            phone
+            role
+            avatar
+            verifyType
+          }
+        }
+        langs
+        existInApp(appId: $appId)
+      }
+    }
+  }
+`
+
+/**
+ * __usePagePublicEntriesByAppQuery__
+ *
+ * To run a query within a React component, call `usePagePublicEntriesByAppQuery` and pass it any options that fit your needs.
+ * When your component renders, `usePagePublicEntriesByAppQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = usePagePublicEntriesByAppQuery({
+ *   variables: {
+ *      pageSize: // value for 'pageSize'
+ *      pageNo: // value for 'pageNo'
+ *      key: // value for 'key'
+ *      mainLangText: // value for 'mainLangText'
+ *      appId: // value for 'appId'
+ *   },
+ * });
+ */
+export function usePagePublicEntriesByAppQuery(
+  baseOptions: Apollo.QueryHookOptions<
+    PagePublicEntriesByAppQuery,
+    PagePublicEntriesByAppQueryVariables
+  >,
+) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useQuery<
+    PagePublicEntriesByAppQuery,
+    PagePublicEntriesByAppQueryVariables
+  >(PagePublicEntriesByAppDocument, options)
+}
+export function usePagePublicEntriesByAppLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<
+    PagePublicEntriesByAppQuery,
+    PagePublicEntriesByAppQueryVariables
+  >,
+) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useLazyQuery<
+    PagePublicEntriesByAppQuery,
+    PagePublicEntriesByAppQueryVariables
+  >(PagePublicEntriesByAppDocument, options)
+}
+export type PagePublicEntriesByAppQueryHookResult = ReturnType<
+  typeof usePagePublicEntriesByAppQuery
+>
+export type PagePublicEntriesByAppLazyQueryHookResult = ReturnType<
+  typeof usePagePublicEntriesByAppLazyQuery
+>
+export type PagePublicEntriesByAppQueryResult = Apollo.QueryResult<
+  PagePublicEntriesByAppQuery,
+  PagePublicEntriesByAppQueryVariables
+>
+export const TransformEntryForAppDocument = gql`
+  mutation transformEntryForApp($appId: Int!, $entryIds: [Int!]!) {
+    transformEntryForApp(appId: $appId, entryIds: $entryIds)
+  }
+`
+export type TransformEntryForAppMutationFn = Apollo.MutationFunction<
+  TransformEntryForAppMutation,
+  TransformEntryForAppMutationVariables
+>
+
+/**
+ * __useTransformEntryForAppMutation__
+ *
+ * To run a mutation, you first call `useTransformEntryForAppMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useTransformEntryForAppMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [transformEntryForAppMutation, { data, loading, error }] = useTransformEntryForAppMutation({
+ *   variables: {
+ *      appId: // value for 'appId'
+ *      entryIds: // value for 'entryIds'
+ *   },
+ * });
+ */
+export function useTransformEntryForAppMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    TransformEntryForAppMutation,
+    TransformEntryForAppMutationVariables
+  >,
+) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useMutation<
+    TransformEntryForAppMutation,
+    TransformEntryForAppMutationVariables
+  >(TransformEntryForAppDocument, options)
+}
+export type TransformEntryForAppMutationHookResult = ReturnType<
+  typeof useTransformEntryForAppMutation
+>
+export type TransformEntryForAppMutationResult =
+  Apollo.MutationResult<TransformEntryForAppMutation>
+export type TransformEntryForAppMutationOptions = Apollo.BaseMutationOptions<
+  TransformEntryForAppMutation,
+  TransformEntryForAppMutationVariables
 >

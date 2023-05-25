@@ -161,6 +161,11 @@ type EntryItem {
   creatorId: Int
   deleted: Boolean
   entry_id: Int
+
+  """
+  给定appId，校验当前词条是否存在在给定的APP中（仅在公共词条私有化查询使用）
+  """
+  existInApp(appId: Int!): Boolean
   key: String
   langs: JSONObject
 
@@ -344,6 +349,11 @@ type Mutation {
   transformEntry(entryId: Int!, targetAppId: Int): Boolean
 
   """
+  词条: 公共词条转换为应用内词条（批量）
+  """
+  transformEntryForApp(appId: Int!, entryIds: [Int!]!): Boolean
+
+  """
   应用: 更新应用基本信息
   """
   updateAppBasicInfo(
@@ -468,6 +478,16 @@ type Query {
   反馈: 反馈问题内容分页
   """
   pageFeedbackNegative(pageNo: Int!, pageSize: Int!): FeedbackPaging
+
+  """
+  词条: 获取公共词条（已经存在某个应用的词条会被打上标记）
+  """
+  pagePublicEntriesByApp(
+    key: String
+    mainLangText: String
+    pageNo: Int!
+    pageSize: Int!
+  ): EntryPaging
 
   """
   词条: 通过中文查询公共词条

@@ -178,3 +178,72 @@ query queryPublicEntryByMainText($mainText: String!) {
     langs
   }
 }
+
+# 词条: 获取公共词条（已经存在某个应用的词条会被打上标记）
+query pagePublicEntriesByApp(
+  $pageSize: Int!
+  $pageNo: Int!
+  $key: String
+  $mainLangText: String
+  $appId: Int!
+) {
+  pagePublicEntriesByApp(
+    pageSize: $pageSize
+    pageNo: $pageNo
+    key: $key
+    mainLangText: $mainLangText
+  ) {
+    total
+    pageSize
+    current
+    records {
+      entry_id
+      key
+      creatorId
+      createdAt
+      updatedAt
+      archive
+      deleted
+      mainLangText
+      mainLang
+      appId
+      lastContributor {
+        name
+        user_id
+        email
+        nickName
+        phone
+        role
+        avatar
+        verifyType
+      }
+      modifyRecords {
+        record_id
+        createdAt
+        entryEntry_id
+        prevLangs
+        currLangs
+        prevKey
+        currKey
+        creator
+        creatorInfo {
+          name
+          user_id
+          email
+          nickName
+          phone
+          role
+          avatar
+          verifyType
+        }
+      }
+      langs
+      existInApp(appId: $appId)
+    }
+  }
+}
+
+# 词条: 公共词条转换为应用内词条（批量）
+mutation transformEntryForApp($appId: Int!, $entryIds: [Int!]!) {
+  transformEntryForApp(appId: $appId, entryIds: $entryIds)
+}

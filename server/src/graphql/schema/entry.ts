@@ -15,6 +15,7 @@ import {
   readXlsxLocal,
   splitUpdateOrCreateEntries,
 } from "../utils/xlsx";
+import { PrismaPromise } from "@prisma/client";
 
 export const RecordItem = objectType({
   name: "RecordItem",
@@ -83,7 +84,7 @@ export const EntryItem = objectType({
             modifyRecords: true,
           },
         });
-        const userId = entry?.modifyRecords?.[0].creator;
+        const userId = entry?.modifyRecords?.[0]?.creator;
         if (!userId) {
           return null;
         }
@@ -105,6 +106,23 @@ export const EntryItem = objectType({
       },
     });
     t.json("langs");
+    t.field("existInApp", {
+      type: "Boolean",
+      description:
+        "给定appId，校验当前词条是否存在在给定的APP中（仅在公共词条私有化查询使用）",
+      args: {
+        appId: nonNull(intArg()),
+      },
+      async resolve(root, args, ctx) {
+        const targetEntry = await ctx.prisma.entry.findFirst({
+          where: {
+            appId: args.appId,
+            mainLangText: root.mainLangText,
+          },
+        });
+        return !!targetEntry;
+      },
+    });
   },
 });
 
@@ -467,6 +485,56 @@ export const EntryMutation = extendType({
         return true;
       },
     });
+    t.field("transformEntryForApp", {
+      type: "Boolean",
+      description: "词条: 公共词条转换为应用内词条（批量）",
+      args: {
+        appId: nonNull(intArg()),
+        entryIds: nonNull(list(nonNull(intArg()))),
+      },
+      async resolve(_, args, ctx) {
+        const decoded = decodedToken(ctx.req);
+        for (const entryId of args.entryIds) {
+          await ctx.prisma.$transaction(async () => {
+            const targetEntry = await ctx.prisma.entry.findUnique({
+              where: {
+                entry_id: entryId,
+              },
+            });
+            return await ctx.prisma.entry.create({
+              data: {
+                key: targetEntry!.key,
+                createBy: {
+                  connect: {
+                    user_id: decoded!.userId,
+                  },
+                },
+                mainLang: targetEntry!.mainLang,
+                mainLangText: targetEntry!.mainLangText,
+                langs: targetEntry!.langs as any,
+                belongsTo: {
+                  connect: {
+                    app_id: args.appId || undefined,
+                  },
+                },
+                modifyRecords: {
+                  create: [
+                    {
+                      prevLangs: undefined,
+                      currLangs: targetEntry?.langs,
+                      prevKey: undefined,
+                      currKey: targetEntry?.key,
+                      creator: decoded?.userId,
+                    },
+                  ],
+                },
+              },
+            });
+          });
+        }
+        return true;
+      },
+    });
   },
 });
 
@@ -503,6 +571,44 @@ export const EntryQuery = extendType({
               gte: args.startTime
                 ? formatISO(new Date(args.startTime!))
                 : undefined,
+            },
+          },
+          skip: (args.pageNo - 1) * args.pageSize,
+          take: args.pageSize,
+        });
+        const total = await ctx.prisma.entry.count({
+          where: {
+            appId: null,
+          },
+        });
+        return {
+          current: args.pageNo,
+          pageSize: args.pageSize,
+          records: records,
+          total,
+        };
+      },
+    });
+    t.field("pagePublicEntriesByApp", {
+      type: "EntryPaging",
+      description: "词条: 获取公共词条（已经存在某个应用的词条会被打上标记）",
+      args: {
+        pageSize: nonNull(intArg()),
+        pageNo: nonNull(intArg()),
+        key: stringArg(),
+        mainLangText: stringArg(),
+      },
+      async resolve(_, args, ctx) {
+        decodedToken(ctx.req);
+        // 查询所有公共词条
+        const records = await ctx.prisma.entry.findMany({
+          where: {
+            appId: null,
+            key: {
+              contains: args.key || "",
+            },
+            mainLangText: {
+              contains: args.mainLangText || "",
             },
           },
           skip: (args.pageNo - 1) * args.pageSize,
