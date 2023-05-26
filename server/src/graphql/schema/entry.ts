@@ -130,7 +130,7 @@ export const EntryMutation = extendType({
   type: "Mutation",
   definition(t) {
     t.field("createEntry", {
-      description: "词条: 创建词条，如果不穿入appId，则创建为公共词条",
+      description: "词条: 创建词条，如果不传入appId，则创建为公共词条",
       type: "Int",
       args: {
         appId: intArg(),
@@ -317,10 +317,10 @@ export const EntryMutation = extendType({
         const entriesExist = await ctx.prisma.entry.findMany({
           where: {
             appId: args.appId,
+            deleted: false
           },
         });
         const result = splitUpdateOrCreateEntries(entries, entriesExist);
-        console.log(result);
         // 更新已存在的词条（更新词条/创建编辑记录）
         await ctx.prisma.$transaction(
           result.update.map((item) =>
@@ -344,30 +344,21 @@ export const EntryMutation = extendType({
           )
         );
         // 新增词条
-        const entriyList = await ctx.prisma.$transaction(
+        await ctx.prisma.$transaction(
           result.create.map((entry) =>
             ctx.prisma.entry.create({
               data: {
                 ...entry,
-                appId: args.appId,
+                uploaded: true,
+                belongsTo: {
+                  connect: {
+                    app_id: args.appId
+                  }
+                }
               },
             })
           )
         );
-        const entryListId = entriyList.map((entry) => ({
-          entry_id: entry.entry_id,
-        }));
-        // 更新应用
-        ctx.prisma.app.update({
-          where: {
-            app_id: args.appId,
-          },
-          data: {
-            entries: {
-              connect: entryListId,
-            },
-          },
-        });
         return true;
       },
     });

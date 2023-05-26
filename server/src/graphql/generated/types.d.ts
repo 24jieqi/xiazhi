@@ -3,24 +3,19 @@
  * Do not make changes to this file directly
  */
 
-import type { Context } from "./../context";
-import type { core } from "nexus";
+
+import type { Context } from "./../context"
+import type { core } from "nexus"
 declare global {
   interface NexusGenCustomInputMethods<TypeName extends string> {
     /**
      * The `JSONObject` scalar type represents JSON objects as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
      */
-    json<FieldName extends string>(
-      fieldName: FieldName,
-      opts?: core.CommonInputFieldConfig<TypeName, FieldName>
-    ): void; // "JSONObject";
+    json<FieldName extends string>(fieldName: FieldName, opts?: core.CommonInputFieldConfig<TypeName, FieldName>): void // "JSONObject";
     /**
      * A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
      */
-    date<FieldName extends string>(
-      fieldName: FieldName,
-      opts?: core.CommonInputFieldConfig<TypeName, FieldName>
-    ): void; // "DateTime";
+    date<FieldName extends string>(fieldName: FieldName, opts?: core.CommonInputFieldConfig<TypeName, FieldName>): void // "DateTime";
   }
 }
 declare global {
@@ -28,66 +23,50 @@ declare global {
     /**
      * The `JSONObject` scalar type represents JSON objects as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
      */
-    json<FieldName extends string>(
-      fieldName: FieldName,
-      ...opts: core.ScalarOutSpread<TypeName, FieldName>
-    ): void; // "JSONObject";
+    json<FieldName extends string>(fieldName: FieldName, ...opts: core.ScalarOutSpread<TypeName, FieldName>): void // "JSONObject";
     /**
      * A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
      */
-    date<FieldName extends string>(
-      fieldName: FieldName,
-      ...opts: core.ScalarOutSpread<TypeName, FieldName>
-    ): void; // "DateTime";
+    date<FieldName extends string>(fieldName: FieldName, ...opts: core.ScalarOutSpread<TypeName, FieldName>): void // "DateTime";
   }
 }
+
 
 declare global {
   interface NexusGen extends NexusGenTypes {}
 }
 
 export interface NexusGenInputs {
-  CollaboratorsInput: {
-    // input type
-    role: NexusGenEnums["CollaboratorRoleEnum"]; // CollaboratorRoleEnum!
+  CollaboratorsInput: { // input type
+    role: NexusGenEnums['CollaboratorRoleEnum']; // CollaboratorRoleEnum!
     userId: number; // Int!
-  };
-  ExtractLocalEntryItem: {
-    // input type
+  }
+  ExtractLocalEntryItem: { // input type
     key?: string | null; // String
-    langs?: NexusGenScalars["JSONObject"] | null; // JSONObject
+    langs: NexusGenScalars['JSONObject']; // JSONObject!
     mainLang: string; // String!
-    mainLangText?: string | null; // String
-  };
+    mainLangText: string; // String!
+  }
 }
 
 export interface NexusGenEnums {
-  AppTypeEnum:
-    | "CONTACT"
-    | "EDUCATION"
-    | "EFFICIENCY"
-    | "FINANCE"
-    | "GAME"
-    | "MUSIC"
-    | "OTHER"
-    | "TOOL";
-  CollaboratorRoleEnum: "GUEST" | "MANAGER" | "OWNER" | "TRANSLATOR";
-  UserRoleEnum: "DEVELOPER" | "MANAGER" | "OTHER" | "TRANSLATOR";
+  AppTypeEnum: "CONTACT" | "EDUCATION" | "EFFICIENCY" | "FINANCE" | "GAME" | "MUSIC" | "OTHER" | "TOOL"
+  CollaboratorRoleEnum: "GUEST" | "MANAGER" | "OWNER" | "TRANSLATOR"
+  UserRoleEnum: "DEVELOPER" | "MANAGER" | "OTHER" | "TRANSLATOR"
 }
 
 export interface NexusGenScalars {
-  String: string;
-  Int: number;
-  Float: number;
-  Boolean: boolean;
-  ID: string;
-  DateTime: any;
-  JSONObject: any;
+  String: string
+  Int: number
+  Float: number
+  Boolean: boolean
+  ID: string
+  DateTime: any
+  JSONObject: any
 }
 
 export interface NexusGenObjects {
-  AppAccessInfo: {
-    // root type
+  AppAccessInfo: { // root type
     access?: boolean | null; // Boolean
     accessKey?: string | null; // String
     app_id: number; // Int!
@@ -95,9 +74,8 @@ export interface NexusGenObjects {
     deleted?: boolean | null; // Boolean
     name?: string | null; // String
     push?: boolean | null; // Boolean
-  };
-  AppItem: {
-    // root type
+  }
+  AppItem: { // root type
     access?: boolean | null; // Boolean
     accessKey?: string | null; // String
     app_id?: number | null; // Int
@@ -107,104 +85,99 @@ export interface NexusGenObjects {
     name?: string | null; // String
     pictures?: Array<string | null> | null; // [String]
     push?: boolean | null; // Boolean
-    type?: NexusGenEnums["AppTypeEnum"] | null; // AppTypeEnum
-  };
-  AppPaging: {
-    // root type
+    type?: NexusGenEnums['AppTypeEnum'] | null; // AppTypeEnum
+  }
+  AppPaging: { // root type
     current: number; // Int!
     pageSize: number; // Int!
-    records?: Array<NexusGenRootTypes["AppItem"] | null> | null; // [AppItem]
+    records?: Array<NexusGenRootTypes['AppItem'] | null> | null; // [AppItem]
     total: number; // Int!
-  };
-  CollaborateInfo: {
-    // root type
-    app?: NexusGenRootTypes["AppItem"] | null; // AppItem
-    assignedAt: NexusGenScalars["DateTime"]; // DateTime!
+  }
+  CollaborateInfo: { // root type
+    app?: NexusGenRootTypes['AppItem'] | null; // AppItem
+    assignedAt: NexusGenScalars['DateTime']; // DateTime!
     id: number; // Int!
-    role: NexusGenEnums["CollaboratorRoleEnum"]; // CollaboratorRoleEnum!
-    user?: NexusGenRootTypes["UserInfo"] | null; // UserInfo
-  };
-  CollaboratorStatistics: {
-    // root type
+    role: NexusGenEnums['CollaboratorRoleEnum']; // CollaboratorRoleEnum!
+    user?: NexusGenRootTypes['UserInfo'] | null; // UserInfo
+  }
+  CollaboratorStatistics: { // root type
     addCount: number; // Int!
     addCountToday: number; // Int!
     modifyCount: number; // Int!
     userId: number; // Int!
-  };
-  EntryItem: {
-    // root type
+  }
+  EntryItem: { // root type
     appId?: number | null; // Int
     archive?: boolean | null; // Boolean
-    createdAt?: NexusGenScalars["DateTime"] | null; // DateTime
+    createdAt?: NexusGenScalars['DateTime'] | null; // DateTime
     creatorId?: number | null; // Int
     deleted?: boolean | null; // Boolean
     entry_id?: number | null; // Int
     key?: string | null; // String
-    langs?: NexusGenScalars["JSONObject"] | null; // JSONObject
+    langs?: NexusGenScalars['JSONObject'] | null; // JSONObject
     mainLang?: string | null; // String
     mainLangText?: string | null; // String
-    updatedAt?: NexusGenScalars["DateTime"] | null; // DateTime
-  };
-  EntryPaging: {
-    // root type
+    updatedAt?: NexusGenScalars['DateTime'] | null; // DateTime
+  }
+  EntryPaging: { // root type
     current: number; // Int!
     pageSize: number; // Int!
-    records?: Array<NexusGenRootTypes["EntryItem"] | null> | null; // [EntryItem]
+    records?: Array<NexusGenRootTypes['EntryItem'] | null> | null; // [EntryItem]
     total: number; // Int!
-  };
-  FeedbackItem: {
-    // root type
+  }
+  ExtractResult: { // root type
+    add?: number | null; // Int
+    ignore?: number | null; // Int
+    modify?: number | null; // Int
+  }
+  FeedbackItem: { // root type
     feedback_id: number; // Int!
     message?: string | null; // String
     result: boolean; // Boolean!
-    user?: NexusGenRootTypes["UserInfo"] | null; // UserInfo
-  };
-  FeedbackPaging: {
-    // root type
+    user?: NexusGenRootTypes['UserInfo'] | null; // UserInfo
+  }
+  FeedbackPaging: { // root type
     current: number; // Int!
     pageSize: number; // Int!
-    records?: Array<NexusGenRootTypes["FeedbackItem"] | null> | null; // [FeedbackItem]
+    records?: Array<NexusGenRootTypes['FeedbackItem'] | null> | null; // [FeedbackItem]
     total: number; // Int!
-  };
+  }
   Mutation: {};
   Query: {};
-  RecordItem: {
-    // root type
-    createdAt?: NexusGenScalars["DateTime"] | null; // DateTime
+  RecordItem: { // root type
+    createdAt?: NexusGenScalars['DateTime'] | null; // DateTime
     creator?: number | null; // Int
     currKey?: string | null; // String
-    currLangs?: NexusGenScalars["JSONObject"] | null; // JSONObject
+    currLangs?: NexusGenScalars['JSONObject'] | null; // JSONObject
     entryEntry_id?: number | null; // Int
     prevKey?: string | null; // String
-    prevLangs?: NexusGenScalars["JSONObject"] | null; // JSONObject
+    prevLangs?: NexusGenScalars['JSONObject'] | null; // JSONObject
     record_id: number; // Int!
-  };
-  UserInfo: {
-    // root type
+  }
+  UserInfo: { // root type
     avatar?: string | null; // String
     email?: string | null; // String
     name?: string | null; // String
     nickName?: string | null; // String
     phone?: string | null; // String
-    role?: NexusGenEnums["UserRoleEnum"] | null; // UserRoleEnum
+    role?: NexusGenEnums['UserRoleEnum'] | null; // UserRoleEnum
     user_id?: number | null; // Int
     verifyType?: string | null; // String
-  };
+  }
 }
 
-export interface NexusGenInterfaces {}
+export interface NexusGenInterfaces {
+}
 
-export interface NexusGenUnions {}
+export interface NexusGenUnions {
+}
 
-export type NexusGenRootTypes = NexusGenObjects;
+export type NexusGenRootTypes = NexusGenObjects
 
-export type NexusGenAllTypes = NexusGenRootTypes &
-  NexusGenScalars &
-  NexusGenEnums;
+export type NexusGenAllTypes = NexusGenRootTypes & NexusGenScalars & NexusGenEnums
 
 export interface NexusGenFieldTypes {
-  AppAccessInfo: {
-    // field return type
+  AppAccessInfo: { // field return type
     access: boolean | null; // Boolean
     accessKey: string | null; // String
     app_id: number; // Int!
@@ -212,13 +185,12 @@ export interface NexusGenFieldTypes {
     deleted: boolean | null; // Boolean
     name: string | null; // String
     push: boolean | null; // Boolean
-  };
-  AppItem: {
-    // field return type
+  }
+  AppItem: { // field return type
     access: boolean | null; // Boolean
     accessKey: string | null; // String
     app_id: number | null; // Int
-    creator: NexusGenRootTypes["UserInfo"] | null; // UserInfo
+    creator: NexusGenRootTypes['UserInfo'] | null; // UserInfo
     creatorId: number | null; // Int
     description: string | null; // String
     entryCount: number | null; // Int
@@ -226,71 +198,68 @@ export interface NexusGenFieldTypes {
     name: string | null; // String
     pictures: Array<string | null> | null; // [String]
     push: boolean | null; // Boolean
-    role: NexusGenEnums["CollaboratorRoleEnum"] | null; // CollaboratorRoleEnum
-    type: NexusGenEnums["AppTypeEnum"] | null; // AppTypeEnum
-  };
-  AppPaging: {
-    // field return type
+    role: NexusGenEnums['CollaboratorRoleEnum'] | null; // CollaboratorRoleEnum
+    type: NexusGenEnums['AppTypeEnum'] | null; // AppTypeEnum
+  }
+  AppPaging: { // field return type
     current: number; // Int!
     pageSize: number; // Int!
-    records: Array<NexusGenRootTypes["AppItem"] | null> | null; // [AppItem]
+    records: Array<NexusGenRootTypes['AppItem'] | null> | null; // [AppItem]
     total: number; // Int!
-  };
-  CollaborateInfo: {
-    // field return type
-    app: NexusGenRootTypes["AppItem"] | null; // AppItem
-    assignedAt: NexusGenScalars["DateTime"]; // DateTime!
+  }
+  CollaborateInfo: { // field return type
+    app: NexusGenRootTypes['AppItem'] | null; // AppItem
+    assignedAt: NexusGenScalars['DateTime']; // DateTime!
     id: number; // Int!
-    role: NexusGenEnums["CollaboratorRoleEnum"]; // CollaboratorRoleEnum!
-    user: NexusGenRootTypes["UserInfo"] | null; // UserInfo
-  };
-  CollaboratorStatistics: {
-    // field return type
+    role: NexusGenEnums['CollaboratorRoleEnum']; // CollaboratorRoleEnum!
+    user: NexusGenRootTypes['UserInfo'] | null; // UserInfo
+  }
+  CollaboratorStatistics: { // field return type
     addCount: number; // Int!
     addCountToday: number; // Int!
     modifyCount: number; // Int!
     userId: number; // Int!
-  };
-  EntryItem: {
-    // field return type
+  }
+  EntryItem: { // field return type
     appId: number | null; // Int
     archive: boolean | null; // Boolean
-    createdAt: NexusGenScalars["DateTime"] | null; // DateTime
+    createdAt: NexusGenScalars['DateTime'] | null; // DateTime
     creatorId: number | null; // Int
     deleted: boolean | null; // Boolean
     entry_id: number | null; // Int
     existInApp: boolean | null; // Boolean
     key: string | null; // String
-    langs: NexusGenScalars["JSONObject"] | null; // JSONObject
-    lastContributor: NexusGenRootTypes["UserInfo"] | null; // UserInfo
+    langs: NexusGenScalars['JSONObject'] | null; // JSONObject
+    lastContributor: NexusGenRootTypes['UserInfo'] | null; // UserInfo
     mainLang: string | null; // String
     mainLangText: string | null; // String
-    modifyRecords: Array<NexusGenRootTypes["RecordItem"] | null> | null; // [RecordItem]
-    updatedAt: NexusGenScalars["DateTime"] | null; // DateTime
-  };
-  EntryPaging: {
-    // field return type
+    modifyRecords: Array<NexusGenRootTypes['RecordItem'] | null> | null; // [RecordItem]
+    updatedAt: NexusGenScalars['DateTime'] | null; // DateTime
+  }
+  EntryPaging: { // field return type
     current: number; // Int!
     pageSize: number; // Int!
-    records: Array<NexusGenRootTypes["EntryItem"] | null> | null; // [EntryItem]
+    records: Array<NexusGenRootTypes['EntryItem'] | null> | null; // [EntryItem]
     total: number; // Int!
-  };
-  FeedbackItem: {
-    // field return type
+  }
+  ExtractResult: { // field return type
+    add: number | null; // Int
+    ignore: number | null; // Int
+    modify: number | null; // Int
+  }
+  FeedbackItem: { // field return type
     feedback_id: number; // Int!
     message: string | null; // String
     result: boolean; // Boolean!
-    user: NexusGenRootTypes["UserInfo"] | null; // UserInfo
-  };
-  FeedbackPaging: {
-    // field return type
+    user: NexusGenRootTypes['UserInfo'] | null; // UserInfo
+  }
+  FeedbackPaging: { // field return type
     current: number; // Int!
     pageSize: number; // Int!
-    records: Array<NexusGenRootTypes["FeedbackItem"] | null> | null; // [FeedbackItem]
+    records: Array<NexusGenRootTypes['FeedbackItem'] | null> | null; // [FeedbackItem]
     total: number; // Int!
-  };
-  Mutation: {
-    // field return type
+  }
+  Mutation: { // field return type
     archivedApp: boolean | null; // Boolean
     changeAccessStatus: boolean | null; // Boolean
     changeEntryAccessStatus: boolean | null; // Boolean
@@ -301,7 +270,7 @@ export interface NexusGenFieldTypes {
     deleteEntries: boolean | null; // Boolean
     downloadAppXlsTemplate: string | null; // String
     existCollaboration: boolean | null; // Boolean
-    extractLocalEntries: boolean | null; // Boolean
+    extractLocalEntries: NexusGenRootTypes['ExtractResult'] | null; // ExtractResult
     feedback: number | null; // Int
     inviteCollaborators: boolean | null; // Boolean
     login: string | null; // String
@@ -318,401 +287,350 @@ export interface NexusGenFieldTypes {
     updateUserInfo: boolean | null; // Boolean
     uploadEntriesXlsx: boolean | null; // Boolean
     verifyEmail: string | null; // String
-  };
-  Query: {
-    // field return type
+  }
+  Query: { // field return type
     countPositive: number | null; // Int
-    getAccessKeyByAppId: NexusGenRootTypes["AppAccessInfo"] | null; // AppAccessInfo
-    getAllEntries: Array<NexusGenRootTypes["EntryItem"] | null> | null; // [EntryItem]
-    getAppCollaborators: Array<
-      NexusGenRootTypes["CollaborateInfo"] | null
-    > | null; // [CollaborateInfo]
-    getAppCollaboratorsStatistics: Array<
-      NexusGenRootTypes["CollaboratorStatistics"] | null
-    > | null; // [CollaboratorStatistics]
-    getAppInfoById: NexusGenRootTypes["AppItem"] | null; // AppItem
-    getCurrentApps: NexusGenRootTypes["AppPaging"] | null; // AppPaging
-    getCurrentUser: NexusGenRootTypes["UserInfo"] | null; // UserInfo
-    listUserFuzzyByUserName: Array<NexusGenRootTypes["UserInfo"] | null> | null; // [UserInfo]
-    pageAllPublicEntries: NexusGenRootTypes["EntryPaging"] | null; // EntryPaging
-    pageAppEntries: NexusGenRootTypes["EntryPaging"] | null; // EntryPaging
-    pageFeedbackNegative: NexusGenRootTypes["FeedbackPaging"] | null; // FeedbackPaging
-    pagePublicEntriesByApp: NexusGenRootTypes["EntryPaging"] | null; // EntryPaging
-    queryPublicEntryByMainText: NexusGenRootTypes["EntryItem"] | null; // EntryItem
+    getAccessKeyByAppId: NexusGenRootTypes['AppAccessInfo'] | null; // AppAccessInfo
+    getAllEntries: Array<NexusGenRootTypes['EntryItem'] | null> | null; // [EntryItem]
+    getAppCollaborators: Array<NexusGenRootTypes['CollaborateInfo'] | null> | null; // [CollaborateInfo]
+    getAppCollaboratorsStatistics: Array<NexusGenRootTypes['CollaboratorStatistics'] | null> | null; // [CollaboratorStatistics]
+    getAppInfoById: NexusGenRootTypes['AppItem'] | null; // AppItem
+    getCurrentApps: NexusGenRootTypes['AppPaging'] | null; // AppPaging
+    getCurrentUser: NexusGenRootTypes['UserInfo'] | null; // UserInfo
+    listUserFuzzyByUserName: Array<NexusGenRootTypes['UserInfo'] | null> | null; // [UserInfo]
+    pageAllPublicEntries: NexusGenRootTypes['EntryPaging'] | null; // EntryPaging
+    pageAppEntries: NexusGenRootTypes['EntryPaging'] | null; // EntryPaging
+    pageFeedbackNegative: NexusGenRootTypes['FeedbackPaging'] | null; // FeedbackPaging
+    pagePublicEntriesByApp: NexusGenRootTypes['EntryPaging'] | null; // EntryPaging
+    queryPublicEntryByMainText: NexusGenRootTypes['EntryItem'] | null; // EntryItem
     validEntryKey: boolean | null; // Boolean
-  };
-  RecordItem: {
-    // field return type
-    createdAt: NexusGenScalars["DateTime"] | null; // DateTime
+  }
+  RecordItem: { // field return type
+    createdAt: NexusGenScalars['DateTime'] | null; // DateTime
     creator: number | null; // Int
-    creatorInfo: NexusGenRootTypes["UserInfo"] | null; // UserInfo
+    creatorInfo: NexusGenRootTypes['UserInfo'] | null; // UserInfo
     currKey: string | null; // String
-    currLangs: NexusGenScalars["JSONObject"] | null; // JSONObject
+    currLangs: NexusGenScalars['JSONObject'] | null; // JSONObject
     entryEntry_id: number | null; // Int
     prevKey: string | null; // String
-    prevLangs: NexusGenScalars["JSONObject"] | null; // JSONObject
+    prevLangs: NexusGenScalars['JSONObject'] | null; // JSONObject
     record_id: number; // Int!
-  };
-  UserInfo: {
-    // field return type
+  }
+  UserInfo: { // field return type
     avatar: string | null; // String
     email: string | null; // String
     name: string | null; // String
     nickName: string | null; // String
     phone: string | null; // String
-    role: NexusGenEnums["UserRoleEnum"] | null; // UserRoleEnum
+    role: NexusGenEnums['UserRoleEnum'] | null; // UserRoleEnum
     user_id: number | null; // Int
     verifyType: string | null; // String
-  };
+  }
 }
 
 export interface NexusGenFieldTypeNames {
-  AppAccessInfo: {
-    // field return type name
-    access: "Boolean";
-    accessKey: "String";
-    app_id: "Int";
-    archived: "Boolean";
-    deleted: "Boolean";
-    name: "String";
-    push: "Boolean";
-  };
-  AppItem: {
-    // field return type name
-    access: "Boolean";
-    accessKey: "String";
-    app_id: "Int";
-    creator: "UserInfo";
-    creatorId: "Int";
-    description: "String";
-    entryCount: "Int";
-    languages: "String";
-    name: "String";
-    pictures: "String";
-    push: "Boolean";
-    role: "CollaboratorRoleEnum";
-    type: "AppTypeEnum";
-  };
-  AppPaging: {
-    // field return type name
-    current: "Int";
-    pageSize: "Int";
-    records: "AppItem";
-    total: "Int";
-  };
-  CollaborateInfo: {
-    // field return type name
-    app: "AppItem";
-    assignedAt: "DateTime";
-    id: "Int";
-    role: "CollaboratorRoleEnum";
-    user: "UserInfo";
-  };
-  CollaboratorStatistics: {
-    // field return type name
-    addCount: "Int";
-    addCountToday: "Int";
-    modifyCount: "Int";
-    userId: "Int";
-  };
-  EntryItem: {
-    // field return type name
-    appId: "Int";
-    archive: "Boolean";
-    createdAt: "DateTime";
-    creatorId: "Int";
-    deleted: "Boolean";
-    entry_id: "Int";
-    existInApp: "Boolean";
-    key: "String";
-    langs: "JSONObject";
-    lastContributor: "UserInfo";
-    mainLang: "String";
-    mainLangText: "String";
-    modifyRecords: "RecordItem";
-    updatedAt: "DateTime";
-  };
-  EntryPaging: {
-    // field return type name
-    current: "Int";
-    pageSize: "Int";
-    records: "EntryItem";
-    total: "Int";
-  };
-  FeedbackItem: {
-    // field return type name
-    feedback_id: "Int";
-    message: "String";
-    result: "Boolean";
-    user: "UserInfo";
-  };
-  FeedbackPaging: {
-    // field return type name
-    current: "Int";
-    pageSize: "Int";
-    records: "FeedbackItem";
-    total: "Int";
-  };
-  Mutation: {
-    // field return type name
-    archivedApp: "Boolean";
-    changeAccessStatus: "Boolean";
-    changeEntryAccessStatus: "Boolean";
-    checkEmailValidation: "Boolean";
-    createApp: "Int";
-    createEntry: "Int";
-    deleteApp: "Boolean";
-    deleteEntries: "Boolean";
-    downloadAppXlsTemplate: "String";
-    existCollaboration: "Boolean";
-    extractLocalEntries: "Boolean";
-    feedback: "Int";
-    inviteCollaborators: "Boolean";
-    login: "String";
-    refreshAccessKey: "String";
-    register: "String";
-    removeCollaborators: "Boolean";
-    resetPassword: "Boolean";
-    sendResetPasswordEmail: "Boolean";
-    sendVerifyEmail: "Boolean";
-    transformEntry: "Boolean";
-    transformEntryForApp: "Boolean";
-    updateAppBasicInfo: "Int";
-    updateEntry: "Boolean";
-    updateUserInfo: "Boolean";
-    uploadEntriesXlsx: "Boolean";
-    verifyEmail: "String";
-  };
-  Query: {
-    // field return type name
-    countPositive: "Int";
-    getAccessKeyByAppId: "AppAccessInfo";
-    getAllEntries: "EntryItem";
-    getAppCollaborators: "CollaborateInfo";
-    getAppCollaboratorsStatistics: "CollaboratorStatistics";
-    getAppInfoById: "AppItem";
-    getCurrentApps: "AppPaging";
-    getCurrentUser: "UserInfo";
-    listUserFuzzyByUserName: "UserInfo";
-    pageAllPublicEntries: "EntryPaging";
-    pageAppEntries: "EntryPaging";
-    pageFeedbackNegative: "FeedbackPaging";
-    pagePublicEntriesByApp: "EntryPaging";
-    queryPublicEntryByMainText: "EntryItem";
-    validEntryKey: "Boolean";
-  };
-  RecordItem: {
-    // field return type name
-    createdAt: "DateTime";
-    creator: "Int";
-    creatorInfo: "UserInfo";
-    currKey: "String";
-    currLangs: "JSONObject";
-    entryEntry_id: "Int";
-    prevKey: "String";
-    prevLangs: "JSONObject";
-    record_id: "Int";
-  };
-  UserInfo: {
-    // field return type name
-    avatar: "String";
-    email: "String";
-    name: "String";
-    nickName: "String";
-    phone: "String";
-    role: "UserRoleEnum";
-    user_id: "Int";
-    verifyType: "String";
-  };
+  AppAccessInfo: { // field return type name
+    access: 'Boolean'
+    accessKey: 'String'
+    app_id: 'Int'
+    archived: 'Boolean'
+    deleted: 'Boolean'
+    name: 'String'
+    push: 'Boolean'
+  }
+  AppItem: { // field return type name
+    access: 'Boolean'
+    accessKey: 'String'
+    app_id: 'Int'
+    creator: 'UserInfo'
+    creatorId: 'Int'
+    description: 'String'
+    entryCount: 'Int'
+    languages: 'String'
+    name: 'String'
+    pictures: 'String'
+    push: 'Boolean'
+    role: 'CollaboratorRoleEnum'
+    type: 'AppTypeEnum'
+  }
+  AppPaging: { // field return type name
+    current: 'Int'
+    pageSize: 'Int'
+    records: 'AppItem'
+    total: 'Int'
+  }
+  CollaborateInfo: { // field return type name
+    app: 'AppItem'
+    assignedAt: 'DateTime'
+    id: 'Int'
+    role: 'CollaboratorRoleEnum'
+    user: 'UserInfo'
+  }
+  CollaboratorStatistics: { // field return type name
+    addCount: 'Int'
+    addCountToday: 'Int'
+    modifyCount: 'Int'
+    userId: 'Int'
+  }
+  EntryItem: { // field return type name
+    appId: 'Int'
+    archive: 'Boolean'
+    createdAt: 'DateTime'
+    creatorId: 'Int'
+    deleted: 'Boolean'
+    entry_id: 'Int'
+    existInApp: 'Boolean'
+    key: 'String'
+    langs: 'JSONObject'
+    lastContributor: 'UserInfo'
+    mainLang: 'String'
+    mainLangText: 'String'
+    modifyRecords: 'RecordItem'
+    updatedAt: 'DateTime'
+  }
+  EntryPaging: { // field return type name
+    current: 'Int'
+    pageSize: 'Int'
+    records: 'EntryItem'
+    total: 'Int'
+  }
+  ExtractResult: { // field return type name
+    add: 'Int'
+    ignore: 'Int'
+    modify: 'Int'
+  }
+  FeedbackItem: { // field return type name
+    feedback_id: 'Int'
+    message: 'String'
+    result: 'Boolean'
+    user: 'UserInfo'
+  }
+  FeedbackPaging: { // field return type name
+    current: 'Int'
+    pageSize: 'Int'
+    records: 'FeedbackItem'
+    total: 'Int'
+  }
+  Mutation: { // field return type name
+    archivedApp: 'Boolean'
+    changeAccessStatus: 'Boolean'
+    changeEntryAccessStatus: 'Boolean'
+    checkEmailValidation: 'Boolean'
+    createApp: 'Int'
+    createEntry: 'Int'
+    deleteApp: 'Boolean'
+    deleteEntries: 'Boolean'
+    downloadAppXlsTemplate: 'String'
+    existCollaboration: 'Boolean'
+    extractLocalEntries: 'ExtractResult'
+    feedback: 'Int'
+    inviteCollaborators: 'Boolean'
+    login: 'String'
+    refreshAccessKey: 'String'
+    register: 'String'
+    removeCollaborators: 'Boolean'
+    resetPassword: 'Boolean'
+    sendResetPasswordEmail: 'Boolean'
+    sendVerifyEmail: 'Boolean'
+    transformEntry: 'Boolean'
+    transformEntryForApp: 'Boolean'
+    updateAppBasicInfo: 'Int'
+    updateEntry: 'Boolean'
+    updateUserInfo: 'Boolean'
+    uploadEntriesXlsx: 'Boolean'
+    verifyEmail: 'String'
+  }
+  Query: { // field return type name
+    countPositive: 'Int'
+    getAccessKeyByAppId: 'AppAccessInfo'
+    getAllEntries: 'EntryItem'
+    getAppCollaborators: 'CollaborateInfo'
+    getAppCollaboratorsStatistics: 'CollaboratorStatistics'
+    getAppInfoById: 'AppItem'
+    getCurrentApps: 'AppPaging'
+    getCurrentUser: 'UserInfo'
+    listUserFuzzyByUserName: 'UserInfo'
+    pageAllPublicEntries: 'EntryPaging'
+    pageAppEntries: 'EntryPaging'
+    pageFeedbackNegative: 'FeedbackPaging'
+    pagePublicEntriesByApp: 'EntryPaging'
+    queryPublicEntryByMainText: 'EntryItem'
+    validEntryKey: 'Boolean'
+  }
+  RecordItem: { // field return type name
+    createdAt: 'DateTime'
+    creator: 'Int'
+    creatorInfo: 'UserInfo'
+    currKey: 'String'
+    currLangs: 'JSONObject'
+    entryEntry_id: 'Int'
+    prevKey: 'String'
+    prevLangs: 'JSONObject'
+    record_id: 'Int'
+  }
+  UserInfo: { // field return type name
+    avatar: 'String'
+    email: 'String'
+    name: 'String'
+    nickName: 'String'
+    phone: 'String'
+    role: 'UserRoleEnum'
+    user_id: 'Int'
+    verifyType: 'String'
+  }
 }
 
 export interface NexusGenArgTypes {
   EntryItem: {
-    existInApp: {
-      // args
+    existInApp: { // args
       appId: number; // Int!
-    };
-  };
+    }
+  }
   Mutation: {
-    archivedApp: {
-      // args
+    archivedApp: { // args
       id: number; // Int!
-    };
-    changeAccessStatus: {
-      // args
+    }
+    changeAccessStatus: { // args
       access?: boolean | null; // Boolean
       appId: number; // Int!
       push?: boolean | null; // Boolean
-    };
-    changeEntryAccessStatus: {
-      // args
+    }
+    changeEntryAccessStatus: { // args
       appId: number; // Int!
       archive?: boolean | null; // Boolean
       deleted?: boolean | null; // Boolean
       entryId: number; // Int!
-    };
-    checkEmailValidation: {
-      // args
+    }
+    checkEmailValidation: { // args
       email: string; // String!
-    };
-    createApp: {
-      // args
+    }
+    createApp: { // args
       description?: string | null; // String
       languages: string[]; // [String!]!
       name: string; // String!
       pictures: string[]; // [String!]!
-      type: NexusGenEnums["AppTypeEnum"]; // AppTypeEnum!
-    };
-    createEntry: {
-      // args
+      type: NexusGenEnums['AppTypeEnum']; // AppTypeEnum!
+    }
+    createEntry: { // args
       appId?: number | null; // Int
       key: string; // String!
-      langs: NexusGenScalars["JSONObject"]; // JSONObject!
-    };
-    deleteApp: {
-      // args
+      langs: NexusGenScalars['JSONObject']; // JSONObject!
+    }
+    deleteApp: { // args
       id: number; // Int!
-    };
-    deleteEntries: {
-      // args
+    }
+    deleteEntries: { // args
       appId: number; // Int!
       entryIds: number[]; // [Int!]!
-    };
-    downloadAppXlsTemplate: {
-      // args
+    }
+    downloadAppXlsTemplate: { // args
       appId: number; // Int!
-    };
-    existCollaboration: {
-      // args
+    }
+    existCollaboration: { // args
       appId: number; // Int!
-    };
-    extractLocalEntries: {
-      // args
+    }
+    extractLocalEntries: { // args
       accessKey: string; // String!
-      entries: Array<NexusGenInputs["ExtractLocalEntryItem"] | null>; // [ExtractLocalEntryItem]!
-      isCover?: boolean | null; // Boolean
-    };
-    feedback: {
-      // args
+      entries: NexusGenInputs['ExtractLocalEntryItem'][]; // [ExtractLocalEntryItem!]!
+    }
+    feedback: { // args
       feedbackId?: number | null; // Int
       message?: string | null; // String
       result: boolean; // Boolean!
       userId?: number | null; // Int
-    };
-    inviteCollaborators: {
-      // args
+    }
+    inviteCollaborators: { // args
       appId: number; // Int!
-      userIdList: NexusGenInputs["CollaboratorsInput"][]; // [CollaboratorsInput!]!
-    };
-    login: {
-      // args
+      userIdList: NexusGenInputs['CollaboratorsInput'][]; // [CollaboratorsInput!]!
+    }
+    login: { // args
       email: string; // String!
       password: string; // String!
-    };
-    refreshAccessKey: {
-      // args
+    }
+    refreshAccessKey: { // args
       id: number; // Int!
-    };
-    register: {
-      // args
+    }
+    register: { // args
       email: string; // String!
       password: string; // String!
-    };
-    removeCollaborators: {
-      // args
+    }
+    removeCollaborators: { // args
       appId: number; // Int!
       userIdList: number[]; // [Int!]!
-    };
-    resetPassword: {
-      // args
+    }
+    resetPassword: { // args
       password: string; // String!
-    };
-    sendResetPasswordEmail: {
-      // args
+    }
+    sendResetPasswordEmail: { // args
       email: string; // String!
-    };
-    transformEntry: {
-      // args
+    }
+    transformEntry: { // args
       entryId: number; // Int!
       targetAppId?: number | null; // Int
-    };
-    transformEntryForApp: {
-      // args
+    }
+    transformEntryForApp: { // args
       appId: number; // Int!
       entryIds: number[]; // [Int!]!
-    };
-    updateAppBasicInfo: {
-      // args
+    }
+    updateAppBasicInfo: { // args
       appId: number; // Int!
       description?: string | null; // String
       pictures: string[]; // [String!]!
-      type: NexusGenEnums["AppTypeEnum"]; // AppTypeEnum!
-    };
-    updateEntry: {
-      // args
+      type: NexusGenEnums['AppTypeEnum']; // AppTypeEnum!
+    }
+    updateEntry: { // args
       appId?: number | null; // Int
       entryId: number; // Int!
       key?: string | null; // String
-      langs?: NexusGenScalars["JSONObject"] | null; // JSONObject
-    };
-    updateUserInfo: {
-      // args
+      langs?: NexusGenScalars['JSONObject'] | null; // JSONObject
+    }
+    updateUserInfo: { // args
       avatar?: string | null; // String
       name?: string | null; // String
       nickName?: string | null; // String
       phone?: string | null; // String
-      role?: NexusGenEnums["UserRoleEnum"] | null; // UserRoleEnum
-    };
-    uploadEntriesXlsx: {
-      // args
+      role?: NexusGenEnums['UserRoleEnum'] | null; // UserRoleEnum
+    }
+    uploadEntriesXlsx: { // args
       appId: number; // Int!
       fileUrl: string; // String!
-    };
-  };
+    }
+  }
   Query: {
-    getAccessKeyByAppId: {
-      // args
+    getAccessKeyByAppId: { // args
       id: number; // Int!
-    };
-    getAllEntries: {
-      // args
+    }
+    getAllEntries: { // args
       accessKey: string; // String!
-    };
-    getAppCollaborators: {
-      // args
+    }
+    getAppCollaborators: { // args
       appId: number; // Int!
-    };
-    getAppCollaboratorsStatistics: {
-      // args
+    }
+    getAppCollaboratorsStatistics: { // args
       appId: number; // Int!
-    };
-    getAppInfoById: {
-      // args
+    }
+    getAppInfoById: { // args
       id: number; // Int!
-    };
-    getCurrentApps: {
-      // args
+    }
+    getCurrentApps: { // args
       access?: boolean | null; // Boolean
       languages?: string[] | null; // [String!]
       name?: string | null; // String
       push?: boolean | null; // Boolean
-      type?: NexusGenEnums["AppTypeEnum"] | null; // AppTypeEnum
-    };
-    listUserFuzzyByUserName: {
-      // args
+      type?: NexusGenEnums['AppTypeEnum'] | null; // AppTypeEnum
+    }
+    listUserFuzzyByUserName: { // args
       keywords: string; // String!
-    };
-    pageAllPublicEntries: {
-      // args
+    }
+    pageAllPublicEntries: { // args
       endTime?: number | null; // Float
       key?: string | null; // String
       mainLangText?: string | null; // String
       pageNo: number; // Int!
       pageSize: number; // Int!
       startTime?: number | null; // Float
-    };
-    pageAppEntries: {
-      // args
+    }
+    pageAppEntries: { // args
       appId: number; // Int!
       archive?: boolean | null; // Boolean
       endTime?: number | null; // Float
@@ -722,35 +640,33 @@ export interface NexusGenArgTypes {
       pageNo: number; // Int!
       pageSize: number; // Int!
       startTime?: number | null; // Float
-    };
-    pageFeedbackNegative: {
-      // args
+    }
+    pageFeedbackNegative: { // args
       pageNo: number; // Int!
       pageSize: number; // Int!
-    };
-    pagePublicEntriesByApp: {
-      // args
+    }
+    pagePublicEntriesByApp: { // args
       key?: string | null; // String
       mainLangText?: string | null; // String
       pageNo: number; // Int!
       pageSize: number; // Int!
-    };
-    queryPublicEntryByMainText: {
-      // args
+    }
+    queryPublicEntryByMainText: { // args
       mainText: string; // String!
-    };
-    validEntryKey: {
-      // args
+    }
+    validEntryKey: { // args
       appId?: number | null; // Int
       entryId?: number | null; // Int
       key?: string | null; // String
-    };
-  };
+    }
+  }
 }
 
-export interface NexusGenAbstractTypeMembers {}
+export interface NexusGenAbstractTypeMembers {
+}
 
-export interface NexusGenTypeInterfaces {}
+export interface NexusGenTypeInterfaces {
+}
 
 export type NexusGenObjectNames = keyof NexusGenObjects;
 
@@ -770,11 +686,11 @@ export type NexusGenAbstractsUsingStrategyResolveType = never;
 
 export type NexusGenFeaturesConfig = {
   abstractTypeStrategies: {
-    isTypeOf: false;
-    resolveType: true;
-    __typename: false;
-  };
-};
+    isTypeOf: false
+    resolveType: true
+    __typename: false
+  }
+}
 
 export interface NexusGenTypes {
   context: Context;
@@ -792,37 +708,28 @@ export interface NexusGenTypes {
   interfaceNames: NexusGenInterfaceNames;
   scalarNames: NexusGenScalarNames;
   unionNames: NexusGenUnionNames;
-  allInputTypes:
-    | NexusGenTypes["inputNames"]
-    | NexusGenTypes["enumNames"]
-    | NexusGenTypes["scalarNames"];
-  allOutputTypes:
-    | NexusGenTypes["objectNames"]
-    | NexusGenTypes["enumNames"]
-    | NexusGenTypes["unionNames"]
-    | NexusGenTypes["interfaceNames"]
-    | NexusGenTypes["scalarNames"];
-  allNamedTypes:
-    | NexusGenTypes["allInputTypes"]
-    | NexusGenTypes["allOutputTypes"];
-  abstractTypes: NexusGenTypes["interfaceNames"] | NexusGenTypes["unionNames"];
+  allInputTypes: NexusGenTypes['inputNames'] | NexusGenTypes['enumNames'] | NexusGenTypes['scalarNames'];
+  allOutputTypes: NexusGenTypes['objectNames'] | NexusGenTypes['enumNames'] | NexusGenTypes['unionNames'] | NexusGenTypes['interfaceNames'] | NexusGenTypes['scalarNames'];
+  allNamedTypes: NexusGenTypes['allInputTypes'] | NexusGenTypes['allOutputTypes']
+  abstractTypes: NexusGenTypes['interfaceNames'] | NexusGenTypes['unionNames'];
   abstractTypeMembers: NexusGenAbstractTypeMembers;
   objectsUsingAbstractStrategyIsTypeOf: NexusGenObjectsUsingAbstractStrategyIsTypeOf;
   abstractsUsingStrategyResolveType: NexusGenAbstractsUsingStrategyResolveType;
   features: NexusGenFeaturesConfig;
 }
 
+
 declare global {
-  interface NexusGenPluginTypeConfig<TypeName extends string> {}
-  interface NexusGenPluginInputTypeConfig<TypeName extends string> {}
-  interface NexusGenPluginFieldConfig<
-    TypeName extends string,
-    FieldName extends string
-  > {}
-  interface NexusGenPluginInputFieldConfig<
-    TypeName extends string,
-    FieldName extends string
-  > {}
-  interface NexusGenPluginSchemaConfig {}
-  interface NexusGenPluginArgConfig {}
+  interface NexusGenPluginTypeConfig<TypeName extends string> {
+  }
+  interface NexusGenPluginInputTypeConfig<TypeName extends string> {
+  }
+  interface NexusGenPluginFieldConfig<TypeName extends string, FieldName extends string> {
+  }
+  interface NexusGenPluginInputFieldConfig<TypeName extends string, FieldName extends string> {
+  }
+  interface NexusGenPluginSchemaConfig {
+  }
+  interface NexusGenPluginArgConfig {
+  }
 }
