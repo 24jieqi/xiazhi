@@ -1,3 +1,0 @@
--- AlterTable
-ALTER TABLE "Entry" ALTER COLUMN "mainLang" SET NOT NULL,
-ALTER COLUMN "mainLang" SET DATA TYPE TEXT;

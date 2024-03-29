@@ -1,6 +1,0 @@
-node_modules/
-dist/
-config-overrides.js
-src/graphql/generated
-src/graphql/operations/**/*.generated.ts
-src/services/*

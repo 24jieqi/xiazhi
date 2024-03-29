@@ -1,8 +1,0 @@
-# 用户姓名的模糊查询
-query listUserFuzzyByUserName($keywords: String!) {
-  listUserFuzzyByUserName(keywords: $keywords) {
-    name
-    user_id
-    email
-  }
-}
