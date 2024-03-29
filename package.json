@@ -1,0 +1,48 @@
+{
+  "name": "xiazhi",
+  "packageManager": "yarn@4.1.1",
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "lint": "eslint packages/*/src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "prepare": "husky install",
+    "lint:ts": "tsc --noEmit && eslint packages/*/src --ext .ts,.tsx",
+    "lint:style": "stylelint 'src/**/*.less'",
+    "lint-staged": "lint-staged --allow-empty",
+    "commit": "npx git-cz"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^19.2.1",
+    "@commitlint/config-conventional": "^19.1.0",
+    "@fruits-chain/eslint-config-preset": "^0.3.21",
+    "@fruits-chain/graphql-codegen-preset": "^0.3.3",
+    "@fruits-chain/prettier-config-preset": "^0.0.3",
+    "@fruits-chain/stylelint-config-preset": "^0.1.0",
+    "@types/eslint": "^8",
+    "typescript": "^5.4.3"
+  },
+  "prettier": "@fruits-chain/prettier-config-preset",
+  "lint-staged": {
+    "*.{yml,yaml,md}": [
+      "prettier --write"
+    ],
+    "*.{js,jsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{ts,tsx}": [
+      "bash -c \"tsc -p ./tsconfig.json --noEmit\"",
+      "eslint --fix",
+      "prettier --write"
+    ]
+  },
+  "commitlint": {
+    "extends": [
+      "@commitlint/config-conventional"
+    ]
+  },
+  "dependencies": {
+    "eslint": "8"
+  }
+}

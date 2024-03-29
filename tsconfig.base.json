@@ -1,0 +1,29 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "commonjs",
+    "skipLibCheck": true,
+    "removeComments": false,
+    "preserveConstEnums": true,
+    "moduleResolution": "node",
+    "experimentalDecorators": true,
+    "noImplicitAny": false,
+    "allowSyntheticDefaultImports": true,
+    "outDir": "lib",
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "strictNullChecks": true,
+    "skipDefaultLibCheck": true,
+    "sourceMap": true,
+    "jsx": "react-jsx",
+    "allowJs": true,
+    "resolveJsonModule": true,
+    "baseUrl": ".",
+    "rootDir": "./",
+    "paths": {
+      "~/*": ["packages/*"]
+    }
+  },
+  "exclude": ["node_modules"],
+  "include": ["packages/**/*", ".eslintrc.cjs"]
+}
