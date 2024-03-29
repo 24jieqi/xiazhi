@@ -1,4 +1,5 @@
-query GetCurrentApps(
+# 获取当前用户创建的应用列表
+query getCurrentApps(
   $name: String
   $type: AppTypeEnum
   $languages: [String!]
@@ -34,30 +35,34 @@ query GetCurrentApps(
         phone
         role
         avatar
+        verifyType
       }
       entryCount
+      role
     }
   }
 }
 
-mutation CreateApp(
+# 创建应用
+mutation createApp(
   $name: String!
+  $description: String
   $type: AppTypeEnum!
   $languages: [String!]!
   $pictures: [String!]!
-  $description: String
 ) {
   createApp(
     name: $name
+    description: $description
     type: $type
     languages: $languages
     pictures: $pictures
-    description: $description
   )
 }
 
-query GetAppInfoById($getAppInfoByIdId: Int!) {
-  getAppInfoById(id: $getAppInfoByIdId) {
+# 通过应用id获取应用基本信息
+query getAppInfoById($id: Int!) {
+  getAppInfoById(id: $id) {
     app_id
     name
     description
@@ -66,6 +71,7 @@ query GetAppInfoById($getAppInfoByIdId: Int!) {
     pictures
     access
     push
+    accessKey
     creatorId
     creator {
       name
@@ -75,64 +81,54 @@ query GetAppInfoById($getAppInfoByIdId: Int!) {
       phone
       role
       avatar
+      verifyType
     }
     entryCount
   }
 }
 
-query GetTransformAppInfoById($entryId: Int!) {
-  getTransformAppInfoById(entryId: $entryId) {
-    label
-    value
-  }
-}
-
-mutation UpdateAppBasicInfo(
+# 更新应用基本信息
+mutation updateAppBasicInfo(
   $appId: Int!
+  $description: String
   $type: AppTypeEnum!
   $pictures: [String!]!
-  $description: String
 ) {
   updateAppBasicInfo(
     appId: $appId
+    description: $description
     type: $type
     pictures: $pictures
-    description: $description
   )
 }
 
-query GetAccessKeyByAppId($getAccessKeyByAppIdId: Int!) {
-  getAccessKeyByAppId(id: $getAccessKeyByAppIdId) {
-    app_id
-    name
-    deleted
-    archived
-    push
-    access
-    accessKey
-  }
+# 刷新应用accessKey
+mutation refreshAccessKey($id: Int!) {
+  refreshAccessKey(id: $id)
 }
 
-mutation RefreshAccessKey($refreshAccessKeyId: Int!) {
-  refreshAccessKey(id: $refreshAccessKeyId)
-}
-
-mutation ChangeAccessStatus($appId: Int!, $access: Boolean, $push: Boolean) {
+# 更改应用在可访问和推送上的状态
+mutation changeAccessStatus($appId: Int!, $access: Boolean, $push: Boolean) {
   changeAccessStatus(appId: $appId, access: $access, push: $push)
 }
 
-mutation ArchivedApp($archivedAppId: Int!) {
-  archivedApp(id: $archivedAppId)
+# 归档一个应用（归档后不能再编辑）
+mutation archivedApp($id: Int!) {
+  archivedApp(id: $id)
 }
 
-mutation DeleteApp($deleteAppId: Int!) {
-  deleteApp(id: $deleteAppId)
+# 删除一个应用（逻辑删除），删除后应用对客户不可见
+mutation deleteApp($id: Int!) {
+  deleteApp(id: $id)
 }
 
-query GetAppCollaborators($appId: Int!) {
+# 获取应用的协作者列表
+query getAppCollaborators($appId: Int!) {
   getAppCollaborators(appId: $appId) {
     assignedAt
-    collaborator {
+    id
+    role
+    user {
       name
       user_id
       email
@@ -140,6 +136,7 @@ query GetAppCollaborators($appId: Int!) {
       phone
       role
       avatar
+      verifyType
     }
     app {
       app_id
@@ -160,25 +157,50 @@ query GetAppCollaborators($appId: Int!) {
         phone
         role
         avatar
+        verifyType
       }
       entryCount
     }
   }
 }
 
-mutation InviteCollaborators($appId: Int!, $userIdList: [Int!]!) {
+# 邀请协作者
+mutation inviteCollaborators(
+  $appId: Int!
+  $userIdList: [CollaboratorsInput!]!
+) {
   inviteCollaborators(appId: $appId, userIdList: $userIdList)
 }
 
-mutation RemoveCollaborators($appId: Int!, $userIdList: [Int!]!) {
+# 移除协作者
+mutation removeCollaborators($appId: Int!, $userIdList: [Int!]!) {
   removeCollaborators(appId: $appId, userIdList: $userIdList)
 }
 
-query GetAppCollaboratorsStatistics($appId: Int!) {
+# 获取应用协作者的统计信息
+query getAppCollaboratorsStatistics($appId: Int!) {
   getAppCollaboratorsStatistics(appId: $appId) {
+    userId
     addCount
     addCountToday
     modifyCount
-    userId
   }
+}
+
+# 根据应用id获取应用权限&访问相关的信息
+query getAccessKeyByAppId($id: Int!) {
+  getAccessKeyByAppId(id: $id) {
+    app_id
+    name
+    deleted
+    archived
+    push
+    access
+    accessKey
+  }
+}
+
+# 生成多语言模版文件并返回
+mutation downloadAppXlsTemplate($appId: Int!) {
+  downloadAppXlsTemplate(appId: $appId)
 }

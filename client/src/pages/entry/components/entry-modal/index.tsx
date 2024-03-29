@@ -3,18 +3,22 @@ import {
   ModalForm,
   ProForm,
   ProFormCheckbox,
+  ProFormSelect,
   ProFormText,
 } from '@ant-design/pro-components'
 import { Button, message } from 'antd'
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { omit } from 'lodash'
 import { pinyin } from 'pinyin-pro'
+import { isDef } from '@fruits-chain/utils'
 import {
   useCreateEntryMutation,
   useUpdateEntryMutation,
 } from '@/graphql/operations/__generated__/entry.generated'
 import {
+  LangMapKeyType,
   LanguageTypeEnum,
+  appSupportLangsOptions,
   appSupportLangsTableEnum,
   langKeys,
 } from '@/pages/application/constant'
@@ -24,15 +28,46 @@ import { generateEntryKey } from '../utils'
 interface EntryModalProps {
   children?: JSX.Element
   initialFormData?: any
-  supportLanguageArray: string[]
   onActionSuccess?: () => void
+  supportedLangs?: any[]
+}
+
+/**
+ * 获取初始化选中的多语言
+ * @param supportedLangs
+ * @param formData
+ */
+function getInitialLangs(
+  supportedLangs?: LangMapKeyType[],
+  formData: Record<string, unknown> = {},
+): LangMapKeyType[] {
+  // 对于私有词条的编辑，传入了支持的多语言 直接使用
+  if (isDef(supportedLangs)) {
+    return supportedLangs
+  }
+  // 处理传入的初始化参数，并过滤出多语言的key
+  const keys = Object.keys(formData).filter(key => langKeys.includes(key))
+  // 如果包含key，则表示是编辑
+  if (keys.length) {
+    return keys as LangMapKeyType[]
+  }
+  // 新增的情况下默认显示中文和英文
+  return ['zh', 'en']
+}
+
+function sortLangKeys(keys: LangMapKeyType[]) {
+  const result = [...keys]
+  const index = result.findIndex(key => key === 'zh')
+  result.splice(index, 1)
+  result.unshift('zh')
+  return result
 }
 
 const EntryModal: React.FC<EntryModalProps> = ({
   children,
   initialFormData,
-  supportLanguageArray,
   onActionSuccess,
+  supportedLangs,
 }) => {
   const formRef = useRef(null)
   const [form] = ProForm.useForm()
@@ -40,14 +75,23 @@ const EntryModal: React.FC<EntryModalProps> = ({
 
   const [createEntry] = useCreateEntryMutation()
   const [updateEntry] = useUpdateEntryMutation()
-
   // 设置默认值
   useEffect(() => {
     if (typeof initialFormData !== 'undefined' && isShow && formRef.current) {
-      form.setFieldsValue({ ...initialFormData })
+      form.setFieldsValue({
+        ...initialFormData,
+      })
     }
-  }, [initialFormData, isShow, form])
-
+  }, [initialFormData, isShow, form, supportedLangs])
+  useEffect(() => {
+    if (!isShow) {
+      return
+    }
+    form.setFieldsValue({
+      langs: sortLangKeys(getInitialLangs(supportedLangs, initialFormData)),
+    })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [supportedLangs, initialFormData, isShow])
   function handleValuesChange(changedValues: Record<string, any>, values) {
     const keys = Object.keys(changedValues)
     if (
@@ -55,7 +99,9 @@ const EntryModal: React.FC<EntryModalProps> = ({
       values.autoGenerate &&
       !initialFormData?.entryId
     ) {
-      const pinYinStr = pinyin(changedValues[LanguageTypeEnum.zh])
+      const pinYinStr = pinyin(changedValues[LanguageTypeEnum.zh], {
+        toneType: 'none',
+      })
       form.setFieldsValue({
         key: generateEntryKey(pinYinStr),
       })
@@ -71,9 +117,8 @@ const EntryModal: React.FC<EntryModalProps> = ({
           entryId: initialFormData.entryId,
           key: formData.key,
           langs: {
-            ...omit(formData, ['key']),
+            ...omit(formData, ['key', 'langs']),
           },
-          isRollback: false,
         },
       })
       message.success('修改词条成功！')
@@ -84,7 +129,7 @@ const EntryModal: React.FC<EntryModalProps> = ({
           key: formData.key,
           appId: allData.appId,
           langs: {
-            ...omit(formData, ['key']),
+            ...omit(formData, ['key', 'langs']),
           },
         },
       })
@@ -95,22 +140,16 @@ const EntryModal: React.FC<EntryModalProps> = ({
   }
 
   function handleVisibleChange(visible: boolean) {
-    if (!visible) {
-      form.resetFields()
-    }
     setIsShow(visible)
   }
-
-  const formateSupportLanguageArray = useMemo(() => {
-    const tempArr = [...supportLanguageArray].filter(item =>
-      langKeys.includes(item),
-    )
-    const index = tempArr.findIndex(item => item === LanguageTypeEnum.zh)
-    tempArr.splice(index, 1)
-    tempArr.unshift(LanguageTypeEnum.zh)
-    return tempArr
-  }, [supportLanguageArray])
-
+  const langOptions = useMemo(() => {
+    if (isDef(supportedLangs)) {
+      return appSupportLangsOptions.filter(option =>
+        supportedLangs.includes(option.value),
+      )
+    }
+    return appSupportLangsOptions
+  }, [supportedLangs])
   return (
     <ModalForm
       form={form}
@@ -163,25 +202,42 @@ const EntryModal: React.FC<EntryModalProps> = ({
           )
         }}
       </ProForm.Item>
-      <ProForm.Group>
-        {formateSupportLanguageArray.map((lang, index) => {
-          const isRequired = lang === 'zh'
+      <ProFormSelect
+        width="md"
+        disabled={isDef(supportedLangs)}
+        mode="multiple"
+        showSearch
+        name="langs"
+        placeholder="请选择支持的语言"
+        label="多语言"
+        options={langOptions}
+      />
+      <ProForm.Item dependencies={['langs']}>
+        {({ getFieldValue }) => {
+          const langs: string[] = getFieldValue('langs') || []
           return (
-            <ProFormText
-              rules={
-                isRequired
-                  ? [{ required: true, message: '请输入中文词条' }]
-                  : []
-              }
-              key={index}
-              name={lang}
-              width="md"
-              label={appSupportLangsTableEnum[lang]?.text}
-              placeholder="请输入多语言词条"
-            />
+            <ProForm.Group>
+              {langs.map((lang, index) => {
+                const isRequired = lang === 'zh'
+                return (
+                  <ProFormText
+                    rules={
+                      isRequired
+                        ? [{ required: true, message: '请输入中文词条' }]
+                        : []
+                    }
+                    key={index}
+                    name={lang}
+                    width="md"
+                    label={appSupportLangsTableEnum[lang]?.text}
+                    placeholder="请输入多语言词条"
+                  />
+                )
+              })}
+            </ProForm.Group>
           )
-        })}
-      </ProForm.Group>
+        }}
+      </ProForm.Item>
     </ModalForm>
   )
 }

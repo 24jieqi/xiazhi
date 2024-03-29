@@ -1,21 +1,54 @@
-import { EditTwoTone, SettingTwoTone } from '@ant-design/icons'
+import { EditTwoTone, EyeTwoTone, SettingTwoTone } from '@ant-design/icons'
 import { Avatar, Card, Col, Popover, Row, Statistic, Tag } from 'antd'
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
-import { AppItem } from '@/graphql/generated/types'
+import { AppItem, CollaboratorRoleEnum } from '@/graphql/generated/types'
 import {
   APP_DETAIL,
   EDIT_APP,
 } from '@/router/config/main-routes/application/path'
-import useUser from '@/stores/user'
 
 import { useGetAppCollaboratorsQuery } from '@/graphql/operations/__generated__/app.generated'
+import { collaboratorRoleMap } from '../../detail/sections/collaborator'
 import styles from './index.module.less'
+import { ENTRY_LIST } from '@/router/config/main-routes/entry/path'
 
 const { Meta } = Card
 
 interface AppCardProps {
   data: AppItem
+}
+
+enum ActionType {
+  READ,
+  EDIT,
+  SETTING,
+}
+
+/**
+ * 不同协作者角色对应操作图标
+ */
+const roleIconMap: {
+  [key in CollaboratorRoleEnum]: {
+    Icon: React.ComponentType<any>
+    type: ActionType
+  }[]
+} = {
+  [CollaboratorRoleEnum.Guest]: [{ Icon: EyeTwoTone, type: ActionType.READ }],
+  [CollaboratorRoleEnum.Manager]: [
+    { Icon: SettingTwoTone, type: ActionType.SETTING },
+    { Icon: EditTwoTone, type: ActionType.EDIT },
+    { Icon: EyeTwoTone, type: ActionType.READ },
+  ],
+  [CollaboratorRoleEnum.Owner]: [
+    { Icon: SettingTwoTone, type: ActionType.SETTING },
+    { Icon: EditTwoTone, type: ActionType.EDIT },
+    { Icon: EyeTwoTone, type: ActionType.READ },
+  ],
+  [CollaboratorRoleEnum.Translator]: [
+    { Icon: EditTwoTone, type: ActionType.EDIT },
+    { Icon: EyeTwoTone, type: ActionType.READ },
+  ],
 }
 
 const coverPlaceholder =
@@ -30,31 +63,37 @@ function getCoverUrl(pictures: string[]) {
 
 const AppCard: React.FC<AppCardProps> = ({ data }) => {
   const navigate = useNavigate()
-
-  const { info } = useUser()
   // 获取协作者列表
   const { data: collaboratorList } = useGetAppCollaboratorsQuery({
     variables: {
       appId: data.app_id,
     },
   })
-
-  function handleRedirectAppSetting() {
-    navigate(`${APP_DETAIL}/${data.app_id}`)
+  function handleActionClick(type: ActionType) {
+    switch (type) {
+      case ActionType.READ:
+        navigate(`${ENTRY_LIST}/${data.app_id}`)
+        break
+      case ActionType.EDIT:
+        navigate(`${EDIT_APP}/${data.app_id}`)
+        break
+      case ActionType.SETTING:
+        navigate(`${APP_DETAIL}/${data.app_id}`)
+        break
+      default:
+        break
+    }
   }
-
-  function handleRedirectAppEdit() {
-    navigate(`${EDIT_APP}/${data.app_id}`)
-  }
-
-  const isCollaborator = info.user_id !== data.creatorId
-
+  const actions = roleIconMap[data.role].map(Item => (
+    <Item.Icon key={Item.type} onClick={() => handleActionClick(Item.type)} />
+  ))
+  const roleConfig = collaboratorRoleMap[data.role]
   return (
     <Card
       title={
         <div className={styles.titleWrap}>
           <p>{data.name}</p>
-          {isCollaborator ? <Tag color="#2db7f5">协作</Tag> : null}
+          <Tag color={roleConfig.color}>{roleConfig.label}</Tag>
         </div>
       }
       style={{ width: 300 }}
@@ -65,12 +104,7 @@ const AppCard: React.FC<AppCardProps> = ({ data }) => {
           className={styles.coverImg}
         />
       }
-      actions={[
-        isCollaborator ? null : (
-          <SettingTwoTone key="setting" onClick={handleRedirectAppSetting} />
-        ),
-        <EditTwoTone key="edit" onClick={handleRedirectAppEdit} />,
-      ].filter(Boolean)}>
+      actions={actions}>
       <Meta
         avatar={
           <Popover

@@ -72,7 +72,7 @@ export type ResetPasswordMutationVariables = SchemaTypes.Exact<{
 export type ResetPasswordMutation = { resetPassword?: boolean }
 
 export const RegisterDocument = gql`
-  mutation Register($email: String!, $password: String!) {
+  mutation register($email: String!, $password: String!) {
     register(email: $email, password: $password)
   }
 `
@@ -118,7 +118,7 @@ export type RegisterMutationOptions = Apollo.BaseMutationOptions<
   RegisterMutationVariables
 >
 export const LoginDocument = gql`
-  mutation Login($email: String!, $password: String!) {
+  mutation login($email: String!, $password: String!) {
     login(email: $email, password: $password)
   }
 `
@@ -164,7 +164,7 @@ export type LoginMutationOptions = Apollo.BaseMutationOptions<
   LoginMutationVariables
 >
 export const UpdateUserInfoDocument = gql`
-  mutation UpdateUserInfo(
+  mutation updateUserInfo(
     $name: String
     $phone: String
     $nickName: String
@@ -228,7 +228,7 @@ export type UpdateUserInfoMutationOptions = Apollo.BaseMutationOptions<
   UpdateUserInfoMutationVariables
 >
 export const GetCurrentUserDocument = gql`
-  query GetCurrentUser {
+  query getCurrentUser {
     getCurrentUser {
       name
       user_id
@@ -292,7 +292,7 @@ export type GetCurrentUserQueryResult = Apollo.QueryResult<
   GetCurrentUserQueryVariables
 >
 export const SendVerifyEmailDocument = gql`
-  mutation SendVerifyEmail {
+  mutation sendVerifyEmail {
     sendVerifyEmail
   }
 `
@@ -339,7 +339,7 @@ export type SendVerifyEmailMutationOptions = Apollo.BaseMutationOptions<
   SendVerifyEmailMutationVariables
 >
 export const VerifyEmailDocument = gql`
-  mutation VerifyEmail {
+  mutation verifyEmail {
     verifyEmail
   }
 `
@@ -386,7 +386,7 @@ export type VerifyEmailMutationOptions = Apollo.BaseMutationOptions<
   VerifyEmailMutationVariables
 >
 export const SendResetPasswordEmailDocument = gql`
-  mutation SendResetPasswordEmail($email: String!) {
+  mutation sendResetPasswordEmail($email: String!) {
     sendResetPasswordEmail(email: $email)
   }
 `
@@ -434,7 +434,7 @@ export type SendResetPasswordEmailMutationOptions = Apollo.BaseMutationOptions<
   SendResetPasswordEmailMutationVariables
 >
 export const ResetPasswordDocument = gql`
-  mutation ResetPassword($password: String!) {
+  mutation resetPassword($password: String!) {
     resetPassword(password: $password)
   }
 `

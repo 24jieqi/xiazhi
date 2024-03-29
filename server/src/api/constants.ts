@@ -12,5 +12,5 @@ export const ipAddress = getIpAddress();
 
 export const serverAddress =
   process.env.NODE_ENV === "development"
-    ? getServerAddress(false, ipAddress!, PORT)
+    ? getServerAddress(false, 'localhost', PORT)
     : process.env.SERVER_ADDRESS;

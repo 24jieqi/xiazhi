@@ -1,17 +1,14 @@
-mutation Feedback(
+# 反馈(新增/修改描述)
+mutation feedback(
   $result: Boolean!
-  $message: String
   $userId: Int
+  $message: String
   $feedbackId: Int
 ) {
   feedback(
     result: $result
-    message: $message
     userId: $userId
+    message: $message
     feedbackId: $feedbackId
   )
-}
-
-query FeedbackStatistics {
-  countPositive
 }

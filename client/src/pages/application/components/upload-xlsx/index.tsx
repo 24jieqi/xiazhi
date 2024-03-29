@@ -32,7 +32,7 @@ const UploadXlsx: React.FC<UploadXlsxProps> = ({ onUploadSuccess }) => {
       onChange={handleOnChange}
       maxCount={1}>
       <Button size="small" type="primary" loading={loading}>
-        导入
+        Excel导入
       </Button>
     </Upload>
   )

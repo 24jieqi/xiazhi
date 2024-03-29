@@ -1,4 +1,5 @@
-query PageAllPublicEntries(
+# 获取所有公共词条（分页）
+query pageAllPublicEntries(
   $pageSize: Int!
   $pageNo: Int!
   $key: String
@@ -20,86 +21,9 @@ query PageAllPublicEntries(
     records {
       entry_id
       key
+      creatorId
       createdAt
       updatedAt
-      public
-      archive
-      deleted
-      mainLangText
-      mainLang
-      modifyRecords {
-        record_id
-        createdAt
-        entryEntry_id
-        prevLangs
-        currLangs
-        prevKey
-        currKey
-        creatorInfo {
-          name
-          user_id
-          email
-          nickName
-          phone
-          avatar
-        }
-      }
-      langs
-    }
-  }
-}
-
-mutation CreateEntry($appId: Int, $langs: JSONObject, $key: String) {
-  createEntry(appId: $appId, langs: $langs, key: $key)
-}
-
-mutation UpdateEntry(
-  $entryId: Int!
-  $appId: Int
-  $isRollback: Boolean!
-  $langs: JSONObject
-  $key: String
-) {
-  updateEntry(
-    entryId: $entryId
-    appId: $appId
-    isRollback: $isRollback
-    langs: $langs
-    key: $key
-  )
-}
-
-query PageAppEntries(
-  $pageSize: Int!
-  $pageNo: Int!
-  $appId: Int!
-  $archive: Boolean
-  $startTime: Float
-  $endTime: Float
-  $mainLangText: String
-  $latest: Boolean
-  $key: String
-) {
-  pageAppEntries(
-    pageSize: $pageSize
-    pageNo: $pageNo
-    appId: $appId
-    archive: $archive
-    startTime: $startTime
-    endTime: $endTime
-    mainLangText: $mainLangText
-    latest: $latest
-    key: $key
-  ) {
-    total
-    pageSize
-    current
-    records {
-      entry_id
-      key
-      createdAt
-      updatedAt
-      public
       archive
       deleted
       mainLangText
@@ -121,6 +45,7 @@ query PageAppEntries(
           phone
           role
           avatar
+          verifyType
         }
       }
       langs
@@ -128,7 +53,83 @@ query PageAppEntries(
   }
 }
 
-mutation ChangeEntryAccessStatus(
+# 创建词条，如果不穿入appId，则创建为公共词条
+mutation createEntry($appId: Int, $langs: JSONObject!, $key: String!) {
+  createEntry(appId: $appId, langs: $langs, key: $key)
+}
+
+mutation updateEntry(
+  $entryId: Int!
+  $appId: Int
+  $langs: JSONObject
+  $key: String
+) {
+  updateEntry(entryId: $entryId, appId: $appId, langs: $langs, key: $key)
+}
+
+# 获取应用所有词条（分页）
+query pageAppEntries(
+  $pageSize: Int!
+  $pageNo: Int!
+  $appId: Int!
+  $startTime: Float
+  $endTime: Float
+  $mainLangText: String
+  $latest: Boolean
+  $key: String
+  $archive: Boolean
+) {
+  pageAppEntries(
+    pageSize: $pageSize
+    pageNo: $pageNo
+    appId: $appId
+    startTime: $startTime
+    endTime: $endTime
+    mainLangText: $mainLangText
+    latest: $latest
+    key: $key
+    archive: $archive
+  ) {
+    total
+    pageSize
+    current
+    records {
+      entry_id
+      key
+      creatorId
+      createdAt
+      updatedAt
+      archive
+      deleted
+      mainLangText
+      mainLang
+      modifyRecords {
+        record_id
+        createdAt
+        entryEntry_id
+        prevLangs
+        currLangs
+        prevKey
+        currKey
+        creator
+        creatorInfo {
+          name
+          user_id
+          email
+          nickName
+          phone
+          role
+          avatar
+          verifyType
+        }
+      }
+      langs
+    }
+  }
+}
+
+# 归档词条或者删除词条（仅针对非公共词条）
+mutation changeEntryAccessStatus(
   $appId: Int!
   $entryId: Int!
   $archive: Boolean
@@ -142,18 +143,107 @@ mutation ChangeEntryAccessStatus(
   )
 }
 
-mutation DeleteEntries($appId: Int!, $entryIds: [Int!]!) {
+# 删除（批量）应用词条
+mutation deleteEntries($appId: Int!, $entryIds: [Int!]!) {
   deleteEntries(appId: $appId, entryIds: $entryIds)
 }
 
-query ValidEntryKey($appId: Int, $entryId: Int, $key: String) {
+# 词条key应用内唯一校验
+query validEntryKey($appId: Int, $entryId: Int, $key: String) {
   validEntryKey(appId: $appId, entryId: $entryId, key: $key)
 }
 
-mutation UploadEntriesXlsx($appId: Int!, $fileUrl: String!) {
+# 通过excel上传词条
+mutation uploadEntriesXlsx($appId: Int!, $fileUrl: String!) {
   uploadEntriesXlsx(appId: $appId, fileUrl: $fileUrl)
 }
 
-mutation TransformEntry($entryId: Int!, $targetAppId: Int!) {
+# 公共词条、私有词条相互转换
+mutation transformEntry($entryId: Int!, $targetAppId: Int) {
   transformEntry(entryId: $entryId, targetAppId: $targetAppId)
+}
+
+# 通过中文查询公共词条
+query queryPublicEntryByMainText($mainText: String!) {
+  queryPublicEntryByMainText(mainText: $mainText) {
+    entry_id
+    key
+    creatorId
+    createdAt
+    updatedAt
+    archive
+    deleted
+    mainLangText
+    mainLang
+    langs
+  }
+}
+
+# 词条: 获取公共词条（已经存在某个应用的词条会被打上标记）
+query pagePublicEntriesByApp(
+  $pageSize: Int!
+  $pageNo: Int!
+  $key: String
+  $mainLangText: String
+  $appId: Int!
+) {
+  pagePublicEntriesByApp(
+    pageSize: $pageSize
+    pageNo: $pageNo
+    key: $key
+    mainLangText: $mainLangText
+  ) {
+    total
+    pageSize
+    current
+    records {
+      entry_id
+      key
+      creatorId
+      createdAt
+      updatedAt
+      archive
+      deleted
+      mainLangText
+      mainLang
+      appId
+      lastContributor {
+        name
+        user_id
+        email
+        nickName
+        phone
+        role
+        avatar
+        verifyType
+      }
+      modifyRecords {
+        record_id
+        createdAt
+        entryEntry_id
+        prevLangs
+        currLangs
+        prevKey
+        currKey
+        creator
+        creatorInfo {
+          name
+          user_id
+          email
+          nickName
+          phone
+          role
+          avatar
+          verifyType
+        }
+      }
+      langs
+      existInApp(appId: $appId)
+    }
+  }
+}
+
+# 词条: 公共词条转换为应用内词条（批量）
+mutation transformEntryForApp($appId: Int!, $entryIds: [Int!]!) {
+  transformEntryForApp(appId: $appId, entryIds: $entryIds)
 }

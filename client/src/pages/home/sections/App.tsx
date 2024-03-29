@@ -13,11 +13,14 @@ const AppHomeEntry: React.FC = () => {
   return (
     <Spin spinning={loading}>
       {appList && appList.length > 0 ? (
-        <Space align="start">
-          {appList.map(app => (
-            <AppCard key={app.app_id} data={app} />
-          ))}
-        </Space>
+        // tips: 添加负margin为了解决咱不可知的样式异常
+        <div style={{ marginTop: '-16px' }}>
+          <Space wrap size={12}>
+            {appList.map(app => (
+              <AppCard key={app.app_id} data={app} />
+            ))}
+          </Space>
+        </div>
       ) : (
         <Empty
           image="https://gw.alipayobjects.com/zos/antfincdn/ZHrcdLPrvN/empty.svg"

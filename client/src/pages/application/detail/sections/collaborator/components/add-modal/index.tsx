@@ -2,12 +2,18 @@ import {
   CheckCard,
   ModalForm,
   ProForm,
+  ProFormSelect,
   ProFormText,
 } from '@ant-design/pro-components'
 import { debounce } from 'lodash'
 import React from 'react'
+import { Select } from 'antd'
 import { useInviteCollaboratorsMutation } from '@/graphql/operations/__generated__/app.generated'
 import { useListUserFuzzyByUserNameLazyQuery } from '@/graphql/operations/__generated__/basic.generated'
+import {
+  CollaboratorRoleEnum,
+  CollaboratorsInput,
+} from '@/graphql/generated/types'
 
 interface AddCollaboratorsModalProps {
   trigger: JSX.Element
@@ -18,6 +24,33 @@ interface AddCollaboratorsModalProps {
 interface FormData {
   keywords: string
   userList: number[]
+  role: (CollaboratorRoleEnum | undefined)[]
+}
+
+const roleOptions = [
+  {
+    label: '访客',
+    value: CollaboratorRoleEnum.Guest,
+  },
+  {
+    label: '成员',
+    value: CollaboratorRoleEnum.Translator,
+  },
+  {
+    label: '管理员',
+    value: CollaboratorRoleEnum.Manager,
+  },
+]
+
+function getUserRoleList(data: FormData) {
+  const result: CollaboratorsInput[] = []
+  for (const userId of data.userList) {
+    result.push({
+      userId,
+      role: data.role?.[userId] || CollaboratorRoleEnum.Translator,
+    })
+  }
+  return result
 }
 
 const AddCollaboratorsModal: React.FC<AddCollaboratorsModalProps> = ({
@@ -47,7 +80,7 @@ const AddCollaboratorsModal: React.FC<AddCollaboratorsModalProps> = ({
     await inviteCollaborators({
       variables: {
         appId,
-        userIdList: formData.userList,
+        userIdList: getUserRoleList(formData),
       },
     })
     onInviteSuccess?.()
@@ -61,7 +94,7 @@ const AddCollaboratorsModal: React.FC<AddCollaboratorsModalProps> = ({
       }}
       onValuesChange={handleValuesChange}
       onFinish={handleAddCollaborators}
-      title="添加协作者"
+      title="邀请协作者"
       trigger={trigger}>
       <ProFormText
         name="keywords"
@@ -82,7 +115,23 @@ const AddCollaboratorsModal: React.FC<AddCollaboratorsModalProps> = ({
             <CheckCard
               key={user.user_id}
               title={user.name}
-              description={user.email}
+              description={
+                <div>
+                  <p>{user.email}</p>
+                  <ProForm.Item
+                    label="角色"
+                    name={['role', user.user_id]}
+                    rules={[{ required: true, message: '请选择协作者角色' }]}
+                    labelCol={{ span: 8 }}
+                    wrapperCol={{ span: 8 }}>
+                    <Select
+                      placeholder="请选择"
+                      onClick={e => e.stopPropagation()}
+                      options={roleOptions}
+                    />
+                  </ProForm.Item>
+                </div>
+              }
               value={user.user_id}
             />
           ))}

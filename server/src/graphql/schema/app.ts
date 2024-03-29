@@ -1,4 +1,4 @@
-import { AppType } from "@prisma/client";
+import { AppType, CollaboratorRole } from "@prisma/client";
 import {
   objectType,
   queryType,
@@ -13,6 +13,9 @@ import {
 } from "nexus";
 import bcrypt from "bcrypt";
 import { decodedToken } from "../token";
+import { buildTemplateFile } from "../utils/xlsx";
+import { GraphQLError } from "graphql";
+import { checkAppManagementRole } from "../utils/role";
 
 export const AppTypeEnum = enumType({
   description: "应用类型枚举",
@@ -52,15 +55,29 @@ export const AppItem = objectType({
       type: "Int",
       description: "当前应用包含的词条数量",
       async resolve(root, _, ctx) {
-        const app = await ctx.prisma.app.findUnique({
+        return ctx.prisma.entry.count({
           where: {
-            app_id: root.app_id!,
-          },
-          include: {
-            entries: true,
+            appId: root.app_id,
+            deleted: false,
           },
         });
-        return app?.entries?.length || 0;
+      },
+    });
+    t.field("role", {
+      description: "权限（沿用协作者），把APP所有人映射成为管理员角色",
+      type: "CollaboratorRoleEnum",
+      async resolve(root, __, ctx) {
+        const decoded = decodedToken(ctx.req);
+        if (root.creatorId === decoded?.userId) {
+          return CollaboratorRole.OWNER;
+        }
+        const record = await ctx.prisma.collaborator.findFirst({
+          where: {
+            appId: root.app_id!,
+            userId: decoded!.userId,
+          },
+        });
+        return record?.role || null;
       },
     });
   },
@@ -82,7 +99,7 @@ export const AppPaging = objectType({
 export const AppQuery = queryType({
   definition(t) {
     t.field("getAppInfoById", {
-      description: "通过应用id获取应用基本信息",
+      description: "应用: 通过应用id获取应用基本信息",
       args: {
         id: nonNull(intArg()),
       },
@@ -91,6 +108,7 @@ export const AppQuery = queryType({
         const decoded = decodedToken(ctx.req);
         return await ctx.prisma.app.findFirst({
           where: {
+            deleted: false,
             app_id: args.id,
             creatorId: decoded?.userId,
           },
@@ -98,7 +116,7 @@ export const AppQuery = queryType({
       },
     });
     t.field("getCurrentApps", {
-      description: "获取当前用户创建的应用列表",
+      description: "应用: 获取当前用户创建的应用列表",
       type: "AppPaging",
       args: {
         name: stringArg(),
@@ -109,14 +127,13 @@ export const AppQuery = queryType({
       },
       async resolve(_root, args, ctx) {
         const decoded = decodedToken(ctx.req);
-        const languagesParams = args.languages
+        const languagesParams = args.languages?.length
           ? {
               languages: {
                 hasSome: args.languages || [],
               },
             }
           : {};
-
         const records = await ctx.prisma.app.findMany({
           where: {
             OR: [
@@ -124,13 +141,14 @@ export const AppQuery = queryType({
                 creatorId: decoded?.userId,
               },
               {
-                CollaboratorsOnApps: {
+                collaborator: {
                   some: {
-                    collaboratorId: decoded?.userId,
+                    userId: decoded?.userId,
                   },
                 },
               },
             ],
+            deleted: false,
             name: {
               contains: args.name!,
             },
@@ -154,7 +172,7 @@ export const AppQuery = queryType({
 export const AppMutation = mutationType({
   definition(t) {
     t.field("createApp", {
-      description: "创建应用",
+      description: "应用: 创建应用",
       type: "Int",
       args: {
         name: nonNull(stringArg()),
@@ -173,20 +191,10 @@ export const AppMutation = mutationType({
             type: args.type,
             languages: args.languages,
             pictures: args.pictures,
-          },
-        });
-        // 更新客户&建立关联管理
-        await ctx.prisma.user.update({
-          where: {
-            user_id: decoded?.userId,
-          },
-          data: {
-            apps: {
-              connect: [
-                {
-                  app_id: app.app_id,
-                },
-              ],
+            creator: {
+              connect: {
+                user_id: decoded?.userId,
+              },
             },
           },
         });
@@ -194,7 +202,7 @@ export const AppMutation = mutationType({
       },
     });
     t.field("updateAppBasicInfo", {
-      description: "更新应用基本信息",
+      description: "应用: 更新应用基本信息",
       type: "Int",
       args: {
         appId: nonNull(intArg()),
@@ -203,8 +211,9 @@ export const AppMutation = mutationType({
         pictures: nonNull(list(nonNull("String"))),
       },
       async resolve(_, args, ctx) {
-        decodedToken(ctx.req);
-        await ctx.prisma.app.update({
+        const decoded = decodedToken(ctx.req);
+        await checkAppManagementRole(decoded!.userId, args.appId, ctx.prisma);
+        const app = await ctx.prisma.app.update({
           where: {
             app_id: args.appId,
           },
@@ -214,7 +223,25 @@ export const AppMutation = mutationType({
             pictures: args.pictures,
           },
         });
-        return 1;
+        return app.app_id;
+      },
+    });
+    t.field("downloadAppXlsTemplate", {
+      description: "应用: 生成多语言模版文件并返回",
+      type: "String",
+      args: {
+        appId: nonNull(intArg()),
+      },
+      async resolve(_, args, ctx) {
+        const app = await ctx.prisma.app.findUnique({
+          where: {
+            app_id: args.appId,
+          },
+        });
+        if (!app) {
+          throw new GraphQLError("参数错误，APP不存在");
+        }
+        return buildTemplateFile(app.languages);
       },
     });
   },
@@ -236,25 +263,18 @@ export const AppAccessInfo = objectType({
   },
 });
 
-export const TransformAppEntryInfo = objectType({
-  name: "TransformAppEntryInfo",
-  description: "词条要转换的应用词库信息",
-  definition(t) {
-    t.string("label");
-    t.int("value");
-  },
-});
-
 export const AppAccessQuery = extendType({
   type: "Query",
   definition(t) {
     t.field("getAccessKeyByAppId", {
       type: "AppAccessInfo",
-      description: "根据应用id获取应用权限&访问相关的信息",
+      description: "应用管理: 根据应用id获取应用权限&访问相关的信息",
       args: {
         id: nonNull(intArg()),
       },
       async resolve(_, args, ctx) {
+        const decoded = decodedToken(ctx.req);
+        await checkAppManagementRole(decoded!.userId, args.id, ctx.prisma);
         return await ctx.prisma.app.findUnique({
           where: {
             app_id: args.id,
@@ -265,65 +285,18 @@ export const AppAccessQuery = extendType({
   },
 });
 
-export const TransformAppEntry = extendType({
-  type: "Query",
-  definition(t) {
-    t.list.field("getTransformAppInfoById", {
-      type: "TransformAppEntryInfo",
-      description: "根据应用id获取要共享的应用词库",
-      args: {
-        entryId: nonNull(intArg()),
-      },
-      async resolve(_, args, ctx) {
-        const entryData = await ctx.prisma.entry.findUnique({
-          where: {
-            entry_id: args.entryId,
-          },
-          include: {
-            app: true,
-          },
-        });
-        const appData = await ctx.prisma.app.findMany({
-          select: {
-            app_id: true,
-            name: true,
-          },
-        });
-        // 大于0代表该词条有关联的应用
-        if (entryData!.app?.length > 0) {
-          return appData
-            .filter((appItem) => {
-              return (
-                entryData?.app.findIndex(
-                  (entryItem) => entryItem.appId === appItem.app_id
-                ) === -1
-              );
-            })
-            .map((appItem) => ({
-              label: appItem?.name,
-              value: appItem?.app_id,
-            }));
-        }
-        return appData.map((appItem) => ({
-          label: appItem?.name,
-          value: appItem?.app_id,
-        }));
-      },
-    });
-  },
-});
-
 export const AppAccessMutation = extendType({
   type: "Mutation",
   definition(t) {
     t.field("refreshAccessKey", {
       type: "String",
-      description: "刷新应用accessKey",
+      description: "应用管理: 刷新应用accessKey",
       args: {
         id: nonNull(intArg()),
       },
       async resolve(_, args, ctx) {
-        decodedToken(ctx.req);
+        const decoded = decodedToken(ctx.req);
+        await checkAppManagementRole(decoded!.userId, args.id, ctx.prisma);
         const accessKey = await bcrypt.hash(String(Date.now()), 10);
         await ctx.prisma.app.update({
           where: {
@@ -338,11 +311,13 @@ export const AppAccessMutation = extendType({
     });
     t.field("archivedApp", {
       type: "Boolean",
-      description: "归档一个应用（归档后不能再编辑）",
+      description: "应用管理: 归档一个应用（归档后不能再编辑）",
       args: {
         id: nonNull(intArg()),
       },
       async resolve(_, args, ctx) {
+        const decoded = decodedToken(ctx.req);
+        await checkAppManagementRole(decoded!.userId, args.id, ctx.prisma);
         await ctx.prisma.app.update({
           where: {
             app_id: args.id,
@@ -356,32 +331,19 @@ export const AppAccessMutation = extendType({
     });
     t.field("deleteApp", {
       type: "Boolean",
-      description: "删除一个应用（逻辑删除），删除后应用对客户不可见",
+      description: "应用管理: 删除一个应用（逻辑删除），删除后应用对客户不可见",
       args: {
         id: nonNull(intArg()),
       },
       async resolve(_, args, ctx) {
-        /**
-         * 逻辑删除一个应用步骤
-         * 1.设置删除标记
-         * 2.断开创建者关系（可能也有写作者）
-         * 3.断开与词条的关系（这些词条将变为不可查询的词条）
-         */
+        const decoded = decodedToken(ctx.req);
+        await checkAppManagementRole(decoded!.userId, args.id, ctx.prisma);
         await ctx.prisma.app.update({
           where: {
             app_id: args.id,
           },
           data: {
             deleted: true,
-            creator: {
-              disconnect: true,
-            },
-            entries: {
-              set: [],
-            },
-          },
-          include: {
-            creator: true,
           },
         });
         return true;
@@ -389,14 +351,15 @@ export const AppAccessMutation = extendType({
     });
     t.field("changeAccessStatus", {
       type: "Boolean",
-      description: "更改应用在可访问和推送上的状态",
+      description: "应用管理: 更改应用在可访问和推送上的状态",
       args: {
         appId: nonNull(intArg()),
         access: booleanArg(),
         push: booleanArg(),
       },
       async resolve(_, args, ctx) {
-        decodedToken(ctx.req);
+        const decoded = decodedToken(ctx.req);
+        await checkAppManagementRole(decoded!.userId, args.appId, ctx.prisma);
         await ctx.prisma.app.update({
           where: {
             app_id: args.appId,

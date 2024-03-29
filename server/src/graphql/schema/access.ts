@@ -4,19 +4,19 @@ import {
   nonNull,
   stringArg,
   inputObjectType,
-  booleanArg,
+  objectType,
 } from "nexus";
-import { EntryItem } from "./entry";
+import { groupUploadedEntries } from "../utils/access";
 
 export const AccessQuery = extendType({
   type: "Query",
   definition(t) {
     t.field("getAllEntries", {
-      type: list(EntryItem),
+      type: list("EntryItem"),
       args: {
         accessKey: nonNull(stringArg()),
       },
-      description: "根据accessKey获取所有应用词条",
+      description: "外部API: 根据accessKey获取所有应用词条",
       async resolve(_, args, ctx) {
         const app = await ctx.prisma.app.findFirst({
           where: {
@@ -24,15 +24,12 @@ export const AccessQuery = extendType({
             access: true,
           },
           include: {
-            entries: {
-              include: {
-                entry: true,
-              },
-            },
+            entries: true
           },
         });
+        // 只返回有key的词条
         return (
-          app?.entries?.map((item) => item.entry)?.filter((item) => item.key) ||
+          app?.entries?.filter((item) => item.key) ||
           []
         );
       },
@@ -46,21 +43,30 @@ export const ExtractLocalEntryItem = inputObjectType({
   definition(t) {
     t.string("key");
     t.nonNull.string("mainLang");
-    t.string("mainLangText");
-    t.json("langs");
+    t.nonNull.string("mainLangText");
+    t.nonNull.json("langs");
   },
 });
+
+export const ExtractResult = objectType({
+  name: 'ExtractResult',
+  description: '上传结果',
+  definition(t) {
+    t.int('add', { description: '新增词条数' })
+    t.int('modify', { description: '编辑（合并词条数）' })
+    t.int('ignore', { description: '跳过词条数（key存在无法合并）' })
+  },
+})
 
 export const AccessMutation = extendType({
   type: "Mutation",
   definition(t) {
     t.field("extractLocalEntries", {
-      deprecation: "提取本地词条信息",
-      type: "Boolean",
+      description: "外部API: 本地提取词条上传",
+      type: "ExtractResult",
       args: {
         accessKey: nonNull(stringArg()),
-        entries: nonNull(list("ExtractLocalEntryItem")),
-        isCover: booleanArg(),
+        entries: nonNull(list(nonNull("ExtractLocalEntryItem"))),
       },
       async resolve(_, args, ctx) {
         const app = await ctx.prisma.app.findFirst({
@@ -69,92 +75,53 @@ export const AccessMutation = extendType({
             push: true,
           },
           include: {
-            entries: {
-              include: {
-                entry: true,
-              },
-            },
+            entries: true
           },
         });
         if (!app) {
           throw new Error("accessKey不正确或无权访问此应用");
         }
-        const currentEntry = args.entries.map((entry) => ({
-          ...entry,
-          public: false,
-          uploaded: true,
-        }));
-        const oldEntry = app.entries?.map((item) => item.entry);
-        const addEntryArr = currentEntry.filter(
-          (item) =>
-            oldEntry.findIndex(
-              (oldEntryItem) =>
-                oldEntryItem.key === item.key ||
-                oldEntryItem.mainLangText === item.mainLangText
-            ) === -1
-        );
-        const addEditEntryArr = currentEntry.filter(
-          (item) =>
-            oldEntry.findIndex(
-              (oldEntryItem) =>
-                oldEntryItem.key === item.key ||
-                oldEntryItem.mainLangText === item.mainLangText
-            ) > -1
-        );
-        // 是否要覆盖当前已经存在的词条
-        if (args.isCover) {
-          let editEntryArr = ([] as Array<any>).concat(oldEntry);
-          editEntryArr = editEntryArr.map((entry) => {
-            const tempArr = addEditEntryArr.find(
-              (addEditItem) => addEditItem.key === entry.key
-            );
-            const returnValue = tempArr
-              ? { ...entry, ...tempArr }
-              : { ...entry };
-            return {
-              ...returnValue,
-            };
-          });
-          await ctx.prisma.$transaction(
-            editEntryArr.map((entry) => {
-              return ctx.prisma.entry.update({
-                where: {
-                  entry_id: entry.entry_id,
-                },
-                data: {
-                  ...entry,
-                },
-              });
-            })
-          );
-        }
-        // 新增词条
-        if (addEntryArr.length > 0) {
-          const createdEntries = await ctx.prisma.$transaction(
-            addEntryArr.map((entry) => {
-              return ctx.prisma.entry.create({
-                data: {
-                  ...entry,
-                },
-              });
-            })
-          );
-          const entryIdArr = createdEntries.map((entry) => entry.entry_id);
-          await ctx.prisma.app.update({
-            where: {
-              app_id: app.app_id,
+        // 找出当前应用所有词条
+        const existedEntries = await ctx.prisma.entry.findMany({
+          where: {
+            appId: app.app_id!,
+            deleted: false
+          }
+        })
+        // 对当前词条进行分组
+        const result = groupUploadedEntries(args.entries, existedEntries)
+        // 批量新增词条
+        await ctx.prisma.entry.createMany({
+          data: result.add.map(item => ({ key: item.key, langs: item.langs, mainLang: item.mainLang, mainLangText: item.mainLangText, appId: app.app_id }))
+        })
+        // 批量更新词条
+        ctx.prisma.$transaction(result.modify.map(item => ctx.prisma.entry.update({
+          where: {
+            entry_id: item.prev!.entry_id,
+          },
+          data: {
+            key: item.key,
+            mainLang: item.mainLang,
+            mainLangText: item.mainLangText,
+            langs: {
+              ...(item.prev!.langs as any),
+              ...item.langs
             },
-            data: {
-              entries: {
-                create: entryIdArr.map((item) => ({
-                  entryId: item,
-                })),
-              },
-            },
-          });
+            modifyRecords: {
+              create: {
+                prevLangs: item.prev!.langs || {},
+                currLangs: item.langs,
+                prevKey: item.prev!.key,
+                currKey: item.key,
+              }
+            }
+          }
+        })))
+        return {
+          add: result.add.length,
+          modify: result.modify.length,
+          ignore: result.ignore.length
         }
-
-        return true;
       },
     });
   },

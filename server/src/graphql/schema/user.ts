@@ -9,10 +9,7 @@ import {
 import bcrypt from "bcrypt";
 import { decodedToken, generateToken } from "../token";
 import { sendRestEmail, sendVerifyEmail } from "../utils/mailer";
-import { getIpAddress } from "../../utils";
 import { serverAddress } from "../../api/constants";
-
-const ipAddress = getIpAddress();
 
 export const UserRoleEnum = enumType({
   description: "用户角色枚举",
@@ -44,9 +41,9 @@ export const UserQuery = extendType({
   type: "Query",
   definition(t) {
     t.field("getCurrentUser", {
-      description: "获取当前登录用户的基本信息",
+      description: "用户: 获取当前登录用户的基本信息",
       type: "UserInfo",
-      async resolve(_, args, ctx) {
+      async resolve(_, __, ctx) {
         const decoded = decodedToken(ctx.req);
         return await ctx.prisma.user.findUnique({
           where: {
@@ -56,7 +53,7 @@ export const UserQuery = extendType({
       },
     });
     t.field("listUserFuzzyByUserName", {
-      description: "用户姓名的模糊查询",
+      description: "用户: 用户姓名的模糊查询",
       type: list("UserInfo"),
       args: {
         keywords: nonNull(stringArg()),
@@ -87,7 +84,7 @@ export const UserMutation = extendType({
   type: "Mutation",
   definition(t) {
     t.field("register", {
-      description: "用户邮箱&密码注册",
+      description: "用户: 用户邮箱&密码注册",
       type: "String",
       args: {
         email: nonNull(stringArg()),
@@ -116,7 +113,7 @@ export const UserMutation = extendType({
       },
     });
     t.field("checkEmailValidation", {
-      description: "检测邮箱是否可用",
+      description: "用户: 检测邮箱是否可用",
       type: "Boolean",
       args: {
         email: nonNull(stringArg()),
@@ -131,7 +128,7 @@ export const UserMutation = extendType({
       },
     });
     t.field("sendResetPasswordEmail", {
-      description: "发送重设密码链接",
+      description: "用户: 发送重设密码链接",
       type: "Boolean",
       args: {
         email: nonNull(stringArg()),
@@ -153,7 +150,7 @@ export const UserMutation = extendType({
       },
     });
     t.field("sendVerifyEmail", {
-      description: "发送验证邮件",
+      description: "用户: 发送验证邮件",
       type: "Boolean",
       async resolve(_, args, ctx) {
         const info = decodedToken(ctx.req);
@@ -172,6 +169,7 @@ export const UserMutation = extendType({
     });
     t.field("resetPassword", {
       type: "Boolean",
+      description: '用户: 重设密码',
       args: {
         password: nonNull(stringArg()),
       },
@@ -201,34 +199,34 @@ export const UserMutation = extendType({
         }
       },
     }),
-      t.field("login", {
-        description: "邮箱&密码登录",
-        type: "String",
-        args: {
-          email: nonNull(stringArg()),
-          password: nonNull(stringArg()),
-        },
-        async resolve(_, args, ctx) {
-          const targetUser = await ctx.prisma.user.findUnique({
-            where: {
-              email: args.email,
-            },
-          });
-          if (!targetUser) {
-            throw new Error("邮箱或密码错误");
-          }
-          const isEqual = await bcrypt.compare(
-            args.password,
-            targetUser.password
-          );
-          if (!isEqual) {
-            throw new Error("邮箱或密码错误");
-          }
-          return generateToken(targetUser.user_id);
-        },
-      });
+    t.field("login", {
+      description: "用户: 邮箱&密码登录",
+      type: "String",
+      args: {
+        email: nonNull(stringArg()),
+        password: nonNull(stringArg()),
+      },
+      async resolve(_, args, ctx) {
+        const targetUser = await ctx.prisma.user.findUnique({
+          where: {
+            email: args.email,
+          },
+        });
+        if (!targetUser) {
+          throw new Error("邮箱或密码错误");
+        }
+        const isEqual = await bcrypt.compare(
+          args.password,
+          targetUser.password
+        );
+        if (!isEqual) {
+          throw new Error("邮箱或密码错误");
+        }
+        return generateToken(targetUser.user_id);
+      },
+    });
     t.field("updateUserInfo", {
-      description: "编辑用户信息",
+      description: "用户: 编辑用户信息",
       type: "Boolean",
       args: {
         name: stringArg(),
@@ -255,7 +253,7 @@ export const UserMutation = extendType({
       },
     });
     t.field("verifyEmail", {
-      description: "邮箱验证",
+      description: "用户: 邮箱验证",
       type: "String",
       async resolve(_, args, ctx) {
         const info = decodedToken(ctx.req);

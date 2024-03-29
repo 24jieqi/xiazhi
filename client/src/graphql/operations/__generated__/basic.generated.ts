@@ -17,7 +17,7 @@ export type ListUserFuzzyByUserNameQuery = {
 }
 
 export const ListUserFuzzyByUserNameDocument = gql`
-  query ListUserFuzzyByUserName($keywords: String!) {
+  query listUserFuzzyByUserName($keywords: String!) {
     listUserFuzzyByUserName(keywords: $keywords) {
       name
       user_id
