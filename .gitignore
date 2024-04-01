@@ -17,3 +17,6 @@ node_modules
 
 dist
 
+packages/server/.env
+
+
