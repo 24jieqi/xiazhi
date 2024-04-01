@@ -1,0 +1,10 @@
+{
+  "extends": "@fruits-chain/eslint-config-preset",
+  "rules": {
+    // "@typescript-eslint/ban-ts-comment": "off",
+    // "@typescript-eslint/prefer-ts-expect-error": "off",
+    // "prettier/prettier": "off"
+    "import/no-unresolved": "off",
+    "max-params": ["error", 4]
+  }
+}

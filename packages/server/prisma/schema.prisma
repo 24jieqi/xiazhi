@@ -1,0 +1,77 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator pothos {
+  provider     = "prisma-pothos-types"
+  // Match client output location from above
+  clientOutput = "@prisma/client"
+  output       = "./generated.d.ts"
+  prismaUtils  = true
+}
+
+model User {
+  id    Int      @id @default(autoincrement())
+  email String   @unique
+  name  String?
+  posts Post[]
+  role  UserRole
+}
+
+model Post {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  title     String
+  content   String?
+  published Boolean  @default(false)
+  viewCount Int      @default(0)
+  author    User?    @relation(fields: [authorId], references: [id])
+  authorId  Int?
+}
+
+enum UserRole {
+  GUEST
+  DEVELOPER
+  TEST
+  MAINTAINER
+}
+
+// 词条
+model Entry {
+  entry_id     Int      @id @default(autoincrement())
+  key          String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  archive      Boolean  @default(false)
+  deleted      Boolean  @default(false)
+  mainLang     String   @default("zh")
+  mainLangText String?
+  langs        Json?
+  belongsTo    App?     @relation(fields: [appId], references: [app_id])
+  uploaded     Boolean  @default(false)
+  creatorId    Int?
+  appId        Int?
+}
+
+// 应用
+model App {
+  app_id      Int      @id @default(autoincrement())
+  name        String
+  description String?
+  languages   String[]
+  pictures    String[]
+  createdAt   DateTime @default(now())
+  accessKey   String?
+  deleted     Boolean  @default(false)
+  archived    Boolean  @default(false)
+  push        Boolean  @default(true)
+  access      Boolean  @default(true)
+  creatorId   Int?
+  entries     Entry[]
+}
