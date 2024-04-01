@@ -45,13 +45,13 @@ async function writeI18nTemplateFile() {
  */
 async function writeFileIfNotExisted(filePath: string, content: string) {
   if (fs.existsSync(filePath)) {
-    log(chalk.yellow(`[WARNING] 多语言模版: ${filePath} 已存在，跳过写入.`))
+    log(chalk.yellow(`[WARNING] ${filePath} 已存在，跳过写入.`))
     return
   }
   try {
     fs.writeFileSync(filePath, await formatFileWithConfig(content))
   } catch (error) {
-    log(chalk.red(`[ERROR] 写入多语言模版失败: ${error.message}`))
+    log(chalk.red(`[ERROR] 写入${filePath}失败: ${error.message}`))
   }
 }
 

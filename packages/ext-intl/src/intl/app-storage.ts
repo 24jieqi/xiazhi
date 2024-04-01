@@ -12,7 +12,12 @@ function set(key: any, value: any) {
   return AsyncStorage.setItem(key, JSON.stringify(value))
 }
 
-export default { get, set }
+const storage = {
+  get,
+  set
+}
+
+export default storage
 `
 
 export default appStorageTemplate

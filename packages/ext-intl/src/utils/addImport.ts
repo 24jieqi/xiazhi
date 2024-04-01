@@ -16,18 +16,18 @@ export function addImportToFile(ast: ts.SourceFile, code: string) {
   }
   const importStatement = factory.createImportDeclaration(
     undefined,
-    ts.factory.createImportClause(
+    factory.createImportClause(
       false,
       undefined,
-      ts.factory.createNamedImports([
-        ts.factory.createImportSpecifier(
+      factory.createNamedImports([
+        factory.createImportSpecifier(
           false,
           undefined,
-          ts.factory.createIdentifier('useI18n'),
+          factory.createIdentifier('useI18n'),
         ),
       ]),
     ),
-    ts.factory.createStringLiteral('@/i18n/context', true),
+    factory.createStringLiteral('@/i18n/context', true),
   )
   const updatedStatements = [importStatement, ...ast.statements]
   return factory.updateSourceFile(ast, updatedStatements)

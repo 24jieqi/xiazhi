@@ -4,7 +4,7 @@ function getContextTemplate(isNative: boolean) {
     effectArray.push(`
       Storage.get(LANG_STORAGE_KEY).then((lang: LangEnum) => {
       if (lang) {
-        i18n.setLang(lang)
+        i18n.setLang(lang as LangEnum)
       } else {
         Storage.set(LANG_STORAGE_KEY, i18n.currentLang)
       }
@@ -15,7 +15,7 @@ function getContextTemplate(isNative: boolean) {
     effectArray.push(`
       const lang = Storage.get(LANG_STORAGE_KEY)
       if (lang) {
-        i18n.setLang(lang)
+        i18n.setLang(lang as LangEnum)
       } else {
         Storage.set(LANG_STORAGE_KEY, i18n.currentLang)
       }
@@ -29,6 +29,7 @@ import React, {
   useRef,
   useState,
   useContext,
+  PropsWithChildren
 } from 'react'
 import Storage from './storage'
 import { LangEnum } from './typing'
@@ -45,7 +46,7 @@ export const I18NContext = createContext<I18NProps>({
 
 export const LANG_STORAGE_KEY = 'currentLang'
 
-export const I18NContextWrapper: React.FC = ({ children }) => {
+export const I18NContextWrapper: React.FC<PropsWithChildren> = ({ children }) => {
   const i18nIns = useRef<Langs>(I18N)
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [_, forceUpdate] = useState({})

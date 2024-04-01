@@ -29,4 +29,8 @@ export interface ExtConfig {
    * 用户访问权限
    */
   accessKey?: string
+  /**
+   * App组件的路径（默认路径为src/App.js(tsx)）
+   */
+  appFilePath?: string
 }

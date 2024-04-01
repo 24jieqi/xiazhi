@@ -1,12 +1,10 @@
 function getI18nTemplateString(langs: string[]) {
   const langMapStringList = ['const langs = {\n']
   const importLines = ["import kiwiIntl from 'kiwi-intl';\n"]
-  importLines.push(
-    `import { ${langs.map(lang => lang.toUpperCase()).join(',')} } from './langs';\n`,
-  )
   importLines.push(`import { IAPI, LangEnum } from './typing'`)
   for (const lang of langs) {
     const langName = lang.toUpperCase()
+    importLines.push(`import ${langName} from './langs/${lang}';\n`)
     langMapStringList.push(`[LangEnum.${langName}]: ${langName},\n`)
   }
   langMapStringList.push('};\n')

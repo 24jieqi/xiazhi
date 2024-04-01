@@ -38,7 +38,12 @@ function get(key: string, defaultValue = null) {
   return res !== null ? res : defaultValue
 }
 
-export default { get, set }
+const storage = {
+  get,
+  set
+}
+
+export default storage
 `
 
 export default webStorageTemplate
