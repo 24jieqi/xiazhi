@@ -1,0 +1,31 @@
+# 应用: 应用列表
+query getApps {
+  getApps {
+    access
+    accessKey
+    appId
+    createdAt
+    description
+    entries {
+      id
+      key
+      langs
+      mainLang
+      mainLangText
+    }
+    languages
+    name
+    pictures
+    push
+  }
+}
+
+# 应用: 创建应用
+mutation createApp($input: CreateAppInput!) {
+  createApp(input: $input)
+}
+
+# 应用: 生成访问key
+mutation refreshAccessKey($appId: Int!) {
+  refreshAccessKey(appId: $appId)
+}

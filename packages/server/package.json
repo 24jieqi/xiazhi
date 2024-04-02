@@ -22,6 +22,7 @@
     "@apollo/server": "4.5.0",
     "@as-integrations/koa": "^1.0.0",
     "@koa/cors": "^4.0.0",
+    "@koa/multer": "^3.0.2",
     "@koa/router": "^12.0.0",
     "@pothos/core": "^3.40.1",
     "@pothos/plugin-dataloader": "^3.17.2",
@@ -38,6 +39,7 @@
     "koa": "^2.14.2",
     "koa-bodyparser": "^4.4.0",
     "koa-static": "^5.0.0",
+    "multer": "^1.4.5-lts.1",
     "tsconfig-paths": "^4.2.0"
   },
   "devDependencies": {
@@ -53,7 +55,9 @@
     "@types/koa-bodyparser": "^4.3.10",
     "@types/koa-static": "^4.0.2",
     "@types/koa__cors": "^4.0.0",
+    "@types/koa__multer": "^2.0.7",
     "@types/koa__router": "^12.0.0",
+    "@types/multer": "^1",
     "@types/node": "^20.1.2",
     "commitizen": "^4.2.5",
     "cz-conventional-changelog": "^3.3.0",

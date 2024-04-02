@@ -11,6 +11,23 @@ const CreateAppInput = builder.inputType('CreateAppInput', {
   }),
 })
 
+const AppItem = builder.prismaObject('App', {
+  fields(t) {
+    return {
+      appId: t.exposeInt('app_id'),
+      name: t.exposeString('name'),
+      description: t.exposeString('description', { nullable: true }),
+      languages: t.exposeStringList('languages'),
+      pictures: t.exposeStringList('pictures'),
+      createdAt: t.expose('createdAt', { type: 'DateTime' }),
+      accessKey: t.exposeString('accessKey', { nullable: true }),
+      push: t.exposeBoolean('push'),
+      access: t.exposeBoolean('access'),
+      entries: t.relation('entries'),
+    }
+  },
+})
+
 builder.mutationField('createApp', t =>
   t.field({
     description: '应用: 创建应用',
@@ -43,5 +60,13 @@ builder.mutationField('refreshAccessKey', t =>
       appId: t.arg.int({ required: true }),
     },
     resolve: (_, args) => AppDataSource.refreshAccessKey(args.appId),
+  }),
+)
+
+builder.queryField('getApps', t =>
+  t.field({
+    description: '应用: 应用列表',
+    type: [AppItem],
+    resolve: () => AppDataSource.getApps(),
   }),
 )

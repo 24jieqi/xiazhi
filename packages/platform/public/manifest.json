@@ -1,0 +1,15 @@
+{
+  "short_name": "QGL-渠道版",
+  "name": "全果链-洪九自营平台渠道端",
+  "icons": [
+    {
+      "src": "favicon_pc.svg",
+      "sizes": "64x64 32x32 24x24 16x16",
+      "type": "image/x-icon"
+    }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#000000",
+  "background_color": "#ffffff"
+}

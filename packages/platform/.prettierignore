@@ -1,0 +1,4 @@
+node_modules
+src/graphql/operations/
+src/i18n/
+public

@@ -1,0 +1,5 @@
+node_modules/
+build/
+src/graphql/operations/
+src/graphql/generated/
+public/

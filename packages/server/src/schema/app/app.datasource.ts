@@ -37,4 +37,11 @@ export class AppDataSource {
     })
     return accessKey
   }
+  public static getApps() {
+    return prisma.app.findMany({
+      include: {
+        entries: true,
+      },
+    })
+  }
 }

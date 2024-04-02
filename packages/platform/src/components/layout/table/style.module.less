@@ -1,0 +1,48 @@
+.contentWrapper {
+  background: #fff;
+  border-radius: 8px;
+  padding: 24px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow-y: hidden;
+  .actionWrapper {
+    margin-bottom: 16px;
+  }
+  .content {
+    flex: 1;
+    overflow: hidden;
+  }
+}
+
+.tableOverflowScrollY {
+  :global(.ant-table-body) {
+    overflow-y: scroll !important; // 该样式覆盖可能会导致表头对不齐的问题
+  }
+}
+.tableOverflowAutoY {
+  :global(.ant-table-body) {
+    overflow-y: auto !important; // 该样式覆盖可能会导致表头对不齐的问题
+  }
+}
+
+.title {
+  font-size: 14px;
+  line-height: 22px;
+  color: rgba(0, 0, 0, 0.85)
+}
+
+.footer {
+  margin-top: 16px;
+  display: flex;
+  justify-content: end;
+  flex-shrink: 0;
+}
+
+.alertWrapper {
+  padding-block: 12px;
+  padding-inline: 24px;
+  margin-block-end: 16px;
+  background-color: rgba(42, 46, 54, 0.02);
+  border-radius: 6px;
+}
