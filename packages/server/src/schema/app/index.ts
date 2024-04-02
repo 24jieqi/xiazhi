@@ -13,6 +13,7 @@ const CreateAppInput = builder.inputType('CreateAppInput', {
 
 builder.mutationField('createApp', t =>
   t.field({
+    description: '应用: 创建应用',
     type: 'Int',
     authScopes: {
       public: true,
@@ -20,7 +21,7 @@ builder.mutationField('createApp', t =>
     args: {
       input: t.arg({ type: CreateAppInput, required: true }),
     },
-    resolve: (_, { input: { name, description, languages, pictures } }, __) => {
+    resolve: (_, { input: { name, description, languages, pictures } }) => {
       return AppDataSource.createApp({
         name,
         description: description || undefined,
@@ -28,5 +29,19 @@ builder.mutationField('createApp', t =>
         pictures: pictures || undefined,
       })
     },
+  }),
+)
+
+builder.mutationField('refreshAccessKey', t =>
+  t.field({
+    description: '应用: 生成访问key',
+    type: 'String',
+    authScopes: {
+      public: true,
+    },
+    args: {
+      appId: t.arg.int({ required: true }),
+    },
+    resolve: (_, args) => AppDataSource.refreshAccessKey(args.appId),
   }),
 )

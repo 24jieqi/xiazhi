@@ -1,4 +1,5 @@
 import prisma from 'prisma/prisma'
+import bcrypt from 'bcrypt'
 
 type CreateAppArgs = {
   name: string
@@ -23,5 +24,17 @@ export class AppDataSource {
       },
     })
     return app.app_id
+  }
+  public static async refreshAccessKey(appId: number) {
+    const accessKey = await bcrypt.hash(String(Date.now()), 10)
+    await prisma.app.update({
+      where: {
+        app_id: appId,
+      },
+      data: {
+        accessKey,
+      },
+    })
+    return accessKey
   }
 }
