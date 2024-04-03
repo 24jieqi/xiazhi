@@ -1,4 +1,4 @@
-const webStorageTemplate = `
+const webStorageTsTemplate = `
 /**
  * 判断str是否是json字符串
  * @param str
@@ -46,4 +46,4 @@ const storage = {
 export default storage
 `
 
-export default webStorageTemplate
+export default webStorageTsTemplate

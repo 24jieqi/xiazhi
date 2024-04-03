@@ -1,4 +1,4 @@
-function getI18nTemplateString(langs: string[]) {
+function getI18nTsTemplateString(langs: string[]) {
   const langMapStringList = ['const langs = {\n']
   const importLines = ["import kiwiIntl from 'kiwi-intl';\n"]
   importLines.push(`import { IAPI, LangEnum } from './typing';\n`)
@@ -23,4 +23,4 @@ function getI18nTemplateString(langs: string[]) {
   return returnd
 }
 
-export default getI18nTemplateString
+export default getI18nTsTemplateString

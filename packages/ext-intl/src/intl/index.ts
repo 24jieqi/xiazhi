@@ -5,16 +5,25 @@ import * as promiseFs from 'fs/promises'
 import * as chalk from 'chalk'
 
 import type { ExtConfig } from '../commands/config/interface'
-import { APP_DEPENDENCIES, WEB_DEPENDENCIES, outputPath } from '../constant'
+import {
+  APP_DEPENDENCIES,
+  WEB_DEPENDENCIES,
+  isUseTs,
+  outputPath,
+} from '../constant'
 import type { DependenciesType } from '../interface'
 import { isNative, log, resolvePath } from '../utils/common'
 import { formatFileWithConfig } from '../utils/format'
 
-import appStorageTemplate from './app-storage'
-import getContextTemplate from './context'
-import getI18nTemplateString from './i18n'
-import getTypingTemplateString from './typing'
-import webStorageTemplate from './web-storage'
+import appStorageJsTemplate from './js-template/app-storage'
+import getContextJsTemplate from './js-template/context'
+import getI18nJsTemplateString from './js-template/i18n'
+import webStorageJsTemplate from './js-template/web-storage'
+import appStorageTsTemplate from './ts-template/app-storage'
+import getContextTsTemplate from './ts-template/context'
+import getI18nTsTemplateString from './ts-template/i18n'
+import getTypingTemplateString from './ts-template/typing'
+import webStorageTsTemplate from './ts-template/web-storage'
 /**
  * 写入i18n模版文件
  */
@@ -23,10 +32,21 @@ async function writeI18nTemplateFile() {
   const native = isNative()
 
   // 获取模板文件内容
-  const i18nStr = getI18nTemplateString(langs!)
+  const i18nStr = isUseTs
+    ? getI18nTsTemplateString(langs!)
+    : getI18nJsTemplateString(langs!)
   const typingStr = getTypingTemplateString(langs!)
-  const contextStr = getContextTemplate(native)
-  const storageTemplate = native ? appStorageTemplate : webStorageTemplate
+  const contextStr = isUseTs
+    ? getContextTsTemplate(native)
+    : getContextJsTemplate(native)
+  const storageTemplate = native
+    ? isUseTs
+      ? appStorageTsTemplate
+      : appStorageJsTemplate
+    : isUseTs
+      ? webStorageTsTemplate
+      : webStorageJsTemplate
+  const extension = isUseTs ? '.ts' : '.js'
 
   try {
     // 下载依赖项
@@ -34,10 +54,13 @@ async function writeI18nTemplateFile() {
   } catch (error) {}
 
   // 写入模版文件
-  writeFileIfNotExisted(`${outputPath}/storage.ts`, storageTemplate)
-  writeFileIfNotExisted(`${outputPath}/index.ts`, i18nStr)
-  writeFileIfNotExisted(`${outputPath}/typing.ts`, typingStr)
-  writeFileIfNotExisted(`${outputPath}/context.tsx`, contextStr)
+  writeFileIfNotExisted(`${outputPath}/storage${extension}`, storageTemplate)
+  writeFileIfNotExisted(`${outputPath}/index${extension}`, i18nStr)
+  isUseTs && writeFileIfNotExisted(`${outputPath}/typing.ts`, typingStr)
+  writeFileIfNotExisted(
+    `${outputPath}/context.${isUseTs ? 'tsx' : 'jsx'}`,
+    contextStr,
+  )
 }
 
 /**
