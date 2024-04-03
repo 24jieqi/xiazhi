@@ -1,10 +1,10 @@
-function getContextTemplate(isNative: boolean) {
+function getContextJsTemplate(isNative: boolean) {
   const effectArray: string[] = []
   if (isNative) {
     effectArray.push(`
-      Storage.get(LANG_STORAGE_KEY).then((lang: LangEnum) => {
+      Storage.get(LANG_STORAGE_KEY).then((lang) => {
       if (lang) {
-        i18n.setLang(lang as LangEnum)
+        i18n.setLang(lang)
       } else {
         Storage.set(LANG_STORAGE_KEY, i18n.currentLang)
       }
@@ -15,7 +15,7 @@ function getContextTemplate(isNative: boolean) {
     effectArray.push(`
       const lang = Storage.get(LANG_STORAGE_KEY)
       if (lang) {
-        i18n.setLang(lang as LangEnum)
+        i18n.setLang(lang)
       } else {
         Storage.set(LANG_STORAGE_KEY, i18n.currentLang)
       }
@@ -29,32 +29,26 @@ import React, {
   useRef,
   useState,
   useContext,
-  PropsWithChildren
 } from 'react'
 import Storage from './storage'
-import { LangEnum } from './typing'
-import I18N, { Langs } from './index'
+import I18N from './index'
 
-export interface I18NProps {
-  I18N: Langs
-  setLangTriggerRender: (lang: LangEnum) => void
-}
-export const I18NContext = createContext<I18NProps>({
+export const I18NContext = createContext({
   I18N,
   setLangTriggerRender: () => {},
 })
 
 export const LANG_STORAGE_KEY = 'currentLang'
 
-export const I18NContextWrapper: React.FC<PropsWithChildren> = ({ children }) => {
-  const i18nIns = useRef<Langs>(I18N)
+export const I18NContextWrapper = ({ children }) => {
+  const i18nIns = useRef(I18N)
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [_, forceUpdate] = useState({})
   const i18n = i18nIns.current
   useEffect(() => {
     ${effectArray.join('')}
   }, [])
-  function setLang(lang: LangEnum) {
+  function setLang(lang) {
     if (lang === i18n.currentLang) {
       return
     }
@@ -75,4 +69,4 @@ export const useI18n = () => {
 `
   return contextTemplate
 }
-export default getContextTemplate
+export default getContextJsTemplate
