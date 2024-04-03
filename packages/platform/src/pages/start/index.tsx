@@ -9,7 +9,7 @@ import coverImg from './images/cover.webp'
 const StartPage: React.FC = () => {
   const navigate = useNavigate()
   return (
-    <StartLayout title="处暑多语言词库平台" coverImg={coverImg}>
+    <StartLayout title="夏至多语言词库平台" coverImg={coverImg}>
       <Button
         size="large"
         type="primary"

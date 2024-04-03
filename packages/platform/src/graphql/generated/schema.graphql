@@ -18,17 +18,31 @@ input CreateAppInput {
   pictures: [String!]
 }
 
+input CreateEntryInput {
+  appId: Int!
+  key: String!
+  langs: JSON!
+}
+
 """
 A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
 """
 scalar DateTime
 
 type Entry {
+  createdAt: DateTime!
   id: Int!
   key: String
   langs: JSON!
   mainLang: String!
   mainLangText: String
+}
+
+type EntryPaging {
+  current: Int!
+  pageSize: Int!
+  records: [Entry!]!
+  total: Int!
 }
 
 input ExtractEntryItem {
@@ -52,10 +66,13 @@ scalar JSON
 type Mutation {
   """应用: 创建应用"""
   createApp(input: CreateAppInput!): Int!
+
+  """词条: 创建词条"""
+  createEntry(input: CreateEntryInput!): Int!
   createPost(content: String, title: String!): Int!
 
   """词条: 词条更新"""
-  editEntry(appId: Int!, entryId: Int!, key: String, langs: JSON): Boolean!
+  editEntry(entryId: Int!, langs: JSON): Boolean!
   login(email: String!): String!
 
   """应用: 生成访问key"""
@@ -81,11 +98,17 @@ type Query {
   allPosts: [Post!]!
   allUsers: [User!]
 
+  """应用: 获取目标应用"""
+  getAppById(appId: Int!): App!
+
   """应用: 应用列表"""
   getApps: [App!]!
 
   """词条: 获取应用所有词条"""
   getEntries(ak: String!): [Entry!]!
+
+  """词条: 应用词条分页"""
+  pageAppEntries(appId: Int!, key: String, mainLangText: String, pageNo: Int!, pageSize: Int!): EntryPaging!
   user(id: Int!): User
   userPosts: [Post!]!
 }

@@ -18,6 +18,26 @@ const EntryItem = builder.prismaObject('Entry', {
       langs: t.expose('langs', { type: 'JSON' }),
       mainLang: t.exposeString('mainLang'),
       mainLangText: t.exposeString('mainLangText', { nullable: true }),
+      createdAt: t.expose('createdAt', { type: 'DateTime' }),
+    }
+  },
+})
+
+const EntryPaging = builder.simpleObject('EntryPaging', {
+  fields: t => ({
+    total: t.int({ nullable: false }),
+    pageSize: t.int({ nullable: false }),
+    current: t.int({ nullable: false }),
+    records: t.field({ type: [EntryItem] }),
+  }),
+})
+
+const CreateEntryInput = builder.inputType('CreateEntryInput', {
+  fields(t) {
+    return {
+      appId: t.int({ required: true }),
+      langs: t.field({ type: 'JSON', required: true }),
+      key: t.string({ required: true }),
     }
   },
 })
@@ -53,6 +73,29 @@ builder.queryField('getEntries', t =>
   }),
 )
 
+builder.queryField('pageAppEntries', t =>
+  t.field({
+    description: '词条: 应用词条分页',
+    authScopes: {
+      public: true,
+    },
+    args: {
+      appId: t.arg.int({ required: true }),
+      pageSize: t.arg.int({ required: true }),
+      pageNo: t.arg.int({ required: true }),
+      mainLangText: t.arg.string(),
+      key: t.arg.string(),
+    },
+    type: EntryPaging,
+    resolve: (_, args) =>
+      EntryDataSource.pageAppEntry({
+        ...args,
+        mainLangText: args.mainLangText || undefined,
+        key: args.key || undefined,
+      }),
+  }),
+)
+
 builder.mutationField('editEntry', t =>
   t.field({
     description: '词条: 词条更新',
@@ -62,16 +105,27 @@ builder.mutationField('editEntry', t =>
     type: 'Boolean',
     args: {
       entryId: t.arg.int({ required: true }),
-      appId: t.arg.int({ required: true }),
       langs: t.arg({ type: 'JSON' }),
-      key: t.arg.string(),
     },
-    resolve: (_, { entryId, appId, langs, key }) =>
+    resolve: (_, { entryId, langs }) =>
       EntryDataSource.updateAppEntry({
         entryId,
-        appId,
         langs,
-        key: key || undefined,
       }),
+  }),
+)
+
+builder.mutationField('createEntry', t =>
+  t.field({
+    description: '词条: 创建词条',
+    authScopes: {
+      public: true,
+    },
+    type: 'Int',
+    args: {
+      input: t.arg({ type: CreateEntryInput, required: true }),
+    },
+    resolve: (_, args) =>
+      EntryDataSource.createEntry({ ...args.input, langs: args.input.langs! }),
   }),
 )

@@ -12,6 +12,7 @@ query getApps {
       langs
       mainLang
       mainLangText
+      createdAt
     }
     languages
     name
@@ -28,4 +29,27 @@ mutation createApp($input: CreateAppInput!) {
 # 应用: 生成访问key
 mutation refreshAccessKey($appId: Int!) {
   refreshAccessKey(appId: $appId)
+}
+
+# 应用: 获取目标应用
+query getAppById($appId: Int!) {
+  getAppById(appId: $appId) {
+    access
+    accessKey
+    appId
+    createdAt
+    description
+    entries {
+      id
+      key
+      langs
+      mainLang
+      mainLangText
+      createdAt
+    }
+    languages
+    name
+    pictures
+    push
+  }
 }

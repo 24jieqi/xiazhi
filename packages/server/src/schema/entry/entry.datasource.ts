@@ -15,12 +15,49 @@ export const ExtractEntryItem = builder.inputType('ExtractEntryItem', {
 
 type UpdateEntryArgs = {
   entryId: number
-  appId: number
   langs?: any
+}
+
+type PagingAppEntryArgs = {
+  pageSize: number
+  pageNo: number
+  appId: number
+  mainLangText?: string
   key?: string
 }
 
+type CreateEntryArgs = {
+  appId: number
+  key: string
+  langs: any
+}
+
 export class EntryDataSource {
+  public static async createEntry({ appId, key, langs }: CreateEntryArgs) {
+    const mainLangText = langs['zh']
+    if (!mainLangText) {
+      throw new Error('必须填写词条中文！')
+    }
+    const records = await prisma.entry.findMany({
+      where: {
+        appId,
+        mainLangText: mainLangText,
+        deleted: false,
+      },
+    })
+    if (records.length) {
+      throw new Error('无法新增已经存在的词条')
+    }
+    const entry = await prisma.entry.create({
+      data: {
+        key,
+        langs,
+        mainLangText, // 设置主语言文本
+        appId,
+      },
+    })
+    return entry.entry_id
+  }
   public static async uploadEntries(
     ak: string,
     entries: (typeof ExtractEntryItem.$inferInput)[],
@@ -92,38 +129,17 @@ export class EntryDataSource {
     // 只返回有key的词条
     return app?.entries?.filter(item => item.key) || []
   }
-  public static async updateAppEntry({
-    entryId,
-    key,
-    appId,
-    langs,
-  }: UpdateEntryArgs) {
+  public static async updateAppEntry({ entryId, langs }: UpdateEntryArgs) {
     const currentEntry = await prisma.entry.findUnique({
       where: {
         entry_id: entryId,
       },
-      include: {
-        belongsTo: true,
-      },
     })
-    const entries = await prisma.entry.count({
-      where: {
-        key,
-        appId,
-        entry_id: {
-          not: entryId,
-        },
-      },
-    })
-    if (entries > 0) {
-      throw new Error('词条key在应用内唯一')
-    }
     await prisma.entry.update({
       where: {
         entry_id: entryId,
       },
       data: {
-        key,
         langs: {
           ...(currentEntry?.langs as Object),
           ...langs,
@@ -132,5 +148,44 @@ export class EntryDataSource {
       },
     })
     return true
+  }
+  public static async pageAppEntry({
+    pageNo,
+    pageSize,
+    appId,
+    mainLangText,
+    key,
+  }: PagingAppEntryArgs) {
+    const records = await prisma.entry.findMany({
+      where: {
+        deleted: false,
+        appId,
+        mainLangText: {
+          contains: mainLangText || undefined,
+        },
+        key: key || undefined,
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+      skip: (pageNo - 1) * pageSize,
+      take: pageSize,
+    })
+    const total = await prisma.entry.count({
+      where: {
+        deleted: false,
+        appId,
+        mainLangText: {
+          contains: mainLangText || undefined,
+        },
+        key,
+      },
+    })
+    return {
+      current: pageNo,
+      pageSize,
+      records: records,
+      total,
+    }
   }
 }

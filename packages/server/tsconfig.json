@@ -5,6 +5,7 @@
     "baseUrl": ".",
     "esModuleInterop": true,
     "moduleResolution": "node",
+    "rootDir": ".",
     "lib": ["esnext"],
     "strict": true,
     "paths": {

@@ -35,13 +35,28 @@ export type CreateAppInput = {
   pictures?: InputMaybe<Array<Scalars['String']>>;
 };
 
+export type CreateEntryInput = {
+  appId: Scalars['Int'];
+  key: Scalars['String'];
+  langs: Scalars['JSON'];
+};
+
 export type Entry = {
   __typename?: 'Entry';
+  createdAt: Scalars['DateTime'];
   id: Scalars['Int'];
   key?: Maybe<Scalars['String']>;
   langs: Scalars['JSON'];
   mainLang: Scalars['String'];
   mainLangText?: Maybe<Scalars['String']>;
+};
+
+export type EntryPaging = {
+  __typename?: 'EntryPaging';
+  current: Scalars['Int'];
+  pageSize: Scalars['Int'];
+  records: Array<Entry>;
+  total: Scalars['Int'];
 };
 
 export type ExtractEntryItem = {
@@ -62,6 +77,8 @@ export type Mutation = {
   __typename?: 'Mutation';
   /** 应用: 创建应用 */
   createApp: Scalars['Int'];
+  /** 词条: 创建词条 */
+  createEntry: Scalars['Int'];
   createPost: Scalars['Int'];
   /** 词条: 词条更新 */
   editEntry: Scalars['Boolean'];
@@ -79,6 +96,11 @@ export type MutationCreateAppArgs = {
 };
 
 
+export type MutationCreateEntryArgs = {
+  input: CreateEntryInput;
+};
+
+
 export type MutationCreatePostArgs = {
   content?: InputMaybe<Scalars['String']>;
   title: Scalars['String'];
@@ -86,9 +108,7 @@ export type MutationCreatePostArgs = {
 
 
 export type MutationEditEntryArgs = {
-  appId: Scalars['Int'];
   entryId: Scalars['Int'];
-  key?: InputMaybe<Scalars['String']>;
   langs?: InputMaybe<Scalars['JSON']>;
 };
 
@@ -129,17 +149,35 @@ export type Query = {
   __typename?: 'Query';
   allPosts: Array<Post>;
   allUsers?: Maybe<Array<User>>;
+  /** 应用: 获取目标应用 */
+  getAppById: App;
   /** 应用: 应用列表 */
   getApps: Array<App>;
   /** 词条: 获取应用所有词条 */
   getEntries: Array<Entry>;
+  /** 词条: 应用词条分页 */
+  pageAppEntries: EntryPaging;
   user?: Maybe<User>;
   userPosts: Array<Post>;
 };
 
 
+export type QueryGetAppByIdArgs = {
+  appId: Scalars['Int'];
+};
+
+
 export type QueryGetEntriesArgs = {
   ak: Scalars['String'];
+};
+
+
+export type QueryPageAppEntriesArgs = {
+  appId: Scalars['Int'];
+  key?: InputMaybe<Scalars['String']>;
+  mainLangText?: InputMaybe<Scalars['String']>;
+  pageNo: Scalars['Int'];
+  pageSize: Scalars['Int'];
 };
 
 

@@ -6,7 +6,7 @@ const defaultOptions = {} as const;
 export type GetAppsQueryVariables = SchemaTypes.Exact<{ [key: string]: never; }>;
 
 
-export type GetAppsQuery = { getApps: Array<{ __typename?: 'App', access: boolean, accessKey?: string, appId: number, createdAt: number, description?: string, languages: Array<string>, name: string, pictures: Array<string>, push: boolean, entries: Array<{ __typename?: 'Entry', id: number, key?: string, langs: any, mainLang: string, mainLangText?: string }> }> };
+export type GetAppsQuery = { getApps: Array<{ __typename?: 'App', access: boolean, accessKey?: string, appId: number, createdAt: number, description?: string, languages: Array<string>, name: string, pictures: Array<string>, push: boolean, entries: Array<{ __typename?: 'Entry', id: number, key?: string, langs: any, mainLang: string, mainLangText?: string, createdAt: number }> }> };
 
 export type CreateAppMutationVariables = SchemaTypes.Exact<{
   input: SchemaTypes.CreateAppInput;
@@ -21,6 +21,13 @@ export type RefreshAccessKeyMutationVariables = SchemaTypes.Exact<{
 
 
 export type RefreshAccessKeyMutation = { refreshAccessKey: string };
+
+export type GetAppByIdQueryVariables = SchemaTypes.Exact<{
+  appId: SchemaTypes.Scalars['Int'];
+}>;
+
+
+export type GetAppByIdQuery = { getAppById: { __typename?: 'App', access: boolean, accessKey?: string, appId: number, createdAt: number, description?: string, languages: Array<string>, name: string, pictures: Array<string>, push: boolean, entries: Array<{ __typename?: 'Entry', id: number, key?: string, langs: any, mainLang: string, mainLangText?: string, createdAt: number }> } };
 
 
 export const GetAppsDocument = gql`
@@ -37,6 +44,7 @@ export const GetAppsDocument = gql`
       langs
       mainLang
       mainLangText
+      createdAt
     }
     languages
     name
@@ -134,3 +142,54 @@ export function useRefreshAccessKeyMutation(baseOptions?: Apollo.MutationHookOpt
 export type RefreshAccessKeyMutationHookResult = ReturnType<typeof useRefreshAccessKeyMutation>;
 export type RefreshAccessKeyMutationResult = Apollo.MutationResult<RefreshAccessKeyMutation>;
 export type RefreshAccessKeyMutationOptions = Apollo.BaseMutationOptions<RefreshAccessKeyMutation, RefreshAccessKeyMutationVariables>;
+export const GetAppByIdDocument = gql`
+    query getAppById($appId: Int!) {
+  getAppById(appId: $appId) {
+    access
+    accessKey
+    appId
+    createdAt
+    description
+    entries {
+      id
+      key
+      langs
+      mainLang
+      mainLangText
+      createdAt
+    }
+    languages
+    name
+    pictures
+    push
+  }
+}
+    `;
+
+/**
+ * __useGetAppByIdQuery__
+ *
+ * To run a query within a React component, call `useGetAppByIdQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetAppByIdQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetAppByIdQuery({
+ *   variables: {
+ *      appId: // value for 'appId'
+ *   },
+ * });
+ */
+export function useGetAppByIdQuery(baseOptions: Apollo.QueryHookOptions<GetAppByIdQuery, GetAppByIdQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetAppByIdQuery, GetAppByIdQueryVariables>(GetAppByIdDocument, options);
+      }
+export function useGetAppByIdLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetAppByIdQuery, GetAppByIdQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetAppByIdQuery, GetAppByIdQueryVariables>(GetAppByIdDocument, options);
+        }
+export type GetAppByIdQueryHookResult = ReturnType<typeof useGetAppByIdQuery>;
+export type GetAppByIdLazyQueryHookResult = ReturnType<typeof useGetAppByIdLazyQuery>;
+export type GetAppByIdQueryResult = Apollo.QueryResult<GetAppByIdQuery, GetAppByIdQueryVariables>;

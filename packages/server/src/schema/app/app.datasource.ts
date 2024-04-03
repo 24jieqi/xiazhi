@@ -44,4 +44,11 @@ export class AppDataSource {
       },
     })
   }
+  public static getAppById(appId: number) {
+    return prisma.app.findUnique({
+      where: {
+        app_id: appId,
+      },
+    })
+  }
 }

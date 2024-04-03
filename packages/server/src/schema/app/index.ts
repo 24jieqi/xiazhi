@@ -70,3 +70,17 @@ builder.queryField('getApps', t =>
     resolve: () => AppDataSource.getApps(),
   }),
 )
+
+builder.queryField('getAppById', t =>
+  t.field({
+    description: '应用: 获取目标应用',
+    type: AppItem,
+    args: {
+      appId: t.arg.int({ required: true }),
+    },
+    resolve: async (_, args) => {
+      const app = await AppDataSource.getAppById(args.appId)
+      return app!
+    },
+  }),
+)

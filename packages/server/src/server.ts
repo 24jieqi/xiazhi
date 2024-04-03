@@ -44,7 +44,7 @@ const start = async () => {
       serve(
         path.resolve(
           __dirname,
-          env === 'development' ? './static' : '../../src/static',
+          env === 'development' ? '../static' : '../../static',
         ),
       ),
     )

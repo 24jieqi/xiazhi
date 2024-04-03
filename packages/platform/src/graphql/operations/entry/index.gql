@@ -1,0 +1,38 @@
+# 词条: 词条更新
+mutation editEntry($entryId: Int!, $langs: JSON) {
+  editEntry(entryId: $entryId, langs: $langs)
+}
+
+# 词条: 应用词条分页
+query pageAppEntries(
+  $appId: Int!
+  $key: String
+  $mainLangText: String
+  $pageNo: Int!
+  $pageSize: Int!
+) {
+  pageAppEntries(
+    appId: $appId
+    key: $key
+    mainLangText: $mainLangText
+    pageNo: $pageNo
+    pageSize: $pageSize
+  ) {
+    current
+    pageSize
+    records {
+      id
+      key
+      langs
+      mainLang
+      mainLangText
+      createdAt
+    }
+    total
+  }
+}
+
+# 词条: 创建词条
+mutation createEntry($input: CreateEntryInput!) {
+  createEntry(input: $input)
+}
