@@ -7,6 +7,7 @@ export const CONFIG_FILE_NAME = '.extintl.json'
 export const DEFAULT_LANGUAGE = 'zh-CN'
 
 export const IMPORT_STATEMENT = `import { useI18n } from '@/i18n/context';\n`
+export const IMPORT_CONTEXT_STATEMENT = `import { I18NContextWrapper } from '@/i18n/context';\n`
 export const USE_STATEMENT = 'const { I18N } = useI18n();'
 
 export const INIT_VERSION_NUMBER = 1

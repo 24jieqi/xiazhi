@@ -16,6 +16,7 @@ import { readEntryFile } from '../../utils/file'
 import type { ExtConfig } from '../config/interface'
 
 import { traverseDir } from './traverse'
+import { updateAppFile } from './updateAppFile'
 
 /**
  * 开始中文提取，返回匹配到的中文词条
@@ -57,6 +58,7 @@ export async function start(config: ExtConfig) {
     if (!extractOnly) {
       // 3. 如果是非提取模式，写入基于kiwi-intl的模版文件
       await writeI18nTemplateFile()
+      await updateAppFile()
     }
     timeEnd('[INFO] 提取用时')
     return unMatchedList
