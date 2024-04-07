@@ -1,5 +1,5 @@
 import { screen, act, within } from '@testing-library/react'
-import type { UserEvent } from 'node_modules/@testing-library/user-event/dist/types/setup/setup'
+import type { UserEvent } from '@testing-library/user-event'
 
 /**
  * 选择器单选

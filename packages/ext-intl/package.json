@@ -4,7 +4,8 @@
   "description": "xiazhi多语言脚本",
   "main": "dist/index.js",
   "scripts": {
-    "build": "tsc"
+    "build": "tsc",
+    "lint:ts": "tsc --noEmit && eslint src --ext .ts,.tsx"
   },
   "files": [
     "dist/*"
@@ -30,6 +31,8 @@
     "typescript": "^5.4.3"
   },
   "devDependencies": {
-    "@types/inquirer": "^8"
+    "@types/eslint": "^8",
+    "@types/inquirer": "^8",
+    "eslint": "8"
   }
 }

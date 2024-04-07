@@ -1,6 +1,3 @@
 node_modules/
-
-**/src/graphql/operations/
-**/src/graphql/generated/
-
+prisma/client
 packages/*/dist

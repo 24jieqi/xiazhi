@@ -5,5 +5,10 @@
     "rootDir": "src",
     "sourceMap": false
   },
-  "exclude": ["../../.eslintrc.cjs", "dist", "../server/*"]
+  "exclude": [
+    "../../.eslintrc.cjs",
+    "dist",
+    "../server/*",
+    "../platform/*"
+  ]
 }

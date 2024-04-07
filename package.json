@@ -6,11 +6,10 @@
   ],
   "scripts": {
     "lint": "eslint packages/*/src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
-    "prepare": "husky install",
-    "lint:ts": "tsc --noEmit && eslint packages/*/src --ext .ts,.tsx",
-    "lint:style": "stylelint 'src/**/*.less'",
+    "prepare": "husky",
+    "lint:ts": "yarn workspaces foreach -A lint:ts",
     "lint-staged": "lint-staged --allow-empty",
-    "commit": "npx git-cz"
+    "commit": "yarn dlx git-cz"
   },
   "devDependencies": {
     "@commitlint/cli": "^19.2.1",
@@ -20,6 +19,8 @@
     "@fruits-chain/prettier-config-preset": "^0.0.3",
     "@fruits-chain/stylelint-config-preset": "^0.1.0",
     "@types/eslint": "^8",
+    "husky": "^9.0.11",
+    "lint-staged": "^15.2.2",
     "typescript": "^5.4.3"
   },
   "prettier": "@fruits-chain/prettier-config-preset",

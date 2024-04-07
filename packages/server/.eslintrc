@@ -5,6 +5,10 @@
     // "@typescript-eslint/prefer-ts-expect-error": "off",
     // "prettier/prettier": "off"
     "import/no-unresolved": "off",
-    "max-params": ["error", 4]
+    "max-params": ["error", 4],
+    "@typescript-eslint/no-useless-constructor": "off",
+    "@typescript-eslint/prefer-optional-chain": "off",
+    "@typescript-eslint/prefer-function-type": "off",
+    "@typescript-eslint/consistent-type-definitions": "off"
   }
 }

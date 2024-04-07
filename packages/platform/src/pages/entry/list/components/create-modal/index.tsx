@@ -10,7 +10,7 @@ import { isDef } from '@fruits-chain/utils'
 import { Button, message } from 'antd'
 import omit from 'lodash/omit'
 import { pinyin } from 'pinyin-pro'
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 
 import type { App, Entry } from '@/graphql/generated/types'
 import {

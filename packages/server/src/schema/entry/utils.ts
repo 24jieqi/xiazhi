@@ -1,5 +1,4 @@
-import { Entry } from '@prisma/client'
-
+import { type Entry } from '@prisma/client'
 interface UploadedEntryItem {
   key?: string | null | undefined
   langs: any

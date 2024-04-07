@@ -1,5 +1,3 @@
-import { AppTypeEnum } from '@/graphql/generated/types'
-
 /**
  * 配置文件
  */
@@ -8,7 +6,6 @@ interface CommonConfig {
   authKey: string
   /** 系统是否需鉴权 */
   authorization: boolean
-  appType: AppTypeEnum
 }
 
 interface EnvConfig {
@@ -41,7 +38,6 @@ const {
 const commonConfig: CommonConfig = {
   authKey: 'Authorization',
   authorization: true,
-  appType: AppTypeEnum.MerchantWeb,
 }
 
 const config: IConfig = {
