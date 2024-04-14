@@ -15,7 +15,7 @@ const StartPage: React.FC = () => {
         type="primary"
         style={{ width: '100%' }}
         onClick={() => navigate(APP_LIST)}>
-        开始使用123
+        开始使用
       </Button>
     </StartLayout>
   )

@@ -2362,12 +2362,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@fruits-chain/react-bailu@npm:^0.3.0-beta.3":
-  version: 0.3.0-beta.28
-  resolution: "@fruits-chain/react-bailu@npm:0.3.0-beta.28"
+"@fruits-chain/react-bailu@npm:0.3.0-beta.29":
+  version: 0.3.0-beta.29
+  resolution: "@fruits-chain/react-bailu@npm:0.3.0-beta.29"
   dependencies:
     "@fruits-chain/utils": "npm:^1.0.6"
-    ahooks: "npm:^3.7.10"
+    ahooks: "npm:^3.7.11"
     fast-deep-equal: "npm:^3.1.3"
     immutability-helper: "npm:^3.1.1"
     lodash: "npm:^4.17.21"
@@ -2382,7 +2382,7 @@ __metadata:
     antd: 5.x
     dayjs: 1.x
     react: "*"
-  checksum: 10c0/6bbaf98f396476e335eff393473851f17aa12e45b0f9447858f2e902673c3279e9a7a59a1482315459b7fcc91cd6bd4b6550657eaf632ec628881ce4d2a9f322
+  checksum: 10c0/def9ef71da55b9469cc847deb08e0bed5371eae501d83158be6e0c87e1e20da2ff4aff360ea7550a29af94d51568612c0f85e5adf63c7258d55cbf02f446fb52
   languageName: node
   linkType: hard
 
@@ -5302,7 +5302,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ahooks@npm:^3.7.10, ahooks@npm:^3.7.8":
+"ahooks@npm:^3.7.11, ahooks@npm:^3.7.8":
   version: 3.7.11
   resolution: "ahooks@npm:3.7.11"
   dependencies:
@@ -19043,7 +19043,7 @@ __metadata:
     "@fruits-chain/graphql-codegen-preset": "npm:^0.3.1"
     "@fruits-chain/icons-react": "npm:^0.0.31"
     "@fruits-chain/prettier-config-preset": "npm:^0.0.3"
-    "@fruits-chain/react-bailu": "npm:^0.3.0-beta.3"
+    "@fruits-chain/react-bailu": "npm:0.3.0-beta.29"
     "@fruits-chain/stylelint-config-preset": "npm:^0.0.9"
     "@fruits-chain/utils": "npm:^1.0.1"
     "@graphql-codegen/cli": "npm:3.2.2"
