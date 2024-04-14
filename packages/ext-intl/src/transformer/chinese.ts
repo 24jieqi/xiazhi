@@ -79,8 +79,8 @@ function getChineseTransformer(
                 const parentNodeKind = node.parent.kind
                 const result =
                   parentNodeKind === ts.SyntaxKind.JsxAttribute
-                    ? `{I18N.index.${key}}`
-                    : `I18N.index.${key}`
+                    ? `{I18N.${key}}`
+                    : `I18N.${key}`
                 return factory.createIdentifier(result)
               }
             }
@@ -108,7 +108,7 @@ function getChineseTransformer(
                 ...langs,
               })
               if (isMatch) {
-                return factory.createJsxText(`{I18N.index.${key}}`)
+                return factory.createJsxText(`{I18N.${key}}`)
               }
             }
             break
@@ -150,7 +150,7 @@ function getChineseTransformer(
                   return factory.createCallExpression(
                     factory.createIdentifier(templateString.funcName),
                     undefined,
-                    [factory.createIdentifier(`I18N.index.${key}`), objParam],
+                    [factory.createIdentifier(`I18N.${key}`), objParam],
                   )
                 }
               } else {

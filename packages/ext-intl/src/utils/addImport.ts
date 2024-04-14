@@ -1,6 +1,10 @@
+import * as path from 'path'
+
 import * as ts from 'typescript'
 
 import { IMPORT_STATEMENT } from '../constant'
+
+import { getOutputPath } from './common'
 
 const factory = ts.factory
 
@@ -10,9 +14,20 @@ const factory = ts.factory
  * @param code 目标文件的字符串
  * @returns 修改后的sourceFile
  */
-export function addImportToFile(ast: ts.SourceFile, code: string) {
+export function addImportToFile(
+  ast: ts.SourceFile,
+  code: string,
+  filePath: string,
+) {
   if (code.includes(IMPORT_STATEMENT)) {
     return ast
+  }
+  const { dir } = path.parse(filePath)
+  let relativePath = path
+    .join(path.relative(dir, getOutputPath()), 'context')
+    .replaceAll(path.sep, '/')
+  if (!relativePath.startsWith('./')) {
+    relativePath = `./${relativePath}`
   }
   const importStatement = factory.createImportDeclaration(
     undefined,
@@ -27,7 +42,7 @@ export function addImportToFile(ast: ts.SourceFile, code: string) {
         ),
       ]),
     ),
-    factory.createStringLiteral('@/i18n/context', true),
+    factory.createStringLiteral(relativePath, true),
   )
   const updatedStatements = [importStatement, ...ast.statements]
   return factory.updateSourceFile(ast, updatedStatements)

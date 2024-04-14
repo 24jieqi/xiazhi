@@ -42,7 +42,7 @@ export const LANG_STORAGE_KEY = 'currentLang'
 
 export const I18NContextWrapper = ({ children }) => {
   const i18nIns = useRef(I18N)
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  // eslint-disable-next-line no-unused-vars
   const [_, forceUpdate] = useState({})
   const i18n = i18nIns.current
   useEffect(() => {

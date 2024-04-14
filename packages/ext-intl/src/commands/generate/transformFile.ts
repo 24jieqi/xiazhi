@@ -29,7 +29,7 @@ export async function transformFile(code: string, fileName: string) {
   let transformedFile = ts.transform(ast, transformers)
     .transformed[0] as ts.SourceFile
   if (!extractOnly && matches.length > 0) {
-    transformedFile = addImportToFile(transformedFile, code)
+    transformedFile = addImportToFile(transformedFile, code, fileName)
     await saveFile(transformedFile, fileName)
   }
   return matches

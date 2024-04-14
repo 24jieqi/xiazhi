@@ -8,8 +8,10 @@ import { getOutputPath, log, mkRootDirIfNeeded } from '../../utils/common'
 import { formatFileWithConfig } from '../../utils/format'
 
 const syncDoc = gql`
-  query GetAllEntries($accessKey: String!) {
-    getAllEntries(accessKey: $accessKey) {
+  query GetEntries($ak: String!) {
+    getEntries(ak: $ak) {
+      createdAt
+      id
       key
       langs
       mainLang
@@ -19,14 +21,11 @@ const syncDoc = gql`
 `
 
 const extractGql = gql`
-  mutation extractLocalEntries(
-    $accessKey: String!
-    $entries: [ExtractLocalEntryItem!]!
-  ) {
-    extractLocalEntries(accessKey: $accessKey, entries: $entries) {
+  mutation UploadEntries($ak: String!, $entries: [ExtractEntryItem!]!) {
+    uploadEntries(ak: $ak, entries: $entries) {
       add
-      modify
       ignore
+      modify
     }
   }
 `
@@ -39,12 +38,12 @@ const extractGql = gql`
  */
 export async function sync(origin: string, accessKey: string) {
   try {
-    const res = await request<{ getAllEntries: OriginEntryItem[] }>(
+    const res = await request<{ getEntries: OriginEntryItem[] }>(
       origin,
       syncDoc,
-      { accessKey },
+      { ak: accessKey },
     )
-    const data: OriginEntryItem[] = res.getAllEntries || []
+    const data: OriginEntryItem[] = res.getEntries || []
     const basePath = getOutputPath()
     await mkRootDirIfNeeded()
     await fs.writeFile(
@@ -88,10 +87,10 @@ export async function upload({ origin, accessKey, entries }: UploadConfig) {
     log(chalk.yellow('无可上传的词条'))
     return
   }
-  const res = await request<{ extractLocalEntries: UploadResponse }>(
+  const res = await request<{ uploadEntries: UploadResponse }>(
     origin,
     extractGql,
-    { accessKey, entries },
+    { ak: accessKey, entries },
   )
   log(chalk.green('词条已推送至远程'))
   return res

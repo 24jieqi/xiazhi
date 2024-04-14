@@ -38,7 +38,7 @@ export async function uploadAction(config: UploadActionConfig) {
         accessKey: config.accessKey,
         entries,
       })
-      const statistics = res!.extractLocalEntries
+      const statistics = res!.uploadEntries
       log(
         chalk.green(
           `已成功完成${config.unMatchedList.length}个词条的推送，结果如下：`,
