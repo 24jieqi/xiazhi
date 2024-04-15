@@ -9,7 +9,10 @@
     "prepare": "husky",
     "lint:ts": "yarn workspaces foreach -A lint:ts",
     "lint-staged": "lint-staged --allow-empty",
-    "commit": "yarn dlx git-cz"
+    "commit": "yarn dlx git-cz",
+    "dev:server": "yarn workspace xiazhi-server dev",
+    "dev:web": "yarn workspace xiazhi-platform dev",
+    "build:script": "yarn workspace ext-intl build"
   },
   "devDependencies": {
     "@commitlint/cli": "^19.2.1",

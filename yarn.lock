@@ -8957,7 +8957,7 @@ __metadata:
     graphql: "npm:^16.8.1"
     graphql-request: "npm:^6.1.0"
     inquirer: "npm:8"
-    kiwi-intl: "npm:1.2.6-beta.0"
+    kiwi-intl: "npm:1.2.5"
     pinyin-pro: "npm:^3.19.6"
     prettier: "npm:^3.2.5"
     typescript: "npm:^5.4.3"
@@ -11791,13 +11791,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"kiwi-intl@npm:1.2.6-beta.0":
-  version: 1.2.6-beta.0
-  resolution: "kiwi-intl@npm:1.2.6-beta.0"
+"kiwi-intl@npm:1.2.5":
+  version: 1.2.5
+  resolution: "kiwi-intl@npm:1.2.5"
   dependencies:
     intl-messageformat: "npm:^2.2.0"
     lodash.get: "npm:^4.4.2"
-  checksum: 10c0/c09f4539e04059471e28c347a630129a4056f41b760bee3b39a799ba0432f629db402015ff8bc812ac37ea5227be954ac04be0b044b53033b47556d32c5337c2
+  checksum: 10c0/ac139f461bd47ce10d59b12fa9dfa8594be5b319b8a3364d08d29b2019f343747c23729dc326184a64fc49d30b5e13a1530b6e85ec53f43721470af6ffb350c0
   languageName: node
   linkType: hard
 
@@ -16114,61 +16114,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"server@workspace:packages/server":
-  version: 0.0.0-use.local
-  resolution: "server@workspace:packages/server"
-  dependencies:
-    "@apollo/server": "npm:4.5.0"
-    "@as-integrations/koa": "npm:^1.0.0"
-    "@changesets/cli": "npm:^2.24.3"
-    "@commitlint/cli": "npm:^17.0.3"
-    "@commitlint/config-conventional": "npm:^17.0.3"
-    "@fruits-chain/eslint-config-preset": "npm:^0.2.2"
-    "@fruits-chain/prettier-config-preset": "npm:^0.0.3"
-    "@koa/cors": "npm:^4.0.0"
-    "@koa/multer": "npm:^3.0.2"
-    "@koa/router": "npm:^12.0.0"
-    "@pothos/core": "npm:^3.40.1"
-    "@pothos/plugin-dataloader": "npm:^3.17.2"
-    "@pothos/plugin-prisma": "npm:^3.62.0"
-    "@pothos/plugin-prisma-utils": "npm:^0.14.0"
-    "@pothos/plugin-scope-auth": "npm:^3.20.0"
-    "@pothos/plugin-simple-objects": "npm:^3.7.0"
-    "@prisma/client": "npm:^5.6.0"
-    "@types/bcrypt": "npm:^5"
-    "@types/dotenv": "npm:^8.2.0"
-    "@types/jsonwebtoken": "npm:^9.0.2"
-    "@types/koa": "npm:^2.13.6"
-    "@types/koa-bodyparser": "npm:^4.3.10"
-    "@types/koa-static": "npm:^4.0.2"
-    "@types/koa__cors": "npm:^4.0.0"
-    "@types/koa__multer": "npm:^2.0.7"
-    "@types/koa__router": "npm:^12.0.0"
-    "@types/multer": "npm:^1"
-    "@types/node": "npm:^20.1.2"
-    bcrypt: "npm:^5.1.1"
-    commitizen: "npm:^4.2.5"
-    cz-conventional-changelog: "npm:^3.3.0"
-    dotenv: "npm:^16.0.3"
-    eslint: "npm:^8.22.0"
-    graphql: "npm:16.6.0"
-    graphql-scalars: "npm:1.21.3"
-    husky: "npm:^8.0.1"
-    jsonwebtoken: "npm:^9.0.0"
-    koa: "npm:^2.14.2"
-    koa-bodyparser: "npm:^4.4.0"
-    koa-static: "npm:^5.0.0"
-    lint-staged: "npm:^13.0.3"
-    multer: "npm:^1.4.5-lts.1"
-    prisma: "npm:^5.6.0"
-    ts-node: "npm:10.9.1"
-    ts-node-dev: "npm:2.0.0"
-    tsc-alias: "npm:^1.8.8"
-    tsconfig-paths: "npm:^4.2.0"
-    typescript: "npm:4.9.5"
-  languageName: unknown
-  linkType: soft
-
 "set-blocking@npm:^2.0.0":
   version: 2.0.0
   resolution: "set-blocking@npm:2.0.0"
@@ -19082,6 +19027,61 @@ __metadata:
     vitest: "npm:^0.31.2"
     web-hw-obs: "npm:^1.2.1"
     zustand: "npm:^4.3.8"
+  languageName: unknown
+  linkType: soft
+
+"xiazhi-server@workspace:packages/server":
+  version: 0.0.0-use.local
+  resolution: "xiazhi-server@workspace:packages/server"
+  dependencies:
+    "@apollo/server": "npm:4.5.0"
+    "@as-integrations/koa": "npm:^1.0.0"
+    "@changesets/cli": "npm:^2.24.3"
+    "@commitlint/cli": "npm:^17.0.3"
+    "@commitlint/config-conventional": "npm:^17.0.3"
+    "@fruits-chain/eslint-config-preset": "npm:^0.2.2"
+    "@fruits-chain/prettier-config-preset": "npm:^0.0.3"
+    "@koa/cors": "npm:^4.0.0"
+    "@koa/multer": "npm:^3.0.2"
+    "@koa/router": "npm:^12.0.0"
+    "@pothos/core": "npm:^3.40.1"
+    "@pothos/plugin-dataloader": "npm:^3.17.2"
+    "@pothos/plugin-prisma": "npm:^3.62.0"
+    "@pothos/plugin-prisma-utils": "npm:^0.14.0"
+    "@pothos/plugin-scope-auth": "npm:^3.20.0"
+    "@pothos/plugin-simple-objects": "npm:^3.7.0"
+    "@prisma/client": "npm:^5.6.0"
+    "@types/bcrypt": "npm:^5"
+    "@types/dotenv": "npm:^8.2.0"
+    "@types/jsonwebtoken": "npm:^9.0.2"
+    "@types/koa": "npm:^2.13.6"
+    "@types/koa-bodyparser": "npm:^4.3.10"
+    "@types/koa-static": "npm:^4.0.2"
+    "@types/koa__cors": "npm:^4.0.0"
+    "@types/koa__multer": "npm:^2.0.7"
+    "@types/koa__router": "npm:^12.0.0"
+    "@types/multer": "npm:^1"
+    "@types/node": "npm:^20.1.2"
+    bcrypt: "npm:^5.1.1"
+    commitizen: "npm:^4.2.5"
+    cz-conventional-changelog: "npm:^3.3.0"
+    dotenv: "npm:^16.0.3"
+    eslint: "npm:^8.22.0"
+    graphql: "npm:16.6.0"
+    graphql-scalars: "npm:1.21.3"
+    husky: "npm:^8.0.1"
+    jsonwebtoken: "npm:^9.0.0"
+    koa: "npm:^2.14.2"
+    koa-bodyparser: "npm:^4.4.0"
+    koa-static: "npm:^5.0.0"
+    lint-staged: "npm:^13.0.3"
+    multer: "npm:^1.4.5-lts.1"
+    prisma: "npm:^5.6.0"
+    ts-node: "npm:10.9.1"
+    ts-node-dev: "npm:2.0.0"
+    tsc-alias: "npm:^1.8.8"
+    tsconfig-paths: "npm:^4.2.0"
+    typescript: "npm:4.9.5"
   languageName: unknown
   linkType: soft
 
