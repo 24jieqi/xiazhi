@@ -1,4 +1,4 @@
-import * as fs from 'fs'
+import * as fs from 'fs/promises'
 
 import * as chalk from 'chalk'
 import * as ts from 'typescript'
@@ -34,7 +34,7 @@ async function updateI18nFile(
   filePath: string,
   lang: string,
 ) {
-  const file = fs.readFileSync(filePath)
+  const file = await fs.readFile(filePath, 'utf-8')
   const printer = ts.createPrinter({})
   const sourceFile = ts.createSourceFile(
     '',
@@ -87,7 +87,7 @@ async function updateI18nFile(
   const updatedFile = printer.printFile(sourceFile)
   const formateFile = unicodeToChar(updatedFile)
   try {
-    fs.writeFileSync(filePath, await formatFileWithConfig(formateFile), {
+    await fs.writeFile(filePath, await formatFileWithConfig(formateFile), {
       encoding: 'utf-8',
     })
   } catch (error) {
@@ -118,7 +118,7 @@ async function createAndWriteI18nFile(
   } catch (error) {}
 
   try {
-    fs.writeFileSync(filePath, textStr)
+    await fs.writeFile(filePath, textStr)
   } catch (error) {
     log(chalk.red(`[ERROR] 创建词条文件失败：${error}`))
   }

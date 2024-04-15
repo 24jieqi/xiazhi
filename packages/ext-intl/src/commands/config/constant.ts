@@ -1,3 +1,4 @@
+import { isUseTs } from '../../constant'
 import { resolvePath } from '../../utils/common'
 
 import type { ExtConfig } from './interface'
@@ -12,6 +13,7 @@ export const INIT_CONFIG: ExtConfig = {
   },
   origin: '',
   accessKey: '',
+  appFilePath: resolvePath(`./src/App.${isUseTs ? 'tsx' : 'js'}`),
 }
 
 export const CONFIG_FILE_NAME = '.extintl.json'

@@ -31,7 +31,7 @@ export async function start(config: ExtConfig) {
     }
     const entries = await readEntryFile()
     global['local_entries'] = entries
-    const { langs, rootPath, extractOnly } = config
+    const { langs, rootPath, extractOnly, appFilePath } = config
     log('[INFO] 开始提取...')
     time('[INFO] 提取用时')
     const unMatchedList: MatchText[] = []
@@ -52,13 +52,12 @@ export async function start(config: ExtConfig) {
       }
     }
     // 2. 遍历文件（提取词条/写入多语言模版等）
-    traverseDir(rootPath, _entries => {
+    await traverseDir(rootPath, _entries => {
       unMatchedList.push(...removeDuplicatedText(unMatchedList, _entries))
     })
     if (!extractOnly) {
-      // 3. 如果是非提取模式，写入基于kiwi-intl的模版文件
       await writeI18nTemplateFile()
-      await updateAppFile()
+      await updateAppFile(appFilePath!)
     }
     timeEnd('[INFO] 提取用时')
     return unMatchedList

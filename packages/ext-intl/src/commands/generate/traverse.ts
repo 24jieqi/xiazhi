@@ -1,4 +1,4 @@
-import * as fs from 'fs'
+import * as fs from 'fs/promises'
 import * as path from 'path'
 
 import { IGNORE_I18N_PATH } from '../../constant'
@@ -19,27 +19,27 @@ export async function traverseDir(
   getUnMatchedEntries?: (entries: MatchText[]) => void,
 ) {
   const { whiteList, extractOnly } = global['intlConfig'] as ExtConfig
-  if (fs.statSync(pathName).isFile()) {
+  if ((await fs.stat(pathName)).isFile()) {
     // 单个文件
     if (!whiteList.includes(path.extname(pathName))) {
       return
     }
-    const text = fs.readFileSync(pathName).toString()
+    const text = await fs.readFile(pathName, 'utf-8')
     const result = await transformFile(text, pathName)
     getUnMatchedEntries?.(result.filter(item => !item.isMatch))
     // 只有非提取模式下才生成词条文件
     if (!extractOnly) {
-      writeOutputFile(
+      await writeOutputFile(
         removeDuplicatedTextList(result).filter(item => item.isMatch),
       )
     }
   } else {
     // 文件夹
-    const files = fs.readdirSync(pathName)
-    files.forEach(file => {
+    const files = await fs.readdir(pathName)
+    files.forEach(async file => {
       const absPath = path.resolve(pathName, file)
       if (absPath !== IGNORE_I18N_PATH) {
-        traverseDir(absPath, getUnMatchedEntries)
+        await traverseDir(absPath, getUnMatchedEntries)
       }
     })
   }

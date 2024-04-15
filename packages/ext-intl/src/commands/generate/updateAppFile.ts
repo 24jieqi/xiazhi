@@ -1,11 +1,12 @@
 import * as fs from 'fs'
+import * as path from 'path'
 
 import * as ts from 'typescript'
 
 import { IMPORT_CONTEXT_STATEMENT, isUseTs } from '../../constant'
 import type { FnType } from '../../transformer/using'
+import { getOutputPath } from '../../utils/common'
 import { saveFile } from '../../utils/file'
-import type { ExtConfig } from '../config/interface'
 
 const factory = ts.factory
 
@@ -45,9 +46,17 @@ function findUpdateFn(name: string, fnNode: FnType) {
 export function addImportContextWrapperToFile(
   ast: ts.SourceFile,
   code: string,
+  appFilePath: string,
 ) {
   if (code.includes(IMPORT_CONTEXT_STATEMENT)) {
     return ast
+  }
+  const { dir } = path.parse(appFilePath)
+  let relativePath = path
+    .join(path.relative(dir, getOutputPath()), 'context')
+    .replaceAll(path.sep, '/')
+  if (!relativePath.startsWith('./')) {
+    relativePath = `./${relativePath}`
   }
   const importStatement = factory.createImportDeclaration(
     undefined,
@@ -62,16 +71,19 @@ export function addImportContextWrapperToFile(
         ),
       ]),
     ),
-    factory.createStringLiteral('@/i18n/context', true),
+    factory.createStringLiteral(relativePath, true),
   )
   const updatedStatements = [importStatement, ...ast.statements]
   return factory.updateSourceFile(ast, updatedStatements)
 }
 
-export async function updateAppFile() {
-  const { rootPath, extractOnly } = global['intlConfig'] as ExtConfig
+/**
+ * 更新入口文件，添加I18NProvider
+ * @param appFilePath
+ */
+export async function updateAppFile(appFilePath: string) {
   let handleFuncName = ''
-
+  // 找到作为默认导出的那个组件的函数名
   const findExportDefault =
     <T extends ts.Node>(context: ts.TransformationContext) =>
     (rootNode: T) => {
@@ -87,7 +99,7 @@ export async function updateAppFile() {
       }
       return ts.visitNode(rootNode, visit)
     }
-
+  // 在return语句的最外层添加Provider
   const transformToI18NContext =
     <T extends ts.Node>(context: ts.TransformationContext) =>
     (rootNode: T) => {
@@ -122,13 +134,11 @@ export async function updateAppFile() {
     }
 
   try {
-    const filePath = `${rootPath}/App.${isUseTs ? 'tsx' : 'jsx'}`
-    const file = fs.readFileSync(filePath)
-
-    if (!file.includes('I18NContextWrapper')) {
+    const fileStr = fs.readFileSync(appFilePath, 'utf-8')
+    if (!fileStr.includes('I18NContextWrapper')) {
       const ast = ts.createSourceFile(
         '',
-        file.toString(),
+        fileStr,
         ts.ScriptTarget.ES2015,
         true,
         isUseTs ? ts.ScriptKind.TS : ts.ScriptKind.JS,
@@ -139,13 +149,12 @@ export async function updateAppFile() {
         transformToI18NContext,
       ]).transformed[0] as ts.SourceFile
 
-      if (!extractOnly) {
-        transformedFile = addImportContextWrapperToFile(
-          transformedFile,
-          transformedFile.getText(),
-        )
-        await saveFile(transformedFile, filePath)
-      }
+      transformedFile = addImportContextWrapperToFile(
+        transformedFile,
+        fileStr,
+        appFilePath,
+      )
+      await saveFile(transformedFile, appFilePath)
     }
-  } catch (error) {}
+  } catch {}
 }
