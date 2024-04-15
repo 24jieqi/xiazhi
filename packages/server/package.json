@@ -1,5 +1,5 @@
 {
-  "name": "server",
+  "name": "xiazhi-server",
   "packageManager": "yarn@4.1.1",
   "license": "MIT",
   "scripts": {
