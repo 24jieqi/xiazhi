@@ -20,4 +20,6 @@ dist
 packages/server/.env
 packages/server/static
 
+lib
+
 
