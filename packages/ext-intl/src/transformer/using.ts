@@ -53,7 +53,6 @@ function getNewBlock(fn: FnType) {
       }
     }
     const originalBody = originalFn.body as ts.FunctionBody
-    console.log('注入！！！')
     const newStatements = factory.createNodeArray([
       useStatement,
       ...originalBody.statements,

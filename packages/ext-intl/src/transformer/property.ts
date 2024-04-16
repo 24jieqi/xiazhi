@@ -1,5 +1,6 @@
 import * as ts from 'typescript'
 
+import { getText } from '../commands/generate/writeToI18nFile'
 import type { MatchText } from '../interface'
 
 const factory = ts.factory
@@ -32,13 +33,11 @@ function getAddPropertyTransformer(textArr: MatchText[], lang: string) {
           }
         }
         const propertyArray = textArr
-          .filter(item => !existKeyPair?.[item.key])
+          .filter(item => existKeyPair[item.key] === undefined)
           .map(item => {
             const property = factory.createPropertyAssignment(
               factory.createIdentifier(`${item.key}`),
-              factory.createStringLiteral(
-                item?.[lang]?.replace(/[\r\n;]/g, '') || '',
-              ),
+              factory.createStringLiteral(getText(item, lang)),
             )
             // 添加注释
             const commentProperty = ts.addSyntheticLeadingComment(

@@ -11,7 +11,7 @@ import { fileExist } from '../../utils/file'
 import { formatFileWithConfig } from '../../utils/format'
 import type { ExtConfig } from '../config/interface'
 
-function getText(textObj: MatchText, lang: string) {
+export function getText(textObj: MatchText, lang: string) {
   const { langs } = global['intlConfig'] as ExtConfig
   const isMainLang = lang === langs![0]
   const text = isMainLang ? textObj.value : textObj[lang] || ''
@@ -106,7 +106,7 @@ async function writeToTargetI18nFile(textArr: MatchText[], lang: string) {
  * @param textArr 需要写入的词条列表
  * @returns
  */
-export async function writeToI18nFiles(textArr: MatchText[]) {
+async function writeToI18nFiles(textArr: MatchText[]) {
   const { langs } = global['intlConfig'] as ExtConfig
   if (textArr.length === 0) return
   for (const lang of langs!) {

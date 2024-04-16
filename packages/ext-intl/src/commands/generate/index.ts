@@ -8,7 +8,7 @@ import writeI18nTemplateFile from '../../intl'
 import {
   log,
   mkRootDirIfNeeded,
-  removeDuplicatedText,
+  removeDuplicatedTextList,
   time,
   timeEnd,
 } from '../../utils/common'
@@ -17,6 +17,7 @@ import type { ExtConfig } from '../config/interface'
 
 import { traverseDir } from './traverse'
 import { updateAppFile } from './updateAppFile'
+import writeToI18nFiles from './writeToI18nFile'
 
 /**
  * 开始中文提取，返回匹配到的中文词条
@@ -34,7 +35,6 @@ export async function start(config: ExtConfig) {
     const { langs, rootPath, extractOnly, appFilePath } = config
     log('[INFO] 开始提取...')
     time('[INFO] 提取用时')
-    const unMatchedList: MatchText[] = []
     // 1. 创建多语言根目录&此次提取的词条目录
     try {
       await mkRootDirIfNeeded()
@@ -51,17 +51,17 @@ export async function start(config: ExtConfig) {
         throw error
       }
     }
+    const matchText: MatchText[] = []
     // 2. 遍历文件（提取词条/写入多语言模版等）
-    await traverseDir(rootPath, _entries => {
-      unMatchedList.push(...removeDuplicatedText(unMatchedList, _entries))
-    })
+    await traverseDir(rootPath, matchText)
     if (!extractOnly) {
       await writeI18nTemplateFile()
       await updateAppFile(appFilePath!)
+      // 将所有查找到的词条去重后写入词条文件
+      await writeToI18nFiles(removeDuplicatedTextList(matchText))
     }
     timeEnd('[INFO] 提取用时')
-    log(`未翻译词条数: ${unMatchedList.length}`)
-    return unMatchedList
+    return removeDuplicatedTextList(matchText)
   } catch (error) {
     log(chalk.red('[ERROR]: ', error))
   }
