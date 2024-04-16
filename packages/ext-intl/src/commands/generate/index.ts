@@ -60,6 +60,7 @@ export async function start(config: ExtConfig) {
       await updateAppFile(appFilePath!)
     }
     timeEnd('[INFO] 提取用时')
+    log(`未翻译词条数: ${unMatchedList.length}`)
     return unMatchedList
   } catch (error) {
     log(chalk.red('[ERROR]: ', error))

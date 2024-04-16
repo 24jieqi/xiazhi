@@ -46,14 +46,18 @@ function getNewBlock(fn: FnType) {
     for (const statement of fn.body.statements) {
       let statementStr = ''
       try {
-        statementStr = statement.getText()
+        statementStr = statement.getText().trim()
       } catch {}
-      if (statementStr === USE_STATEMENT) {
+      if (USE_STATEMENT === statementStr) {
         return
       }
     }
     const originalBody = originalFn.body as ts.FunctionBody
-    const newStatements = [useStatement, ...originalBody.statements]
+    console.log('注入！！！')
+    const newStatements = factory.createNodeArray([
+      useStatement,
+      ...originalBody.statements,
+    ])
     return factory.updateBlock(originalBody, newStatements)
   }
 }
@@ -122,10 +126,10 @@ export const usingTransformer =
         // 处理函数表达式
         case ts.SyntaxKind.FunctionExpression: {
           if (isTargetFn(node)) {
-            const originalFn = node as ts.FunctionDeclaration
+            const originalFn = node as ts.FunctionExpression
             const newBlock = getNewBlock(originalFn)
             if (newBlock) {
-              return factory.updateFunctionDeclaration(
+              return factory.updateFunctionExpression(
                 originalFn,
                 originalFn.modifiers,
                 originalFn.asteriskToken,

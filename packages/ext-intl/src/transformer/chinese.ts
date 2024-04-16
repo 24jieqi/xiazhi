@@ -1,3 +1,4 @@
+import * as chalk from 'chalk'
 import { pinyin } from 'pinyin-pro'
 import * as ts from 'typescript'
 
@@ -6,6 +7,7 @@ import { DOUBLE_BYTE_REGEX } from '../constant'
 import type { MatchText, OriginEntryItem } from '../interface'
 import {
   getVariableFromTemplateString,
+  log,
   removeFileComment,
 } from '../utils/common'
 
@@ -49,6 +51,18 @@ function getChineseTransformer(
 ) {
   const entries: OriginEntryItem[] = global['local_entries']
   const { templateString } = global['intlConfig'] as ExtConfig
+  function getTargetEntry(text: string) {
+    const targetEntry = entries.find(entry => entry.mainLangText === text)
+    const langs = targetEntry?.langs || {}
+    const key = targetEntry?.key || generateKey(text)
+    const isMatch = !!targetEntry
+    return {
+      targetEntry,
+      langs,
+      key,
+      isMatch,
+    }
+  }
   const chineseTransformer =
     <T extends ts.Node>(context: ts.TransformationContext) =>
     (rootNode: T) => {
@@ -58,13 +72,7 @@ function getChineseTransformer(
             const { text: rawText } = node as ts.StringLiteral
             const text = rawText.replace(/[\r\n;]/g, '')
             if (text.match(DOUBLE_BYTE_REGEX)) {
-              // 1. 在本地寻找词条，如果找到
-              const targetEntry = entries.find(
-                entry => entry.mainLangText === text,
-              )
-              const langs = targetEntry?.langs || {}
-              const key = targetEntry?.key || generateKey(text)
-              const isMatch = !!targetEntry
+              const { key, isMatch, langs } = getTargetEntry(text)
               matches.push({
                 isMatch,
                 key,
@@ -75,14 +83,12 @@ function getChineseTransformer(
              */`,
                 ...langs,
               })
-              if (isMatch) {
-                const parentNodeKind = node.parent.kind
-                const result =
-                  parentNodeKind === ts.SyntaxKind.JsxAttribute
-                    ? `{I18N.${key}}`
-                    : `I18N.${key}`
-                return factory.createIdentifier(result)
-              }
+              const parentNodeKind = node.parent.kind
+              const result =
+                parentNodeKind === ts.SyntaxKind.JsxAttribute
+                  ? `{I18N.${key}}`
+                  : `I18N.${key}`
+              return factory.createIdentifier(result)
             }
             break
           }
@@ -91,12 +97,7 @@ function getChineseTransformer(
             let noCommentText = removeFileComment(text, fileName)
             if (noCommentText.match(DOUBLE_BYTE_REGEX)) {
               noCommentText = noCommentText.replace(';\n', '')
-              const targetEntry = entries.find(
-                entry => entry.mainLangText === noCommentText,
-              )
-              const langs = targetEntry?.langs || {}
-              const key = targetEntry?.key || generateKey(noCommentText)
-              const isMatch = !!targetEntry
+              const { key, isMatch, langs } = getTargetEntry(noCommentText)
               matches.push({
                 isMatch,
                 key,
@@ -107,9 +108,7 @@ function getChineseTransformer(
              */`,
                 ...langs,
               })
-              if (isMatch) {
-                return factory.createJsxText(`{I18N.${key}}`)
-              }
+              return factory.createJsxText(`{I18N.${key}}`)
             }
             break
           }
@@ -119,12 +118,7 @@ function getChineseTransformer(
             if (text.match(DOUBLE_BYTE_REGEX)) {
               text = text.replace(/\$(?=\{)/g, '')
               if (templateString && templateString.funcName) {
-                const findEntry = entries.find(
-                  entry => entry.mainLangText === text,
-                )
-                const langs = findEntry?.langs || {}
-                const key = findEntry?.key || generateKey(text)
-                const isMatch = !!findEntry
+                const { key, isMatch, langs } = getTargetEntry(text)
                 matches.push({
                   isMatch,
                   key,
@@ -135,26 +129,28 @@ function getChineseTransformer(
              */`,
                   ...langs,
                 })
-                if (isMatch) {
-                  // 返回新的节点(函数调用)
-                  const variableList: string[] =
-                    getVariableFromTemplateString(text)
-                  const objParam = factory.createObjectLiteralExpression(
-                    variableList.map(variable =>
-                      factory.createPropertyAssignment(
-                        variable,
-                        factory.createIdentifier(variable),
-                      ),
+                // 返回新的节点(函数调用)
+                const variableList: string[] =
+                  getVariableFromTemplateString(text)
+                const objParam = factory.createObjectLiteralExpression(
+                  variableList.map(variable =>
+                    factory.createPropertyAssignment(
+                      variable,
+                      factory.createIdentifier(variable),
                     ),
-                  )
-                  return factory.createCallExpression(
-                    factory.createIdentifier(templateString.funcName),
-                    undefined,
-                    [factory.createIdentifier(`I18N.${key}`), objParam],
-                  )
-                }
+                  ),
+                )
+                return factory.createCallExpression(
+                  factory.createIdentifier(templateString.funcName),
+                  undefined,
+                  [factory.createIdentifier(`I18N.${key}`), objParam],
+                )
               } else {
-                console.warn(`模板字符串：${fileName} ${text} 无法处理`)
+                log(
+                  chalk.yellow(
+                    `[WARNING] templateString未配置：${fileName} ${text} 无法处理`,
+                  ),
+                )
               }
             }
             break

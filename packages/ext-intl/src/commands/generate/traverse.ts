@@ -20,18 +20,18 @@ export async function traverseDir(
 ) {
   const { whiteList, extractOnly } = global['intlConfig'] as ExtConfig
   if ((await fs.stat(pathName)).isFile()) {
-    // 单个文件
+    // 文件
     if (!whiteList.includes(path.extname(pathName))) {
       return
     }
     const text = await fs.readFile(pathName, 'utf-8')
+    // 中文转换（文件写入）
     const result = await transformFile(text, pathName)
+    // 通过callback的形式对外保留未匹配到的词条
     getUnMatchedEntries?.(result.filter(item => !item.isMatch))
-    // 只有非提取模式下才生成词条文件
+    // 将所有查找到的词条去重后写入词条文件
     if (!extractOnly) {
-      await writeOutputFile(
-        removeDuplicatedTextList(result).filter(item => item.isMatch),
-      )
+      await writeOutputFile(removeDuplicatedTextList(result))
     }
   } else {
     // 文件夹

@@ -5,12 +5,11 @@ import * as ts from 'typescript'
 
 import { isUseTs, outputPath } from '../../constant'
 import type { MatchText } from '../../interface'
+import getAddPropertyTransformer from '../../transformer/property'
 import { log, unicodeToChar } from '../../utils/common'
 import { fileExist } from '../../utils/file'
 import { formatFileWithConfig } from '../../utils/format'
 import type { ExtConfig } from '../config/interface'
-
-const factory = ts.factory
 
 function getText(textObj: MatchText, lang: string) {
   const { langs } = global['intlConfig'] as ExtConfig
@@ -38,56 +37,17 @@ async function updateI18nFile(
   const printer = ts.createPrinter({})
   const sourceFile = ts.createSourceFile(
     '',
-    file.toString(),
+    file,
     ts.ScriptTarget.ES2015,
     true,
     isUseTs ? ts.ScriptKind.TS : ts.ScriptKind.JS,
   )
-  function visit(node: ts.Node) {
-    if (ts.isObjectLiteralExpression(node)) {
-      addKeyPair(node)
-    }
-    ts.forEachChild(node, visit)
-  }
-  function addKeyPair(node: ts.ObjectLiteralExpression) {
-    const existKeyPair: Record<string, any> = {}
-    for (const prop of node.properties) {
-      if (ts.isPropertyAssignment(prop)) {
-        if (ts.isIdentifier(prop.name)) {
-          existKeyPair[prop.name.text] = prop.initializer
-            .getText()
-            .replace(/'|"/g, '')
-        }
-      }
-    }
-    const propertyArray = textArr
-      .filter(item => !existKeyPair?.[item.key])
-      .map(item => {
-        const property = factory.createPropertyAssignment(
-          factory.createIdentifier(`${item.key}`),
-          factory.createStringLiteral(
-            item?.[lang]?.replace(/[\r\n;]/g, '') || '',
-          ),
-        )
-        // 添加注释
-        const commentProperty = ts.addSyntheticLeadingComment(
-          property,
-          ts.SyntaxKind.MultiLineCommentTrivia,
-          `*\n* ${item.value.replace(/[\r\n;]/g, '')}\n`,
-          false,
-        )
-        return commentProperty
-      })
-    const updatedProperties = [...node.properties, ...propertyArray]
-    const updatedObjectLiteral =
-      factory.createObjectLiteralExpression(updatedProperties)
-    ts.setOriginalNode(updatedObjectLiteral, node)
-  }
-  visit(sourceFile)
-  const updatedFile = printer.printFile(sourceFile)
-  const formateFile = unicodeToChar(updatedFile)
+  const transformedSourceFile = ts.transform(sourceFile, [
+    getAddPropertyTransformer(textArr, lang),
+  ]).transformed[0] as ts.SourceFile
+  const fileStr = unicodeToChar(printer.printFile(transformedSourceFile))
   try {
-    await fs.writeFile(filePath, await formatFileWithConfig(formateFile), {
+    await fs.writeFile(filePath, await formatFileWithConfig(fileStr), {
       encoding: 'utf-8',
     })
   } catch (error) {
