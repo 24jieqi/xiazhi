@@ -14,6 +14,7 @@ import {
 } from '../../utils/common'
 import { readEntryFile } from '../../utils/file'
 import type { ExtConfig } from '../config/interface'
+import { uploadAction } from '../sync/uploadAction'
 
 import { traverseDir } from './traverse'
 import { updateAppFile } from './updateAppFile'
@@ -51,17 +52,24 @@ export async function start(config: ExtConfig) {
         throw error
       }
     }
-    const matchText: MatchText[] = []
+    let matchTextList: MatchText[] = []
     // 2. 遍历文件（提取词条/写入多语言模版等）
-    await traverseDir(rootPath, matchText)
+    await traverseDir(rootPath, matchTextList)
+    matchTextList = removeDuplicatedTextList(matchTextList)
+    const unMatchedList = matchTextList.filter(item => !item.isMatch)
     if (!extractOnly) {
       await writeI18nTemplateFile()
       await updateAppFile(appFilePath!)
       // 将所有查找到的词条去重后写入词条文件
-      await writeToI18nFiles(removeDuplicatedTextList(matchText))
+      await writeToI18nFiles(matchTextList)
     }
     timeEnd('[INFO] 提取用时')
-    return removeDuplicatedTextList(matchText)
+    await uploadAction({
+      origin: config.origin!,
+      unMatchedList,
+      accessKey: config.accessKey!,
+    })
+    return unMatchedList
   } catch (error) {
     log(chalk.red('[ERROR]: ', error))
   }

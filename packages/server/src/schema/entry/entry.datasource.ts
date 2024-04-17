@@ -7,7 +7,7 @@ import { groupUploadedEntries } from './utils'
 export const ExtractEntryItem = builder.inputType('ExtractEntryItem', {
   fields(t) {
     return {
-      name: t.string(),
+      key: t.string(),
       mainLang: t.string({ required: true }),
       mainLangText: t.string({ required: true }),
       langs: t.field({ type: 'JSON', required: true }),

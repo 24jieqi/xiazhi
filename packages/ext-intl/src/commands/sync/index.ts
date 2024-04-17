@@ -21,7 +21,7 @@ const syncDoc = gql`
 `
 
 const extractGql = gql`
-  mutation UploadEntries($ak: String!, $entries: [ExtractEntryItem!]!) {
+  mutation uploadEntries($ak: String!, $entries: [ExtractEntryItem!]!) {
     uploadEntries(ak: $ak, entries: $entries) {
       add
       ignore
