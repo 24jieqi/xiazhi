@@ -51,7 +51,7 @@ program
     const config = getMergedConfig(localConfig)
     const isSyncSuccess = await sync(config!.origin!, config!.accessKey!)
     if (isSyncSuccess) {
-      await update(config!.langs![0])
+      await update(config!)
     }
   })
 program

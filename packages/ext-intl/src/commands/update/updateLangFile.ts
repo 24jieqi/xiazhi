@@ -1,35 +1,38 @@
+import * as fs from 'fs/promises'
+import * as path from 'path'
+
 import * as ts from 'typescript'
 
+import { isUseTs } from '../../constant'
 import type { OriginEntryItem } from '../../interface'
+import { getUpdateLangFileTransformer } from '../../transformer/update'
+import { formatFileWithConfig } from '../../utils/format'
 
 /**
  * 更新文件
  */
-export function updateLangFile(ast: ts.SourceFile, langType: string) {
-  const entries: OriginEntryItem[] = global['local_entries']
-  const transformer =
-    <T extends ts.Node>(context: ts.TransformationContext) =>
-    (rootNode: T) => {
-      function visit(node: ts.Node) {
-        switch (node.kind) {
-          case ts.SyntaxKind.PropertyAssignment: {
-            const current = node as ts.PropertyAssignment
-            const key = current.name.getText()
-            const finded = entries.find(entry => entry.key === key)
-            if (finded && finded.langs[langType]) {
-              const valNode = ts.factory.createStringLiteral(
-                finded.langs[langType],
-                true,
-              )
-              return ts.factory.createPropertyAssignment(key, valNode)
-            }
-          }
-        }
-        return ts.visitEachChild(node, visit, context)
-      }
-      return ts.visitNode(rootNode, visit)
-    }
-  const transformedFile = ts.transform(ast, [transformer]).transformed[0]
+export async function updateLangFile(
+  langsRootDir: string,
+  lang: string,
+  entries: OriginEntryItem[],
+) {
+  const filePath = path.join(
+    langsRootDir,
+    lang,
+    `index.${isUseTs ? 'ts' : 'js'}`,
+  )
+  const fileStr = await fs.readFile(filePath, 'utf-8')
+  const ast = ts.createSourceFile(
+    '',
+    fileStr,
+    ts.ScriptTarget.ES2015,
+    true,
+    ts.ScriptKind.TS,
+  )
+  const transformedFile = ts.transform(ast, [
+    getUpdateLangFileTransformer(lang, entries),
+  ]).transformed[0]
   const printer = ts.createPrinter()
-  return printer.printFile(transformedFile as any)
+  const updatedFileStr = printer.printFile(transformedFile as ts.SourceFile)
+  await fs.writeFile(filePath, await formatFileWithConfig(updatedFileStr))
 }
