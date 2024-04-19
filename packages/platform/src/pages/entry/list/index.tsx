@@ -50,6 +50,13 @@ const EntryListPage: React.FC = () => {
       hideInSearch: true,
     },
     {
+      title: '更新时间',
+      dataIndex: 'updatedAt',
+      valueType: 'dateTime',
+      width: 120,
+      hideInSearch: true,
+    },
+    {
       title: '操作',
       width: 120,
       hideInSearch: true,

@@ -40,12 +40,13 @@ query getAppById($appId: Int!) {
     createdAt
     description
     entries {
+      createdAt
       id
       key
       langs
       mainLang
       mainLangText
-      createdAt
+      updatedAt
     }
     languages
     name

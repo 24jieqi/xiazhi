@@ -49,6 +49,7 @@ export type Entry = {
   langs: Scalars['JSON'];
   mainLang: Scalars['String'];
   mainLangText?: Maybe<Scalars['String']>;
+  updatedAt: Scalars['DateTime'];
 };
 
 export type EntryPaging = {
@@ -60,10 +61,10 @@ export type EntryPaging = {
 };
 
 export type ExtractEntryItem = {
+  key?: InputMaybe<Scalars['String']>;
   langs: Scalars['JSON'];
   mainLang: Scalars['String'];
   mainLangText: Scalars['String'];
-  name?: InputMaybe<Scalars['String']>;
 };
 
 export type ExtractEntryResult = {

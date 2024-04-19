@@ -20,7 +20,7 @@ export type PageAppEntriesQueryVariables = SchemaTypes.Exact<{
 }>;
 
 
-export type PageAppEntriesQuery = { pageAppEntries: { __typename?: 'EntryPaging', current: number, pageSize: number, total: number, records: Array<{ __typename?: 'Entry', id: number, key?: string, langs: any, mainLang: string, mainLangText?: string, createdAt: number }> } };
+export type PageAppEntriesQuery = { pageAppEntries: { __typename?: 'EntryPaging', current: number, pageSize: number, total: number, records: Array<{ __typename?: 'Entry', createdAt: number, id: number, key?: string, langs: any, mainLang: string, mainLangText?: string, updatedAt: number }> } };
 
 export type CreateEntryMutationVariables = SchemaTypes.Exact<{
   input: SchemaTypes.CreateEntryInput;
@@ -74,12 +74,13 @@ export const PageAppEntriesDocument = gql`
     current
     pageSize
     records {
+      createdAt
       id
       key
       langs
       mainLang
       mainLangText
-      createdAt
+      updatedAt
     }
     total
   }

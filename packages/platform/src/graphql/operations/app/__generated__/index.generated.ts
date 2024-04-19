@@ -27,7 +27,7 @@ export type GetAppByIdQueryVariables = SchemaTypes.Exact<{
 }>;
 
 
-export type GetAppByIdQuery = { getAppById: { __typename?: 'App', access: boolean, accessKey?: string, appId: number, createdAt: number, description?: string, languages: Array<string>, name: string, pictures: Array<string>, push: boolean, entries: Array<{ __typename?: 'Entry', id: number, key?: string, langs: any, mainLang: string, mainLangText?: string, createdAt: number }> } };
+export type GetAppByIdQuery = { getAppById: { __typename?: 'App', access: boolean, accessKey?: string, appId: number, createdAt: number, description?: string, languages: Array<string>, name: string, pictures: Array<string>, push: boolean, entries: Array<{ __typename?: 'Entry', createdAt: number, id: number, key?: string, langs: any, mainLang: string, mainLangText?: string, updatedAt: number }> } };
 
 
 export const GetAppsDocument = gql`
@@ -151,12 +151,13 @@ export const GetAppByIdDocument = gql`
     createdAt
     description
     entries {
+      createdAt
       id
       key
       langs
       mainLang
       mainLangText
-      createdAt
+      updatedAt
     }
     languages
     name

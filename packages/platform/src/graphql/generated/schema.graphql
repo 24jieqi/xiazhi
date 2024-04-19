@@ -36,6 +36,7 @@ type Entry {
   langs: JSON!
   mainLang: String!
   mainLangText: String
+  updatedAt: DateTime!
 }
 
 type EntryPaging {
@@ -46,10 +47,10 @@ type EntryPaging {
 }
 
 input ExtractEntryItem {
+  key: String
   langs: JSON!
   mainLang: String!
   mainLangText: String!
-  name: String
 }
 
 type ExtractEntryResult {

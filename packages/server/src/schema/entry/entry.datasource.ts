@@ -165,10 +165,12 @@ export class EntryDataSource {
         mainLangText: {
           contains: mainLangText || undefined,
         },
-        key: key || undefined,
+        key: {
+          contains: key || undefined,
+        },
       },
       orderBy: {
-        createdAt: 'desc',
+        updatedAt: 'desc',
       },
       skip: (pageNo - 1) * pageSize,
       take: pageSize,
@@ -180,7 +182,9 @@ export class EntryDataSource {
         mainLangText: {
           contains: mainLangText || undefined,
         },
-        key,
+        key: {
+          contains: key || undefined,
+        },
       },
     })
     return {

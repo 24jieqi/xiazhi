@@ -4,13 +4,7 @@ mutation editEntry($entryId: Int!, $langs: JSON) {
 }
 
 # 词条: 应用词条分页
-query pageAppEntries(
-  $appId: Int!
-  $key: String
-  $mainLangText: String
-  $pageNo: Int!
-  $pageSize: Int!
-) {
+query pageAppEntries($appId: Int!, $key: String, $mainLangText: String, $pageNo: Int!, $pageSize: Int!) {
   pageAppEntries(
     appId: $appId
     key: $key
@@ -21,12 +15,13 @@ query pageAppEntries(
     current
     pageSize
     records {
+      createdAt
       id
       key
       langs
       mainLang
       mainLangText
-      createdAt
+      updatedAt
     }
     total
   }

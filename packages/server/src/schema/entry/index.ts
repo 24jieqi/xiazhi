@@ -19,6 +19,7 @@ const EntryItem = builder.prismaObject('Entry', {
       mainLang: t.exposeString('mainLang'),
       mainLangText: t.exposeString('mainLangText', { nullable: true }),
       createdAt: t.expose('createdAt', { type: 'DateTime' }),
+      updatedAt: t.expose('updatedAt', { type: 'DateTime' }),
     }
   },
 })
