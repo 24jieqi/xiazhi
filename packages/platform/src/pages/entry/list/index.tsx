@@ -55,7 +55,10 @@ const EntryListPage: React.FC = () => {
       hideInSearch: true,
       render(_, entity) {
         return (
-          <EntryModal app={appInfo?.getAppById} entry={entity}>
+          <EntryModal
+            app={appInfo?.getAppById}
+            entry={entity}
+            onActionSuccess={actions.current.reload}>
             <ActionText>编辑</ActionText>
           </EntryModal>
         )
