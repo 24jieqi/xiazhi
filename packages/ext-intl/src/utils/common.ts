@@ -65,7 +65,7 @@ export function getVariableFromTemplateString(text: string) {
   if (!text) {
     return []
   }
-  const reg = /\$\{(.+?)\}/g
+  const reg = /\{(.+?)\}/g
   const variableList: string[] = []
   while (true) {
     const result = reg.exec(text)
