@@ -11,21 +11,20 @@ import { diffConfig } from './utils'
 
 /**
  * 生成配置文件
+ * @param override 是否覆盖生成
  */
 export async function generateConfigFile(override = false) {
   try {
     await fs.access(resolvePath(CONFIG_FILE_NAME))
     if (!override) {
-      log(chalk.red('[WARNING] 本地文件已存在'))
-    } else {
-      await writeConfigFile()
-      log(chalk.green('[INFO] 配置文件生成成功, 请修改后再次运行'))
-      process.exit()
+      log(chalk.yellow('[WARNING] 本地文件已存在，跳过生成'))
+      return
     }
+    await writeConfigFile()
+    log(chalk.green('[INFO] 配置文件生成成功, 请修改后再次运行'))
   } catch (error) {
     await writeConfigFile()
     log(chalk.green('[INFO] 配置文件生成成功, 请修改后再次运行'))
-    process.exit()
   }
 }
 
@@ -43,8 +42,8 @@ export function getMergedConfig(config?: ExtConfig): ExtConfig | null {
   }
   const diffResult = diffConfig(config)
   if (Object.keys(diffResult).length) {
-    log(`[WARNING] ${chalk.yellow('以下配置项未设置，将会使用默认配置')}`)
-    log(`${chalk.yellow(JSON.stringify(diffResult, null, 2))}`)
+    log(chalk.yellow('[WARNING] 以下配置项未设置，将会使用默认配置'))
+    log(chalk.yellow(JSON.stringify(diffResult, null, 2)))
   }
   return {
     ...INIT_CONFIG,
@@ -100,6 +99,7 @@ export async function checkConfig(config?: ExtConfig) {
     }
     // 以默认值生成配置文件并结束
     await generateConfigFile()
+    process.exit()
   } catch (e) {
     log(chalk.red(`[ERROR] ${e.message}`))
   }

@@ -17,7 +17,7 @@ export async function readEntryFile(): Promise<OriginEntryItem[]> {
     fs.readFile(`${entryFilePath}/entries.json`, { encoding: 'utf-8' }),
   )
   if (error && error.code !== 'ENOENT') {
-    log(chalk.yellow('[WARNNING] 读取词条文件失败'))
+    log(chalk.yellow('[WARNNING] 读取本地词条文件失败'))
     return []
   }
   return JSON.parse(data || '[]')

@@ -20,7 +20,7 @@ const syncDoc = gql`
   }
 `
 
-const extractGql = gql`
+const uploadDoc = gql`
   mutation uploadEntries($ak: String!, $entries: [ExtractEntryItem!]!) {
     uploadEntries(ak: $ak, entries: $entries) {
       add
@@ -34,9 +34,12 @@ const extractGql = gql`
  * 同步远程词条并写入到本地
  * @param origin 远程地址
  * @param accessKey 配置的应用访问key
- * @returns
+ * @returns { Promise<boolean> }
  */
-export async function sync(origin: string, accessKey: string) {
+export async function sync(
+  origin: string,
+  accessKey: string,
+): Promise<boolean> {
   try {
     const res = await request<{ getEntries: OriginEntryItem[] }>(
       origin,
@@ -54,7 +57,7 @@ export async function sync(origin: string, accessKey: string) {
         'json-stringify',
       ),
     )
-    log(chalk.green('远程词条获取完毕'))
+    log(chalk.green('[INFO] 远程词条获取完毕'))
     return true
   } catch {
     return false
@@ -78,20 +81,25 @@ interface UploadResponse {
   ignore: number
 }
 
+/**
+ * 词条上报
+ * @param config
+ * @returns
+ */
 export async function upload({ origin, accessKey, entries }: UploadConfig) {
   if (!accessKey || !origin) {
-    log(chalk.red('请检查配置文件，确保origin/accessKey正确配置'))
+    log(chalk.red('[ERROR] 请检查配置文件，确保origin/accessKey正确配置'))
     return
   }
   if (!entries || !entries.length) {
-    log(chalk.yellow('无可上传的词条'))
+    log(chalk.yellow('[WARNNING] 无可上传的词条'))
     return
   }
   const res = await request<{ uploadEntries: UploadResponse }>(
     origin,
-    extractGql,
+    uploadDoc,
     { ak: accessKey, entries },
   )
-  log(chalk.green('词条已推送至远程'))
+  log(chalk.green('[INFO] 词条已推送至远程'))
   return res
 }

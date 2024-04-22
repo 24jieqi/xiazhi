@@ -7,7 +7,9 @@ import type { ExtConfig } from '../config/interface'
 import { updateLangFile } from './updateLangFile'
 
 /**
- * 更新本地已经维护好的词条信息
+ * 更新本地词条文件（和远程进行同步）
+ * @param config
+ * @returns
  */
 export async function update(config: ExtConfig) {
   const entries = await readEntryFile()

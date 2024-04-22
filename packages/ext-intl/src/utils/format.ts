@@ -28,7 +28,7 @@ export async function formatFileWithConfig(
   if (!_configFilePath) {
     log(
       chalk.yellow(
-        '[WARNING] can not find perttier config file in your project, use default config instead!',
+        '[WARNING] 无法查找到prettier格式化配置，将使用默认配置格式化',
       ),
     )
   } else {
