@@ -1,7 +1,7 @@
 import type * as SchemaTypes from '../../../generated/types';
 
 import { gql } from '@apollo/client';
-import  Apollo from '@apollo/client';
+import * as Apollo from '@apollo/client';
 const defaultOptions = {} as const;
 export type GetAppsQueryVariables = SchemaTypes.Exact<{ [key: string]: never; }>;
 
