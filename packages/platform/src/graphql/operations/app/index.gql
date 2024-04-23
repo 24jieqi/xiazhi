@@ -13,6 +13,7 @@ query getApps {
       mainLang
       mainLangText
       createdAt
+      updatedAt
     }
     languages
     name

@@ -6,7 +6,7 @@ const defaultOptions = {} as const;
 export type GetAppsQueryVariables = SchemaTypes.Exact<{ [key: string]: never; }>;
 
 
-export type GetAppsQuery = { getApps: Array<{ __typename?: 'App', access: boolean, accessKey?: string, appId: number, createdAt: number, description?: string, languages: Array<string>, name: string, pictures: Array<string>, push: boolean, entries: Array<{ __typename?: 'Entry', id: number, key?: string, langs: any, mainLang: string, mainLangText?: string, createdAt: number }> }> };
+export type GetAppsQuery = { getApps: Array<{ __typename?: 'App', access: boolean, accessKey?: string, appId: number, createdAt: number, description?: string, languages: Array<string>, name: string, pictures: Array<string>, push: boolean, entries: Array<{ __typename?: 'Entry', id: number, key?: string, langs: any, mainLang: string, mainLangText?: string, createdAt: number, updatedAt: number }> }> };
 
 export type CreateAppMutationVariables = SchemaTypes.Exact<{
   input: SchemaTypes.CreateAppInput;
@@ -45,6 +45,7 @@ export const GetAppsDocument = gql`
       mainLang
       mainLangText
       createdAt
+      updatedAt
     }
     languages
     name
