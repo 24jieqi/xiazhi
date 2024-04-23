@@ -12,7 +12,8 @@
     "commit": "yarn dlx git-cz",
     "dev:server": "yarn workspace xiazhi-server dev",
     "dev:web": "yarn workspace xiazhi-platform dev",
-    "build:script": "yarn workspace ext-intl build"
+    "build:script": "yarn workspace ext-intl build",
+    "deploy": "cd packages/server && node scripts/deploy.js"
   },
   "devDependencies": {
     "@commitlint/cli": "^19.2.1",
