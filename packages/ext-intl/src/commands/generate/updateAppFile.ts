@@ -1,7 +1,7 @@
-import * as fs from 'fs'
-import * as path from 'path'
+import fs from 'fs'
+import path from 'path'
 
-import * as ts from 'typescript'
+import ts from 'typescript'
 
 import { IMPORT_CONTEXT_STATEMENT, isUseTs } from '../../constant'
 import type { FnType } from '../../transformer/using'

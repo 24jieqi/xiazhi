@@ -1,6 +1,7 @@
-import * as fs from 'fs/promises'
+import fs from 'fs/promises'
 
-import * as chalk from 'chalk'
+import chalk from 'chalk'
+import ora from 'ora'
 
 import { outputPath } from '../../constant'
 import type { MatchText } from '../../interface'
@@ -53,8 +54,13 @@ export async function start(config: ExtConfig) {
       }
     }
     let matchTextList: MatchText[] = []
+    const spinner = ora('准备提取文件').start()
     // 2. 遍历文件（提取词条/写入多语言模版等）
-    await traverseDir(rootPath, matchTextList)
+    await traverseDir(rootPath, matchTextList, (filePath: string) => {
+      spinner.text = `提取文件：${filePath}`
+      spinner.color = 'green'
+    })
+    spinner.succeed('提取完成')
     matchTextList = removeDuplicatedTextList(matchTextList)
     const unMatchedList = matchTextList.filter(item => !item.isMatch)
     if (!extractOnly) {
@@ -71,6 +77,6 @@ export async function start(config: ExtConfig) {
     })
     return unMatchedList
   } catch (error) {
-    log(chalk.red('[ERROR]: ', error))
+    log(chalk.red('[ERROR]', error))
   }
 }

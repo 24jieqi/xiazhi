@@ -1,10 +1,10 @@
 /* eslint-disable no-console */
-import * as fs from 'fs'
-import * as fsPromise from 'fs/promises'
-import * as path from 'path'
+import fs from 'fs'
+import fsPromise from 'fs/promises'
+import path from 'path'
 
 import { isType } from '@fruits-chain/utils'
-import * as ts from 'typescript'
+import ts from 'typescript'
 
 import type { MatchText } from '../interface'
 

@@ -36,12 +36,15 @@ program
   .action(async () => {
     // 1. 读取配置，如果没有 则会自动生成并结束
     const config = await checkConfig()
+    if (!config) {
+      return
+    }
     // 2. 如果配置了ak和url 则同步词条到本地
-    if (config!.accessKey && config!.origin) {
-      await sync(config!.origin, config!.accessKey)
+    if (config.accessKey && config.origin) {
+      await sync(config.origin, config.accessKey)
     }
     // 3. 开始提取
-    await start(config!)
+    await start(config)
   })
 program
   .command('update')

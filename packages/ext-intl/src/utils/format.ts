@@ -1,5 +1,5 @@
-import * as chalk from 'chalk'
-import * as prettier from 'prettier'
+import chalk from 'chalk'
+import prettier from 'prettier'
 
 import { log } from './common'
 /**

@@ -1,4 +1,4 @@
-import * as fs from 'fs/promises'
+import fs from 'fs/promises'
 
 import { resolvePath } from '../../utils/common'
 import { readEntryFile } from '../../utils/file'

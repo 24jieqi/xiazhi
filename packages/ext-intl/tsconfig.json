@@ -3,7 +3,8 @@
   "compilerOptions": {
     "outDir": "dist",
     "rootDir": "src",
-    "sourceMap": false
+    "sourceMap": false,
+    "esModuleInterop": true,
   },
   "exclude": [
     "../../.eslintrc.cjs",

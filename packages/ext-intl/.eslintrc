@@ -1,3 +1,6 @@
 {
-  "extends": ["../../.eslintrc"]
+  "extends": ["../../.eslintrc"],
+  "rules": {
+    "import/no-named-as-default-member": 0
+  }
 }

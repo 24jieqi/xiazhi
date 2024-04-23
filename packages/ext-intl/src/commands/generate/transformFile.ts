@@ -1,4 +1,4 @@
-import * as ts from 'typescript'
+import ts from 'typescript'
 
 import type { MatchText } from '../../interface'
 import getChineseTransformer from '../../transformer/chinese'

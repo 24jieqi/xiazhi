@@ -1,5 +1,5 @@
-import * as fs from 'fs/promises'
-import * as path from 'path'
+import fs from 'fs/promises'
+import path from 'path'
 
 import { IGNORE_I18N_PATH } from '../../constant'
 import type { MatchText } from '../../interface'
@@ -12,13 +12,18 @@ import { transformFile } from './transformFile'
  * @export
  * @param {string} pathName 当前遍历路径
  */
-export async function traverseDir(pathName: string, matchText: MatchText[]) {
+export async function traverseDir(
+  pathName: string,
+  matchText: MatchText[],
+  onTravelFile?: (filePath: string) => void,
+) {
   const { whiteList } = global['intlConfig'] as ExtConfig
   if ((await fs.stat(pathName)).isFile()) {
     // 文件
     if (!whiteList.includes(path.extname(pathName))) {
       return
     }
+    onTravelFile?.(pathName)
     const text = await fs.readFile(pathName, 'utf-8')
     // 中文转换（文件写入）
     const res = await transformFile(text, pathName)

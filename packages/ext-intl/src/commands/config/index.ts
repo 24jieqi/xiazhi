@@ -1,6 +1,6 @@
-import * as fs from 'fs/promises'
+import fs from 'fs/promises'
 
-import * as chalk from 'chalk'
+import chalk from 'chalk'
 
 import { handle, isAndEmpty, log, resolvePath } from '../../utils/common'
 import { formatFileWithConfig } from '../../utils/format'
@@ -59,7 +59,7 @@ export async function readConfigFile() {
   const [data, error] = await handle<string>(
     fs.readFile(resolvePath(CONFIG_FILE_NAME), { encoding: 'utf-8' }),
   )
-  if (error && error.code !== 'ENOENT') {
+  if (error) {
     throw new Error(error.message || '读取配置文件失败')
   }
   return JSON.parse(data || '{}') as ExtConfig
@@ -99,7 +99,6 @@ export async function checkConfig(config?: ExtConfig) {
     }
     // 以默认值生成配置文件并结束
     await generateConfigFile()
-    process.exit()
   } catch (e) {
     log(chalk.red(`[ERROR] ${e.message}`))
   }

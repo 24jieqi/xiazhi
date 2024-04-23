@@ -8958,6 +8958,7 @@ __metadata:
     graphql-request: "npm:^6.1.0"
     inquirer: "npm:8"
     kiwi-intl: "npm:1.2.5"
+    ora: "npm:5.4.1"
     pinyin-pro: "npm:^3.19.6"
     prettier: "npm:^3.2.5"
     typescript: "npm:^5.4.3"
@@ -13593,7 +13594,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ora@npm:^5.4.1":
+"ora@npm:5.4.1, ora@npm:^5.4.1":
   version: 5.4.1
   resolution: "ora@npm:5.4.1"
   dependencies:

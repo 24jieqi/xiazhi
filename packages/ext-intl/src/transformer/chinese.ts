@@ -1,6 +1,6 @@
-import * as chalk from 'chalk'
+import chalk from 'chalk'
 import { pinyin } from 'pinyin-pro'
-import * as ts from 'typescript'
+import ts from 'typescript'
 
 import type { ExtConfig } from '../commands/config/interface'
 import { DOUBLE_BYTE_REGEX } from '../constant'

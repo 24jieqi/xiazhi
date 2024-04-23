@@ -1,8 +1,8 @@
-import * as ChildProcess from 'child_process'
-import * as fs from 'fs'
-import * as promiseFs from 'fs/promises'
+import ChildProcess from 'child_process'
+import fs from 'fs'
+import promiseFs from 'fs/promises'
 
-import * as chalk from 'chalk'
+import chalk from 'chalk'
 
 import type { ExtConfig } from '../commands/config/interface'
 import {
@@ -68,7 +68,7 @@ async function writeI18nTemplateFile() {
  */
 async function writeFileIfNotExisted(filePath: string, content: string) {
   if (fs.existsSync(filePath)) {
-    log(chalk.yellow(`[WARNING] ${filePath} 已存在，跳过写入.`))
+    log(chalk.yellow(`[WARNING] ${filePath} 已存在，跳过写入`))
     return
   }
   try {

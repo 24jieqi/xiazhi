@@ -1,7 +1,7 @@
-import * as fs from 'fs/promises'
+import fs from 'fs/promises'
 
-import * as chalk from 'chalk'
-import * as ts from 'typescript'
+import chalk from 'chalk'
+import ts from 'typescript'
 
 import type { OriginEntryItem } from '../interface'
 

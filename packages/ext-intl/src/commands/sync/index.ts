@@ -1,6 +1,6 @@
-import * as fs from 'fs/promises'
+import fs from 'fs/promises'
 
-import * as chalk from 'chalk'
+import chalk from 'chalk'
 import { request, gql } from 'graphql-request'
 
 import type { OriginEntryItem } from '../../interface'

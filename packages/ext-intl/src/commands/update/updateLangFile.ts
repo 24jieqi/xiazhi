@@ -1,7 +1,7 @@
-import * as fs from 'fs/promises'
-import * as path from 'path'
+import fs from 'fs/promises'
+import path from 'path'
 
-import * as ts from 'typescript'
+import ts from 'typescript'
 
 import { isUseTs } from '../../constant'
 import type { OriginEntryItem } from '../../interface'

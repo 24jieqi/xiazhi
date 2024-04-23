@@ -26,6 +26,7 @@
     "graphql-request": "^6.1.0",
     "inquirer": "8",
     "kiwi-intl": "1.2.5",
+    "ora": "5.4.1",
     "pinyin-pro": "^3.19.6",
     "prettier": "^3.2.5",
     "typescript": "^5.4.3"

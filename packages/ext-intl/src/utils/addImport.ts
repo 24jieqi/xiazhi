@@ -1,6 +1,6 @@
-import * as path from 'path'
+import path from 'path'
 
-import * as ts from 'typescript'
+import ts from 'typescript'
 
 import { IMPORT_STATEMENT } from '../constant'
 

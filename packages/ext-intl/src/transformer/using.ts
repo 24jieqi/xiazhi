@@ -1,4 +1,4 @@
-import * as ts from 'typescript'
+import ts from 'typescript'
 
 import { USE_STATEMENT } from '../constant'
 import { isFunctionHasJSX, isNestedFunction } from '../utils/common'
