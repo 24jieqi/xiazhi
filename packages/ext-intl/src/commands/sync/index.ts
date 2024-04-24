@@ -2,6 +2,7 @@ import fs from 'fs/promises'
 
 import chalk from 'chalk'
 import { request, gql } from 'graphql-request'
+import ora from 'ora'
 
 import type { OriginEntryItem } from '../../interface'
 import { getOutputPath, log, mkRootDirIfNeeded } from '../../utils/common'
@@ -40,6 +41,7 @@ export async function sync(
   origin: string,
   accessKey: string,
 ): Promise<boolean> {
+  const spinner = ora(chalk.cyan('[INFO] 同步远程词条...')).start()
   try {
     const res = await request<{ getEntries: OriginEntryItem[] }>(
       origin,
@@ -57,9 +59,10 @@ export async function sync(
         'json-stringify',
       ),
     )
-    log(chalk.green('[INFO] 远程词条获取完毕'))
+    spinner.succeed()
     return true
   } catch {
+    spinner.fail()
     return false
   }
 }
@@ -95,11 +98,13 @@ export async function upload({ origin, accessKey, entries }: UploadConfig) {
     log(chalk.yellow('[WARNNING] 无可上传的词条'))
     return
   }
-  const res = await request<{ uploadEntries: UploadResponse }>(
-    origin,
-    uploadDoc,
-    { ak: accessKey, entries },
-  )
-  log(chalk.green('[INFO] 词条已推送至远程'))
-  return res
+  try {
+    const res = await request<{ uploadEntries: UploadResponse }>(
+      origin,
+      uploadDoc,
+      { ak: accessKey, entries },
+    )
+    log(chalk.green('[INFO] 词条已推送至远程'))
+    return res
+  } catch {}
 }

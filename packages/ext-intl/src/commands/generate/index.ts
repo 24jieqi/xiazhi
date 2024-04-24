@@ -1,5 +1,6 @@
 import fs from 'fs/promises'
 
+import { formatDuration } from '@fruits-chain/utils'
 import chalk from 'chalk'
 import ora from 'ora'
 
@@ -10,8 +11,6 @@ import {
   log,
   mkRootDirIfNeeded,
   removeDuplicatedTextList,
-  time,
-  timeEnd,
 } from '../../utils/common'
 import { readEntryFile } from '../../utils/file'
 import type { ExtConfig } from '../config/interface'
@@ -35,8 +34,7 @@ export async function start(config: ExtConfig) {
     const entries = await readEntryFile()
     global['local_entries'] = entries
     const { langs, rootPath, extractOnly, appFilePath } = config
-    log('[INFO] 开始提取...')
-    time('[INFO] 提取用时')
+    const beginTimestamp = Date.now()
     // 1. 创建多语言根目录&此次提取的词条目录
     try {
       await mkRootDirIfNeeded()
@@ -54,13 +52,13 @@ export async function start(config: ExtConfig) {
       }
     }
     let matchTextList: MatchText[] = []
-    const spinner = ora('准备提取文件').start()
+    const spinner = ora(chalk.cyan('[INFO] 开始从文件中提取词条...')).start()
     // 2. 遍历文件（提取词条/写入多语言模版等）
     await traverseDir(rootPath, matchTextList, (filePath: string) => {
-      spinner.text = `提取文件：${filePath}`
-      spinner.color = 'green'
+      spinner.text = `[INFO] 提取文件：${filePath}`
+      spinner.color = 'cyan'
     })
-    spinner.succeed('提取完成')
+    spinner.succeed(chalk.green('[INFO] 词条提取完成'))
     matchTextList = removeDuplicatedTextList(matchTextList)
     const unMatchedList = matchTextList.filter(item => !item.isMatch)
     if (!extractOnly) {
@@ -69,12 +67,16 @@ export async function start(config: ExtConfig) {
       // 将所有查找到的词条去重后写入词条文件
       await writeToI18nFiles(matchTextList)
     }
-    timeEnd('[INFO] 提取用时')
     await uploadAction({
       origin: config.origin!,
       unMatchedList,
       accessKey: config.accessKey!,
     })
+    log(
+      chalk.green(
+        `[INFO] 耗时：${formatDuration(Date.now() - beginTimestamp)}`,
+      ),
+    )
     return unMatchedList
   } catch (error) {
     log(chalk.red('[ERROR]', error))

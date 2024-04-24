@@ -87,19 +87,21 @@ export async function writeConfigFile() {
  * 3. 以默认配置生成配置文件并结束进程
  */
 export async function checkConfig(config?: ExtConfig) {
-  try {
-    // 如果传入了配置 则返回后合并
-    if (config) {
-      return getMergedConfig(config)
-    }
-    // 读取本地文件合并后返回
-    const localConfig = await readConfigFile()
-    if (localConfig) {
-      return getMergedConfig(localConfig)
-    }
-    // 以默认值生成配置文件并结束
-    await generateConfigFile()
-  } catch (e) {
-    log(chalk.red(`[ERROR] ${e.message}`))
+  // 如果传入了配置 则返回后合并
+  if (config) {
+    return getMergedConfig(config)
   }
+  // 读取本地文件合并后返回
+  try {
+    const localConfig = await readConfigFile()
+    return getMergedConfig(localConfig)
+  } catch (error) {
+    log(
+      chalk.yellow(
+        `[WARNING] 读取配置文件失败，将生成默认配置文件：${error.message}`,
+      ),
+    )
+  }
+  // 以默认值生成配置文件并结束
+  await generateConfigFile()
 }

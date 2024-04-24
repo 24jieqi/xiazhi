@@ -3,6 +3,7 @@ import fs from 'fs'
 import promiseFs from 'fs/promises'
 
 import chalk from 'chalk'
+import ora from 'ora'
 
 import type { ExtConfig } from '../commands/config/interface'
 import {
@@ -52,7 +53,7 @@ async function writeI18nTemplateFile() {
     // 下载依赖项
     await downloadAllDependencies(native ? APP_DEPENDENCIES : WEB_DEPENDENCIES)
   } catch (error) {}
-
+  const spinner = ora(chalk.cyan('[INFO] 写入模板文件'))
   // 写入模版文件
   writeFileIfNotExisted(`${outputPath}/storage${extension}`, storageTemplate)
   writeFileIfNotExisted(`${outputPath}/index${extension}`, i18nStr)
@@ -61,6 +62,7 @@ async function writeI18nTemplateFile() {
     `${outputPath}/context.${isUseTs ? 'tsx' : 'jsx'}`,
     contextStr,
   )
+  spinner.succeed()
 }
 
 /**

@@ -1,6 +1,8 @@
 import fs from 'fs'
 import path from 'path'
 
+import chalk from 'chalk'
+import ora from 'ora'
 import ts from 'typescript'
 
 import { IMPORT_CONTEXT_STATEMENT, isUseTs } from '../../constant'
@@ -132,7 +134,7 @@ export async function updateAppFile(appFilePath: string) {
       }
       return ts.visitNode(rootNode, visit)
     }
-
+  const spinner = ora(chalk.cyan('[INFO] 更新入口文件'))
   try {
     const fileStr = fs.readFileSync(appFilePath, 'utf-8')
     if (!fileStr.includes('I18NContextWrapper')) {
@@ -156,5 +158,8 @@ export async function updateAppFile(appFilePath: string) {
       )
       await saveFile(transformedFile, appFilePath)
     }
-  } catch {}
+    spinner.succeed()
+  } catch {
+    spinner.fail()
+  }
 }

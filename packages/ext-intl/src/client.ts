@@ -1,6 +1,9 @@
 #!/usr/bin/env node
 
+import chalk from 'chalk'
 import { Command } from 'commander'
+
+import { log } from './utils/common'
 
 import {
   sync,
@@ -38,6 +41,9 @@ program
     const config = await checkConfig()
     if (!config) {
       return
+    }
+    if (!config.accessKey || !config.origin) {
+      log(chalk.cyan('[INFO] 当前以离线模式运行'))
     }
     // 2. 如果配置了ak和url 则同步词条到本地
     if (config.accessKey && config.origin) {

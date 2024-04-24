@@ -1,6 +1,7 @@
 import fs from 'fs/promises'
 
 import chalk from 'chalk'
+import ora from 'ora'
 import ts from 'typescript'
 
 import { isUseTs, outputPath } from '../../constant'
@@ -109,8 +110,14 @@ async function writeToTargetI18nFile(textArr: MatchText[], lang: string) {
 async function writeToI18nFiles(textArr: MatchText[]) {
   const { langs } = global['intlConfig'] as ExtConfig
   if (textArr.length === 0) return
-  for (const lang of langs!) {
-    await writeToTargetI18nFile(textArr, lang)
+  const spinner = ora(chalk.cyan('[INFO] 更新/生成词条文件'))
+  try {
+    for (const lang of langs!) {
+      await writeToTargetI18nFile(textArr, lang)
+    }
+    spinner.succeed()
+  } catch (error) {
+    spinner.fail()
   }
 }
 

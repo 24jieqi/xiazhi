@@ -1,5 +1,6 @@
 import chalk from 'chalk'
 import inquirer from 'inquirer'
+import ora from 'ora'
 
 import type { MatchText } from '../../interface'
 import { log } from '../../utils/common'
@@ -30,6 +31,7 @@ export async function uploadAction(config: UploadActionConfig) {
     },
   ])
   if (answer.shouldUpload) {
+    const spinner = ora(chalk.cyan('[INFO] 推送词条到远程'))
     // 1. 格式化词条数据
     const entries: UploadEntryItem[] = config.unMatchedList.map(item => ({
       langs: {
@@ -46,8 +48,10 @@ export async function uploadAction(config: UploadActionConfig) {
       entries,
     })
     if (!res) {
+      spinner.fail()
       return
     }
+    spinner.succeed()
     const statistics = res.uploadEntries
     log(
       chalk.green(
