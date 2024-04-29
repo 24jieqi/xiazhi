@@ -18,6 +18,7 @@ export const ExtractEntryItem = builder.inputType('ExtractEntryItem', {
 type UpdateEntryArgs = {
   entryId: number
   langs?: any
+  key?: string
 }
 
 type PagingAppEntryArgs = {
@@ -131,7 +132,7 @@ export class EntryDataSource {
     // 只返回有key的词条
     return app?.entries?.filter(item => item.key) || []
   }
-  public static async updateAppEntry({ entryId, langs }: UpdateEntryArgs) {
+  public static async updateAppEntry({ entryId, langs, key }: UpdateEntryArgs) {
     const currentEntry = await prisma.entry.findUnique({
       where: {
         entry_id: entryId,
@@ -147,6 +148,7 @@ export class EntryDataSource {
           ...langs,
         },
         mainLangText: langs['zh'], // 设置主语言文本
+        key,
       },
     })
     return true

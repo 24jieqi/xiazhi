@@ -73,7 +73,7 @@ type Mutation {
   createPost(content: String, title: String!): Int!
 
   """词条: 词条更新"""
-  editEntry(entryId: Int!, langs: JSON): Boolean!
+  editEntry(entryId: Int!, key: String, langs: JSON): Boolean!
   login(email: String!): String!
 
   """应用: 生成访问key"""

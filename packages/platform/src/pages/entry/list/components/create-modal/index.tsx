@@ -66,6 +66,7 @@ const EntryModal: React.FC<EntryModalProps> = ({
         key: entry.key,
         langs: app.languages,
         ...entry.langs,
+        autoGenerate: !!entry.key,
       })
     }
   }, [entry, open, form, app])
@@ -95,6 +96,7 @@ const EntryModal: React.FC<EntryModalProps> = ({
           langs: {
             ...omit(formData, ['key', 'langs', 'autoGenerate']),
           },
+          key: formData.key,
         },
       })
       message.success('修改词条成功！')
@@ -153,11 +155,12 @@ const EntryModal: React.FC<EntryModalProps> = ({
               label="词条key"
               tooltip="词条可读的描述，应用内唯一"
               placeholder="请输入词条key"
+              rules={[{ required: true, message: '请添加词条key' }]}
               addonAfter={
                 <ProFormCheckbox
                   noStyle
                   name="autoGenerate"
-                  disabled={isDef(entry)}>
+                  disabled={!!entry?.key}>
                   自动生成
                 </ProFormCheckbox>
               }

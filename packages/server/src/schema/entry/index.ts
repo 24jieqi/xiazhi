@@ -107,11 +107,13 @@ builder.mutationField('editEntry', t =>
     args: {
       entryId: t.arg.int({ required: true }),
       langs: t.arg({ type: 'JSON' }),
+      key: t.arg.string(),
     },
-    resolve: (_, { entryId, langs }) =>
+    resolve: (_, { entryId, langs, key }) =>
       EntryDataSource.updateAppEntry({
         entryId,
         langs,
+        key: key || undefined,
       }),
   }),
 )

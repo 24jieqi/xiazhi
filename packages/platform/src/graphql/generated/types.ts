@@ -110,6 +110,7 @@ export type MutationCreatePostArgs = {
 
 export type MutationEditEntryArgs = {
   entryId: Scalars['Int'];
+  key?: InputMaybe<Scalars['String']>;
   langs?: InputMaybe<Scalars['JSON']>;
 };
 

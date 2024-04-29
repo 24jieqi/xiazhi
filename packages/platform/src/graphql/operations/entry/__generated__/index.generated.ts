@@ -5,6 +5,7 @@ import * as Apollo from '@apollo/client';
 const defaultOptions = {} as const;
 export type EditEntryMutationVariables = SchemaTypes.Exact<{
   entryId: SchemaTypes.Scalars['Int'];
+  key?: SchemaTypes.InputMaybe<SchemaTypes.Scalars['String']>;
   langs?: SchemaTypes.InputMaybe<SchemaTypes.Scalars['JSON']>;
 }>;
 
@@ -31,8 +32,8 @@ export type CreateEntryMutation = { createEntry: number };
 
 
 export const EditEntryDocument = gql`
-    mutation editEntry($entryId: Int!, $langs: JSON) {
-  editEntry(entryId: $entryId, langs: $langs)
+    mutation EditEntry($entryId: Int!, $key: String, $langs: JSON) {
+  editEntry(entryId: $entryId, key: $key, langs: $langs)
 }
     `;
 export type EditEntryMutationFn = Apollo.MutationFunction<EditEntryMutation, EditEntryMutationVariables>;
@@ -51,6 +52,7 @@ export type EditEntryMutationFn = Apollo.MutationFunction<EditEntryMutation, Edi
  * const [editEntryMutation, { data, loading, error }] = useEditEntryMutation({
  *   variables: {
  *      entryId: // value for 'entryId'
+ *      key: // value for 'key'
  *      langs: // value for 'langs'
  *   },
  * });

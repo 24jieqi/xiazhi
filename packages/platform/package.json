@@ -16,8 +16,8 @@
     "lint:style": "stylelint 'src/**/*.less'",
     "lint-staged": "lint-staged --allow-empty",
     "commit": "npx git-cz",
-    "gen": "fruits-chain-gc http://172.21.96.1:4000/graphql",
-    "gen:w": "fruits-chain-gc http://172.21.96.1:4000/graphql -w",
+    "gen": "fruits-chain-gc http://192.168.31.135:4000/graphql",
+    "gen:w": "fruits-chain-gc http://192.168.31.135:4000/graphql -w",
     "test": "vitest"
   },
   "dependencies": {

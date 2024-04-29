@@ -1,6 +1,5 @@
-# 词条: 词条更新
-mutation editEntry($entryId: Int!, $langs: JSON) {
-  editEntry(entryId: $entryId, langs: $langs)
+mutation EditEntry($entryId: Int!, $key: String, $langs: JSON) {
+  editEntry(entryId: $entryId, key: $key, langs: $langs)
 }
 
 # 词条: 应用词条分页
