@@ -1,6 +1,6 @@
 {
   "name": "ext-intl",
-  "version": "3.2.1",
+  "version": "4.0.0",
   "description": "xiazhi多语言脚本",
   "main": "dist/index.js",
   "scripts": {
