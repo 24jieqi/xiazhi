@@ -5,11 +5,7 @@ import ts from 'typescript'
 import type { ExtConfig } from '../commands/config/interface'
 import { DOUBLE_BYTE_REGEX } from '../constant'
 import type { MatchText, OriginEntryItem } from '../interface'
-import {
-  getVariableFromTemplateString,
-  log,
-  removeFileComment,
-} from '../utils/common'
+import { getVariableFromTemplateString, log } from '../utils/common'
 
 export function generateEntryKey(langText: string) {
   return langText
@@ -24,10 +20,7 @@ export function generateEntryKey(langText: string) {
 }
 
 function generateKey(text: string) {
-  const noCharText = text.replace(
-    /[\u0021-\u007E\u00A1-\u00FF\u3001-\u301f\uff01-\uff0f\uff1a-\uff20\uff3b-\uff40\uff5b-\uff65\n]/g,
-    '',
-  )
+  const noCharText = text.replace(/[^\u4E00-\u9FA5A-Za-z0-9\n]/g, '') // 只匹配中文-英文字母-数字
   const pinYinRaw = pinyin(noCharText, {
     toneType: 'none',
   })
@@ -70,7 +63,7 @@ function getChineseTransformer(
         switch (node.kind) {
           case ts.SyntaxKind.StringLiteral: {
             const { text: rawText } = node as ts.StringLiteral
-            const text = rawText.replace(/[\r\n;]/g, '')
+            const text = rawText.trim().replace(/([\n;]|\n;)$/, '')
             if (text.match(DOUBLE_BYTE_REGEX)) {
               const { key, isMatch, langs } = getTargetEntry(text)
               matches.push({
@@ -83,6 +76,14 @@ function getChineseTransformer(
              */`,
                 ...langs,
               })
+              if (!key) {
+                log(
+                  chalk.yellow(
+                    `\n[WARNNING] 词条<${text}>无法自动生成key，请手动维护key后再进行多语言替换`,
+                  ),
+                )
+                break
+              }
               const parentNodeKind = node.parent.kind
               const result =
                 parentNodeKind === ts.SyntaxKind.JsxAttribute
@@ -93,21 +94,29 @@ function getChineseTransformer(
             break
           }
           case ts.SyntaxKind.JsxText: {
-            const text = node.getText()
-            let noCommentText = removeFileComment(text, fileName)
-            if (noCommentText.match(DOUBLE_BYTE_REGEX)) {
-              noCommentText = noCommentText.replace(';\n', '')
-              const { key, isMatch, langs } = getTargetEntry(noCommentText)
+            // fixd: 通过getText获取到的文本已经不包含注释
+            let text = node.getText().trim()
+            text = text.replace(/([\n;]|\n;)$/, '')
+            if (text.match(DOUBLE_BYTE_REGEX)) {
+              const { key, isMatch, langs } = getTargetEntry(text)
               matches.push({
                 isMatch,
                 key,
-                value: noCommentText,
+                value: text,
                 comment: `
             /**
-             * ${noCommentText}
+             * ${text}
              */`,
                 ...langs,
               })
+              if (!key) {
+                log(
+                  chalk.yellow(
+                    `\n[WARNNING] 词条<${text}>无法自动生成key，请手动维护key后再进行多语言替换`,
+                  ),
+                )
+                break
+              }
               return factory.createJsxText(`{I18N.${key}}`)
             }
             break
@@ -129,6 +138,14 @@ function getChineseTransformer(
              */`,
                   ...langs,
                 })
+                if (!key) {
+                  log(
+                    chalk.yellow(
+                      `\n[WARNNING] 词条<${text}>无法自动生成key，请手动维护key后再进行多语言替换`,
+                    ),
+                  )
+                  break
+                }
                 // 返回新的节点(函数调用)
                 const variableList: string[] =
                   getVariableFromTemplateString(text)

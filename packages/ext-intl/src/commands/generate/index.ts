@@ -58,20 +58,22 @@ export async function start(config: ExtConfig) {
       spinner.text = `[INFO] 提取文件：${filePath}`
       spinner.color = 'cyan'
     })
-    spinner.succeed(chalk.green('[INFO] 词条提取完成'))
+    spinner.succeed(chalk.cyan('[INFO] 词条提取'))
     matchTextList = removeDuplicatedTextList(matchTextList)
     const unMatchedList = matchTextList.filter(item => !item.isMatch)
     if (!extractOnly) {
       await writeI18nTemplateFile()
       await updateAppFile(appFilePath!)
-      // 将所有查找到的词条去重后写入词条文件
-      await writeToI18nFiles(matchTextList)
+      // 将所有查找到的词条去重后写入词条文件（前提是得有key）
+      await writeToI18nFiles(matchTextList.filter(text => text.key))
     }
-    await uploadAction({
-      origin: config.origin!,
-      unMatchedList,
-      accessKey: config.accessKey!,
-    })
+    if (config.origin && config.accessKey) {
+      await uploadAction({
+        origin: config.origin,
+        unMatchedList,
+        accessKey: config.accessKey,
+      })
+    }
     log(
       chalk.green(
         `[INFO] 耗时：${formatDuration(Date.now() - beginTimestamp)}`,

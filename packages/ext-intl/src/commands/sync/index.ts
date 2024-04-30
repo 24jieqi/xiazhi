@@ -41,7 +41,7 @@ export async function sync(
   origin: string,
   accessKey: string,
 ): Promise<boolean> {
-  const spinner = ora(chalk.cyan('[INFO] 同步远程词条...')).start()
+  const spinner = ora(chalk.cyan('[INFO] 同步远程词条')).start()
   try {
     const res = await request<{ getEntries: OriginEntryItem[] }>(
       origin,
@@ -94,7 +94,7 @@ export async function upload({ origin, accessKey, entries }: UploadConfig) {
     log(chalk.red('[ERROR] 请检查配置文件，确保origin/accessKey正确配置'))
     return
   }
-  if (!entries || !entries.length) {
+  if (!entries?.length) {
     log(chalk.yellow('[WARNNING] 无可上传的词条'))
     return
   }
@@ -104,7 +104,6 @@ export async function upload({ origin, accessKey, entries }: UploadConfig) {
       uploadDoc,
       { ak: accessKey, entries },
     )
-    log(chalk.green('[INFO] 词条已推送至远程'))
     return res
   } catch {}
 }

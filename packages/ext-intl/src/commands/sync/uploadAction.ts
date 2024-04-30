@@ -18,7 +18,7 @@ interface UploadActionConfig extends Omit<UploadConfig, 'entries'> {
  * @param config
  */
 export async function uploadAction(config: UploadActionConfig) {
-  if (!config?.unMatchedList) {
+  if (!config.unMatchedList?.length) {
     return
   }
   const { langs } = global['intlConfig'] as ExtConfig
