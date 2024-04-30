@@ -132,3 +132,17 @@ builder.mutationField('createEntry', t =>
       EntryDataSource.createEntry({ ...args.input, langs: args.input.langs! }),
   }),
 )
+
+builder.mutationField('deleteEntry', t =>
+  t.field({
+    description: '词条: 删除词条',
+    authScopes: {
+      public: true,
+    },
+    type: 'Boolean',
+    args: {
+      id: t.arg.int({ required: true }),
+    },
+    resolve: (_, args) => EntryDataSource.deleteEntry(args.id),
+  }),
+)

@@ -81,6 +81,8 @@ export type Mutation = {
   /** 词条: 创建词条 */
   createEntry: Scalars['Int'];
   createPost: Scalars['Int'];
+  /** 词条: 删除词条 */
+  deleteEntry: Scalars['Boolean'];
   /** 词条: 词条更新 */
   editEntry: Scalars['Boolean'];
   login: Scalars['String'];
@@ -105,6 +107,11 @@ export type MutationCreateEntryArgs = {
 export type MutationCreatePostArgs = {
   content?: InputMaybe<Scalars['String']>;
   title: Scalars['String'];
+};
+
+
+export type MutationDeleteEntryArgs = {
+  id: Scalars['Int'];
 };
 
 

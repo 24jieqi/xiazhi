@@ -72,6 +72,9 @@ type Mutation {
   createEntry(input: CreateEntryInput!): Int!
   createPost(content: String, title: String!): Int!
 
+  """词条: 删除词条"""
+  deleteEntry(id: Int!): Boolean!
+
   """词条: 词条更新"""
   editEntry(entryId: Int!, key: String, langs: JSON): Boolean!
   login(email: String!): String!

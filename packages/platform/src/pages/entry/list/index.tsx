@@ -5,21 +5,36 @@ import type {
 } from '@ant-design/pro-components'
 import { PageContainer, ProTable } from '@ant-design/pro-components'
 import { ActionText } from '@fruits-chain/react-bailu'
+import { App } from 'antd'
 import { useRef } from 'react'
 import { useSearchParams } from 'react-router-dom'
 
 import type { Entry } from '@/graphql/generated/types'
 import { useGetAppByIdQuery } from '@/graphql/operations/app/__generated__/index.generated'
-import { usePageAppEntriesLazyQuery } from '@/graphql/operations/entry/__generated__/index.generated'
+import {
+  useDeleteEntryMutation,
+  usePageAppEntriesLazyQuery,
+} from '@/graphql/operations/entry/__generated__/index.generated'
 
 import EntryModal from './components/create-modal'
 
 const EntryListPage: React.FC = () => {
   const [params] = useSearchParams()
   const appId = Number(params.get('id'))
+  const { message } = App.useApp()
   const actions = useRef<ActionType>()
   const [pageAllPublicEntries] = usePageAppEntriesLazyQuery()
+  const [deleteEntry] = useDeleteEntryMutation()
   const { data: appInfo } = useGetAppByIdQuery({ variables: { appId } })
+  async function handleDeleteEntry(id: number) {
+    await deleteEntry({
+      variables: {
+        deleteEntryId: id,
+      },
+    })
+    message.success('删除词条成功！')
+    actions.current.reload()
+  }
   const columns: ProColumns<Entry>[] = [
     {
       title: '词条Key',
@@ -30,6 +45,7 @@ const EntryListPage: React.FC = () => {
     {
       title: '主语言',
       dataIndex: 'mainLangText',
+      ellipsis: true,
       width: 120,
     },
     {
@@ -62,12 +78,19 @@ const EntryListPage: React.FC = () => {
       hideInSearch: true,
       render(_, entity) {
         return (
-          <EntryModal
-            app={appInfo?.getAppById}
-            entry={entity}
-            onActionSuccess={actions.current.reload}>
-            <ActionText>编辑</ActionText>
-          </EntryModal>
+          <ActionText.Group>
+            <EntryModal
+              app={appInfo?.getAppById}
+              entry={entity}
+              onActionSuccess={actions.current.reload}>
+              <ActionText>编辑</ActionText>
+            </EntryModal>
+            <ActionText
+              status="danger"
+              action={() => handleDeleteEntry(entity.id)}>
+              删除
+            </ActionText>
+          </ActionText.Group>
         )
       },
     },

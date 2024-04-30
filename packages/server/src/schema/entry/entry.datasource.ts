@@ -130,7 +130,7 @@ export class EntryDataSource {
       },
     })
     // 只返回有key的词条
-    return app?.entries?.filter(item => item.key) || []
+    return app?.entries?.filter(item => item.key && !item.deleted) || []
   }
   public static async updateAppEntry({ entryId, langs, key }: UpdateEntryArgs) {
     const currentEntry = await prisma.entry.findUnique({
@@ -195,5 +195,16 @@ export class EntryDataSource {
       records: records,
       total,
     }
+  }
+  public static async deleteEntry(id: number) {
+    await prisma.entry.update({
+      where: {
+        entry_id: id,
+      },
+      data: {
+        deleted: true,
+      },
+    })
+    return true
   }
 }

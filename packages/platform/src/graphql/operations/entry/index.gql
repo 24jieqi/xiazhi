@@ -30,3 +30,7 @@ query pageAppEntries($appId: Int!, $key: String, $mainLangText: String, $pageNo:
 mutation createEntry($input: CreateEntryInput!) {
   createEntry(input: $input)
 }
+# 词条: 删除词条
+mutation DeleteEntry($deleteEntryId: Int!) {
+  deleteEntry(id: $deleteEntryId)
+}
